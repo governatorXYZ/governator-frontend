@@ -7,8 +7,8 @@ const userDetails = {
 
 const NavBar: React.FC = () => {
   return (
-    <Box bg='gray.700' px={10} py={4}>
-      <Flex>
+    <Box bg='dark-1' px={10} py={4} h='90px'>
+      <Flex justifyContent='space-between' alignItems='center'>
         {/* Logo */}
         <Box>
           <Image
@@ -20,7 +20,7 @@ const NavBar: React.FC = () => {
         </Box>
 
         {/* User Display */}
-        <Box ml='auto'>
+        <Box>
           <HStack>
             <Image
               src={userDetails.img}

@@ -23,10 +23,10 @@ const dashboardButtons = [
 const Dashboard: NextPage = () => {
   return (
     <Box>
-      <Box bg='black' h='100vh' pt='30'>
+      <Box h='100vh' pt='30'>
         <Flex justifyContent='center' alignItems='center'>
           {/* Dashboard Buttons Box */}
-          <Box bg='gray.700' p={10}>
+          <Box p={10}>
             <VStack spacing={10}>
               <Text color='white' fontSize='2xl'>
                 Server Name
