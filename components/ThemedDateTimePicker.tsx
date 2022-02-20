@@ -1,11 +1,10 @@
 import styled from '@emotion/styled'
-import { Box } from '@chakra-ui/react'
+import { Box, Button } from '@chakra-ui/react'
 
 import 'react-datepicker/dist/react-datepicker.css'
 import DatePicker, { ReactDatePickerProps } from 'react-datepicker'
-import { FiCalendar } from 'react-icons/fi'
+import { FiCalendar, FiX } from 'react-icons/fi'
 import { useRef } from 'react'
-import { UseFormRegisterReturn } from 'react-hook-form'
 
 const StyledDatePicker = styled(DatePicker)`
   background: transparent;
@@ -15,8 +14,13 @@ const StyledDatePicker = styled(DatePicker)`
   border-radius: 6px;
 `
 
-const ThemedDateTimePicker: React.FC<ReactDatePickerProps> = ({
+interface ThemedDateTimePickerProps extends ReactDatePickerProps {
+  onReset: () => void
+}
+
+const ThemedDateTimePicker: React.FC<ThemedDateTimePickerProps> = ({
   selected,
+  onReset,
   onChange,
 }) => {
   const ref = useRef<DatePicker>(null)
@@ -30,17 +34,34 @@ const ThemedDateTimePicker: React.FC<ReactDatePickerProps> = ({
         dateFormat='MMMM d, yyyy h:mm aa'
         ref={ref}
       />
-      <Box
+      {selected && (
+        <Button
+          pos='absolute'
+          bottom='5px'
+          right='50px'
+          size='sm'
+          px='0.5rem'
+          backgroundColor='transparent'
+          onClick={onReset}
+          cursor='pointer'
+        >
+          <FiX fontSize='20px' />
+        </Button>
+      )}
+      <Button
         pos='absolute'
-        bottom='30%'
-        right='20px'
+        bottom='5px'
+        right='10px'
+        size='sm'
+        px='0.5rem'
+        backgroundColor='transparent'
         onClick={() => {
           ref.current?.setFocus()
         }}
         cursor='pointer'
       >
         <FiCalendar fontSize='20px' />
-      </Box>
+      </Button>
     </Box>
   )
 }
