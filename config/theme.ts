@@ -2,9 +2,8 @@ import { extendTheme } from '@chakra-ui/react'
 
 const theme = extendTheme({
   colors: {
-    'dark-1': '#1A1C20',
-    'dark-2': '#2B2D33',
-    'dark-3': '#33363D',
+    'dark-1': '#29303A', // navbar
+    'dark-2': '#20262D', // dashboard background
   },
   fonts: {
     body: "'Inter', sans-serif",
