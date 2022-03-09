@@ -2,11 +2,11 @@ import { extendTheme } from '@chakra-ui/react'
 
 const theme = extendTheme({
   colors: {
-    'dark-1': '#29303A', // navbar
-    'dark-2': '#20262D', // dashboard background
+    'dark-1': '#29303A',
+    'dark-2': '#20262D',
   },
   fonts: {
-    body: "'Inter', sans-serif",
+    body: 'Noto Sans, sans-serif',
   },
   fontSizes: {
     xs: '0.75rem', // 12px
@@ -21,7 +21,11 @@ const theme = extendTheme({
     '6xl': '3.75rem', // 60px
   },
   styles: {
-    global: {},
+    global: {
+      '.roboto-mono': {
+        fontFamily: 'Roboto Mono, sans-serif',
+      },
+    },
   },
 })
 

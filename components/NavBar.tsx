@@ -1,5 +1,14 @@
-import { useSession, signIn, signOut } from "next-auth/react"
-import { Box, HStack, VStack, Flex, Text, Link, Image } from '@chakra-ui/react'
+import { useSession, signIn, signOut } from 'next-auth/react'
+import {
+  Box,
+  HStack,
+  VStack,
+  Flex,
+  Text,
+  Link,
+  Image,
+  Container,
+} from '@chakra-ui/react'
 
 const NavBar: React.FC = () => {
   const { data: session } = useSession()
@@ -7,13 +16,20 @@ const NavBar: React.FC = () => {
   const renderLoginText = () => {
     return (
       <HStack justifyContent='center' alignItems='center'>
-        <Link color='gray.500' href='#' onClick={() => {signIn('discord')}}>Login</Link>
+        <Link
+          color='gray.200'
+          href='#'
+          onClick={() => {
+            signIn('discord')
+          }}
+        >
+          Login
+        </Link>
       </HStack>
     )
   }
 
   const renderUserAvatar = () => {
-
     const name = session?.user?.name
     const image = session?.user?.image
 
@@ -27,7 +43,13 @@ const NavBar: React.FC = () => {
         />
         <VStack>
           <Text color='white'>{name}</Text>
-          <Link color='gray.500' href='#' onClick={() => {signOut()}}>
+          <Link
+            color='gray.500'
+            href='#'
+            onClick={() => {
+              signOut()
+            }}
+          >
             Logout
           </Link>
         </VStack>
@@ -36,26 +58,27 @@ const NavBar: React.FC = () => {
   }
 
   return (
-    <Box bg='gray.700' px={10} py={4}>
-      <Flex alignItems='center'>
-        {/* Logo */}
-        <Box>
-          <Image
-            src='/images/gov-bot.jpeg'
-            alt='logo'
-            boxSize='50px'
-            objectFit='cover'
-          />
-        </Box>
-        {/* User Display */}
-        <Box ml='auto'>
-          {session ? renderUserAvatar() : renderLoginText()}
-        </Box>
-      </Flex>
+    <Box bg='gray.700' py={4} h='60px'>
+      <Container maxW='container.xl'>
+        <Flex justifyContent='space-between' alignItems='center'>
+          <Box>
+            <Text
+              as='span'
+              color='gray.200'
+              fontSize='xl'
+              className='roboto-mono'
+            >
+              governator.xyz
+            </Text>
+          </Box>
+          {/* User Display */}
+          <Box ml='auto'>
+            {session ? renderUserAvatar() : renderLoginText()}
+          </Box>
+        </Flex>
+      </Container>
     </Box>
   )
-
- 
 }
 
 export default NavBar
