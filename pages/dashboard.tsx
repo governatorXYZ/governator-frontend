@@ -1,6 +1,7 @@
 import type { NextPage } from 'next'
 import { CalendarIcon, AddIcon, SettingsIcon } from '@chakra-ui/icons'
 import { Box, Button, VStack, Grid, Text, Flex } from '@chakra-ui/react'
+import Govcrumb from 'components/BreadCrumb'
 
 const dashboardButtons = [
   {
@@ -22,8 +23,9 @@ const dashboardButtons = [
 
 const Dashboard: NextPage = () => {
   return (
-    <Box>
-      <Box h='100vh' pt='30'>
+    <Box bg='dark-2' minH='calc(100vh - 90px)' pt='4rem' pb='8rem'>
+      <Box bg='dark-1' maxW='2xl' mx='auto' p='2rem 3rem'>
+        <Govcrumb />
         <Flex justifyContent='center' alignItems='center'>
           {/* Dashboard Buttons Box */}
           <Box p={10}>
