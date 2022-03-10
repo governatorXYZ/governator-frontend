@@ -17,7 +17,7 @@ const SVGBox: React.FC = () => (
       ease: 'linear',
       duration: 2,
       delay: 2,
-      repeatDelay: 2,
+      repeatDelay: 1,
       repeat: Infinity,
       repeatType: 'mirror',
     }}
