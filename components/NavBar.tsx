@@ -17,13 +17,13 @@ import {
   MenuDivider,
 } from '@chakra-ui/react'
 import { AiOutlineCaretDown } from 'react-icons/ai'
+import { useRouter } from 'next/router'
 
 const LoginText: React.FC = () => {
   return (
     <HStack justifyContent='center' alignItems='center'>
       <Link
         color='gray.200'
-        href='#'
         onClick={() => {
           signIn('discord')
         }}
@@ -37,6 +37,7 @@ const LoginText: React.FC = () => {
 const UserAvatar: React.FC<{ session: any }> = ({ session }) => {
   const name = session?.user?.name
   const image = session?.user?.image
+  const router = useRouter()
 
   return (
     <Menu>
