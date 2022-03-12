@@ -13,7 +13,6 @@ import {
   Link,
 } from '@chakra-ui/react'
 
-import { GovBotContext } from '../components/context-provider/provider'
 import Govcrumb from 'components/BreadCrumb'
 
 const ServerSelect: NextPage = () => {
@@ -48,15 +47,18 @@ const ServerSelect: NextPage = () => {
   }
 
   return (
-    <Box>
-      <Box bg='black' minHeight='100vh' pt='30'>
+    <Box bg='dark-2' minH='calc(100vh - 90px)' pt='4rem' pb='8rem'>
+      <Box bg='dark-1' maxW='2xl' mx='auto' p='2rem 3rem'>
+        <Govcrumb />
+
         <Flex justifyContent='center' alignItems='center'>
           {/* Server Select Box */}
 
-                    {/* Render server icons */}
-                    <Grid templateColumns='repeat(5, 1fr)' gap={1}>
-                      {servers.map((_server: any, idx) => {
-                        const img = `https://cdn.discordapp.com/icons/${_server.id}/${_server.icon}.png`
+          <Box p={10}>
+            <VStack spacing={10}>
+              <Text color='white' fontSize='2xl'>
+                Select Server
+              </Text>
 
               {/* Render server icons */}
               <Grid templateColumns='repeat(5, 1fr)' gap={1}>
@@ -65,32 +67,38 @@ const ServerSelect: NextPage = () => {
 
                   return (
                     <VStack key={`server-${idx}`} cursor='pointer' role='group'>
-                      <Box
-                        p={1}
-                        borderRadius='full'
-                        _groupHover={{ bg: 'teal' }}
-                      >
-                        {_server.icon ? (
-                          <Image
-                            src={img}
-                            alt='user-avatar'
-                            borderRadius='full'
-                            boxSize='50px'
-                          />
-                        ) : (
-                          <Flex
-                            borderRadius='full'
-                            background='grey'
-                            boxSize='50px'
-                            justifyContent='center'
-                            alignItems='center'
-                          >
-                            <Text fontSize='medium'>
-                              {_server.name.slice(0, 2).toUpperCase()}
-                            </Text>
-                          </Flex>
-                        )}
-                      </Box>
+                      <Link
+                        href={`/dashboard`}
+                        onClick={() => {
+                          console.log('i am clickeddd')
+                          return null  
+                        }
+                        }>
+                        <Box
+                          p={1}
+                          borderRadius='full'
+                          _groupHover={{ bg: 'teal' }}>
+                          {_server.icon ? (
+                            <Image
+                              src={img}
+                              alt='user-avatar'
+                              borderRadius='full'
+                              boxSize='50px'
+                            />
+                          ) : (
+                            <Flex
+                              borderRadius='full'
+                              background='grey'
+                              boxSize='50px'
+                              justifyContent='center'
+                              alignItems='center'>
+                              <Text fontSize='medium'>
+                                {_server.name.slice(0, 2).toUpperCase()}
+                              </Text>
+                            </Flex>
+                          )}
+                        </Box>
+                      </Link>
                       <Text color='white'>{_server.name.slice(0, 15)}</Text>
                     </VStack>
                   )
@@ -98,9 +106,9 @@ const ServerSelect: NextPage = () => {
               </Grid>
             </VStack>
           </Box>
-        )
-      }}
-    </GovBotContext.Consumer>
+        </Flex>
+      </Box>
+    </Box>
   )
 }
 
