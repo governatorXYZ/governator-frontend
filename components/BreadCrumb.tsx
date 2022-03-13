@@ -1,20 +1,43 @@
-import React from 'react'
-import { atom, useAtom } from 'jotai';
+import React, { useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from '@chakra-ui/react'
 import { ChevronRightIcon } from '@chakra-ui/icons'
+
 export interface T_crumbs {
   href: string,
   name: string
 }[]
 
-export const crumbAtom = atom([{
-  href: '/server-select',
-  name: 'servers'
-}]);
-
 const Govcrumb: React.FC = () => {
 
-  const [crumb, setCrumb] = useAtom(crumbAtom);
+  const [crumb, setCrumb] = useState([]);
+
+  const router = useRouter();
+
+  useEffect(() => {
+
+    const path = router.asPath
+    const paths = path.split('/')
+    const crumbs: T_crumbs[] = []
+
+    console.log({paths})
+
+    if (paths.length >= 2) {
+      crumbs.push({
+        href: '/servers',
+        name: 'Servers'
+      })
+    }
+    if (paths.length >= 3) {
+      crumbs.push({
+        href: `/servers/${router.query.serverId}`,
+        name: 'Dashboard'
+      })
+    }
+
+    setCrumb(crumbs)
+
+  },[router.query])
 
   return (
     <Breadcrumb

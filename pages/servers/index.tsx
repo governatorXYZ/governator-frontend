@@ -1,18 +1,17 @@
-import type { NextPage } from 'next'
-import { useState } from 'react'
-import axios from 'axios'
-import { useSession } from 'next-auth/react'
+import type { NextPage } from 'next';
+import { useSession } from 'next-auth/react';
+import { useState } from 'react';
+import axios from 'axios';
 import {
   Box,
   VStack,
   Image,
   Flex,
   Text,
-  HStack,
   Grid,
   Link,
 } from '@chakra-ui/react'
-
+ 
 import Govcrumb from 'components/BreadCrumb'
 
 const ServerSelect: NextPage = () => {
@@ -37,10 +36,6 @@ const ServerSelect: NextPage = () => {
       console.log({ e })
     }
   }
-
-  // const onServerSelect = () => {
-
-  // }
 
   if (servers.length == 0) {
     getUserGuilds()
@@ -68,12 +63,7 @@ const ServerSelect: NextPage = () => {
                   return (
                     <VStack key={`server-${idx}`} cursor='pointer' role='group'>
                       <Link
-                        href={`/dashboard`}
-                        onClick={() => {
-                          console.log('i am clickeddd')
-                          return null  
-                        }
-                        }>
+                        href={`/servers/${_server.id}`}>
                         <Box
                           p={1}
                           borderRadius='full'
