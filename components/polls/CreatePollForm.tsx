@@ -11,22 +11,25 @@ import {
   Input,
   Text,
   Textarea,
+  useToast,
 } from '@chakra-ui/react'
 import ThemedFormErrorMessage from 'components/ThemedFormErrorMessage'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { FiPlus, FiTrash } from 'react-icons/fi'
 import { Select } from 'chakra-react-select'
 import ThemedDateTimePicker from 'components/ThemedDateTimePicker'
+import { privateBaseAxios } from 'constants/axios'
 
 interface Poll {
   title: string
-  channel: string
-  options: { name: string }[]
-  allowAnyoneToAddPoll: boolean
-  singleVotePerUser: boolean
-  endTime: Date | null
+  channel_id: string
+  poll_options: { name: string }[]
+  allow_options_for_anyone: boolean
+  single_vote: boolean
+  end_time: Date | null
   description: string
-  roleRestrictions: string[]
+  role_restrictions: string[]
+  author_discord_id: string
 }
 
 const options = [
@@ -48,20 +51,34 @@ const CreatePollForm: React.FC<BoxProps> = ({ ...props }) => {
     control,
     clearErrors,
     setValue,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     watch,
   } = useForm<Poll>({
     defaultValues: {
-      options: [{ name: '' }],
+      poll_options: [{ name: '' }],
+      author_discord_id: '',
     },
   })
   const { fields, append, remove } = useFieldArray({
     control,
-    name: 'options',
+    name: 'poll_options',
   })
 
-  const submit = (data: Poll) => {
-    console.log({ data })
+  const toast = useToast()
+
+  const submit = async (data: Poll) => {
+    try {
+      const res = await privateBaseAxios.post('/polls/create', data)
+
+      if (res.data) {
+        toast({
+          status: 'success',
+          description: 'The poll has been created successfully.',
+        })
+      }
+    } catch (err) {
+      toast({ status: 'error', description: 'An error has occured.' })
+    }
   }
 
   return (
@@ -79,20 +96,20 @@ const CreatePollForm: React.FC<BoxProps> = ({ ...props }) => {
             />
           </FormControl>
           <FormControl>
-            <FormLabel mt='1rem' htmlFor='channel'>
+            <FormLabel mt='1rem' htmlFor='channel_id'>
               Channel
             </FormLabel>
             <Controller
               control={control}
-              name='channel'
+              name='channel_id'
               render={({ field: { onBlur } }) => (
                 <Select
-                  id='channel'
+                  id='channel_id'
                   options={options}
                   isSearchable={false}
                   onBlur={onBlur}
                   onChange={i => {
-                    setValue('channel', i?.label ?? '')
+                    setValue('channel_id', i?.label ?? '')
                   }}
                 />
               )}
@@ -115,14 +132,14 @@ const CreatePollForm: React.FC<BoxProps> = ({ ...props }) => {
               <Box key={f.id}>
                 <Controller
                   control={control}
-                  name={`options.${i}.name`}
+                  name={`poll_options.${i}.name`}
                   render={({ field: { onChange, onBlur, value } }) => (
                     <Box>
                       <Flex alignItems='center'>
                         <Input
                           onChange={e => {
                             onChange(e)
-                            clearErrors('options')
+                            clearErrors('poll_options')
                           }}
                           borderColor='gray.400'
                           onBlur={onBlur}
@@ -146,7 +163,7 @@ const CreatePollForm: React.FC<BoxProps> = ({ ...props }) => {
                         )}
                       </Flex>
                       <ThemedFormErrorMessage>
-                        {errors.options?.[i]?.name?.message}
+                        {errors.poll_options?.[i]?.name?.message}
                       </ThemedFormErrorMessage>
                     </Box>
                   )}
@@ -170,12 +187,12 @@ const CreatePollForm: React.FC<BoxProps> = ({ ...props }) => {
           <FormControl>
             <Flex alignItems='center' mt='1rem'>
               <Checkbox
-                id='allowAnyoneToAddPoll'
-                {...register('allowAnyoneToAddPoll')}
+                id='allow_options_for_anyone'
+                {...register('allow_options_for_anyone')}
               >
                 <Text
                   as='label'
-                  htmlFor='allowAnyoneToAddPoll'
+                  htmlFor='allow_options_for_anyone'
                   mt='0.25rem'
                   ml='0.25rem'
                   fontWeight='500'
@@ -187,13 +204,10 @@ const CreatePollForm: React.FC<BoxProps> = ({ ...props }) => {
           </FormControl>
           <FormControl>
             <Flex alignItems='center' mt='1rem'>
-              <Checkbox
-                id='singleVotePerUser'
-                {...register('singleVotePerUser')}
-              >
+              <Checkbox id='single_vote' {...register('single_vote')}>
                 <Text
                   as='label'
-                  htmlFor='singleVotePerUser'
+                  htmlFor='single_vote'
                   mt='0.25rem'
                   ml='0.25rem'
                   fontWeight='500'
@@ -221,15 +235,15 @@ const CreatePollForm: React.FC<BoxProps> = ({ ...props }) => {
             </Box>
             <Controller
               control={control}
-              name={'endTime'}
+              name={'end_time'}
               render={({ field: { value } }) => (
                 <ThemedDateTimePicker
                   selected={value}
                   onChange={(date: Date) => {
-                    setValue('endTime', date)
+                    setValue('end_time', date)
                   }}
                   onReset={() => {
-                    setValue('endTime', null)
+                    setValue('end_time', null)
                   }}
                   id='endTime'
                   showTimeSelect
@@ -255,7 +269,7 @@ const CreatePollForm: React.FC<BoxProps> = ({ ...props }) => {
             </FormLabel>
             <Controller
               control={control}
-              name='roleRestrictions'
+              name='role_restrictions'
               render={({ field: { onBlur } }) => (
                 <Select
                   id='roleRestrictions'
@@ -265,7 +279,7 @@ const CreatePollForm: React.FC<BoxProps> = ({ ...props }) => {
                   onBlur={onBlur}
                   onChange={i => {
                     setValue(
-                      'roleRestrictions',
+                      'role_restrictions',
                       i.map(e => e.value)
                     )
                   }}
@@ -274,9 +288,14 @@ const CreatePollForm: React.FC<BoxProps> = ({ ...props }) => {
             />
           </FormControl>
           <Flex mt='4rem'>
-            <Button type='submit' mx='auto'>
+            <Button
+              type='submit'
+              mx='auto'
+              isLoading={isSubmitting}
+              isDisabled={isSubmitting}
+            >
               Create poll{' '}
-              {`${watch('channel') ? `in ${watch('channel')}` : ''}`}
+              {`${watch('channel_id') ? `in ${watch('channel_id')}` : ''}`}
             </Button>
           </Flex>
         </form>

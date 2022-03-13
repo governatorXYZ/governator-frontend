@@ -14,6 +14,7 @@ import {
 } from '@chakra-ui/react'
 
 import Govcrumb from 'components/BreadCrumb'
+import { discordAxios } from 'constants/axios'
 
 const ServerSelect: NextPage = () => {
   const { data: session } = useSession()
@@ -24,15 +25,8 @@ const ServerSelect: NextPage = () => {
     if (!servers.length) {
       try {
         setLoading(true)
-        const headers = {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization: `Bearer ${session?.accessToken}`,
-        }
-        const data = await axios.get(
-          'https://discord.com/api/users/@me/guilds',
-          {
-            headers: headers,
-          }
+        const data = await discordAxios(session?.accessToken as string).get(
+          '/users/@me/guilds'
         )
         setLoading(false)
         setServers(data.data)
@@ -67,7 +61,8 @@ const ServerSelect: NextPage = () => {
           <Grid
             gap='0.5rem'
             templateColumns='repeat(auto-fill,minmax(120px,1fr))'
-            w='full'>
+            w='full'
+          >
             {servers.map((_server: any, idx) => {
               const img = `https://cdn.discordapp.com/icons/${_server.id}/${_server.icon}.png`
 
@@ -76,7 +71,8 @@ const ServerSelect: NextPage = () => {
                   p='0.25rem'
                   key={`server-${idx}`}
                   cursor='pointer'
-                  role='group'>
+                  role='group'
+                >
                   <Link href={`/servers/${_server.id}`}>
                     <Box p={1} borderRadius='full' _groupHover={{ bg: 'teal' }}>
                       {_server.icon ? (
@@ -93,7 +89,8 @@ const ServerSelect: NextPage = () => {
                           boxSize='50px'
                           justifyContent='center'
                           alignItems='center'
-                          w='max-content'>
+                          w='max-content'
+                        >
                           <Text fontSize='medium'>{_server.name}</Text>
                         </Flex>
                       )}
