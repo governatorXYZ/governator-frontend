@@ -5,7 +5,6 @@ import {
   VStack,
   Flex,
   Text,
-  Link,
   Image,
   Container,
   IconButton,
@@ -17,19 +16,19 @@ import {
   MenuDivider,
 } from '@chakra-ui/react'
 import { AiOutlineCaretDown } from 'react-icons/ai'
-import { useRouter } from 'next/router'
+import Link from 'next/link'
 
 const LoginText: React.FC = () => {
   return (
-    <HStack justifyContent='center' alignItems='center'>
-      <Link
-        color='gray.200'
+    <HStack justifyContent='center' alignItems='center' color='gray.200'>
+      <Text
+        as='span'
         onClick={() => {
           signIn('discord')
         }}
       >
         Login
-      </Link>
+      </Text>
     </HStack>
   )
 }
@@ -37,7 +36,6 @@ const LoginText: React.FC = () => {
 const UserAvatar: React.FC<{ session: any }> = ({ session }) => {
   const name = session?.user?.name
   const image = session?.user?.image
-  const router = useRouter()
 
   return (
     <Menu>
@@ -64,7 +62,7 @@ const UserAvatar: React.FC<{ session: any }> = ({ session }) => {
         }
         variant='ghost'
       />
-      <MenuList>
+      <MenuList color='gray.800'>
         <MenuGroup title={`Signed in as ${name}`} fontWeight='400'>
           <MenuDivider />
           <MenuItem
@@ -94,12 +92,25 @@ const NavBar: React.FC = () => {
               fontSize='lg'
               className='roboto-mono'
             >
-              governator.xyz
+              <Link href='/'>governator.xyz</Link>
             </Text>
           </Box>
           {/* User Display */}
           <Box>
-            {session ? <UserAvatar session={session} /> : <LoginText />}
+            {session ? (
+              <HStack color='gray.200' spacing='2rem'>
+                <Link href='/servers'>
+                  <a>
+                    <Text as='span' fontSize='15px' fontWeight='500'>
+                      Servers
+                    </Text>
+                  </a>
+                </Link>
+                <UserAvatar session={session} />
+              </HStack>
+            ) : (
+              <LoginText />
+            )}
           </Box>
         </Flex>
       </Container>
