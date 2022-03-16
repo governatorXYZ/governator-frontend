@@ -51,15 +51,15 @@ const ServerSelect: NextPage = () => {
                         />
                       ) : (
                         <Flex
-                          borderRadius='full'
-                          background='grey'
-                          boxSize='50px'
-                          justifyContent='center'
-                          alignItems='center'
-                          w='max-content'
-                        >
-                          <Text fontSize='medium'>{_server.name}</Text>
-                        </Flex>
+                        borderRadius='full'
+                        background='grey'
+                        boxSize='50px'
+                        justifyContent='center'
+                        alignItems='center'>
+                        <Text fontSize='medium'>
+                          {_server.name.slice(0, 2).toUpperCase()}
+                        </Text>
+                      </Flex>
                       )}
                     </Box>
                   </Link>
