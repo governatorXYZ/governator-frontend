@@ -1,45 +1,12 @@
 import type { NextPage } from 'next'
-import { useSession } from 'next-auth/react'
-import { useCallback, useEffect, useState } from 'react'
-import axios from 'axios'
-import {
-  Box,
-  VStack,
-  Image,
-  Flex,
-  Text,
-  Grid,
-  Link,
-  Spinner,
-} from '@chakra-ui/react'
-
+import { Box, VStack, Image, Flex, Text, Grid, Spinner } from '@chakra-ui/react'
 import Govcrumb from 'components/BreadCrumb'
-import { discordAxios } from 'constants/axios'
+import useServers from 'hooks/useServers'
+
+import Link from 'next/link'
 
 const ServerSelect: NextPage = () => {
-  const { data: session } = useSession()
-  const [servers, setServers] = useState([])
-  const [loading, setLoading] = useState(false)
-
-  const getUserGuilds = useCallback(async () => {
-    if (!servers.length) {
-      try {
-        setLoading(true)
-        const data = await discordAxios(session?.accessToken as string).get(
-          '/users/@me/guilds'
-        )
-        setLoading(false)
-        setServers(data.data)
-      } catch (e) {
-        console.log({ e })
-        setLoading(false)
-      }
-    }
-  }, [servers])
-
-  useEffect(() => {
-    getUserGuilds()
-  }, [getUserGuilds])
+  const { servers, loading } = useServers()
 
   return (
     <Box bg='dark-2' minH='calc(100vh - 60px)' pt='4rem' pb='8rem'>

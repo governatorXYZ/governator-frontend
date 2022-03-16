@@ -6,19 +6,22 @@ import {
   DarkMode,
   Flex,
   FormControl,
-  FormHelperText,
+  FormErrorMessage,
   FormLabel,
   Input,
   Text,
   Textarea,
   useToast,
 } from '@chakra-ui/react'
-import ThemedFormErrorMessage from 'components/ThemedFormErrorMessage'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { FiPlus, FiTrash } from 'react-icons/fi'
 import { Select } from 'chakra-react-select'
 import ThemedDateTimePicker from 'components/ThemedDateTimePicker'
 import { privateBaseAxios } from 'constants/axios'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/router'
+import * as yup from 'yup'
+import { yupResolver } from '@hookform/resolvers/yup'
 
 interface Poll {
   title: string
@@ -29,22 +32,41 @@ interface Poll {
   end_time: Date | null
   description: string
   role_restrictions: string[]
-  author_discord_id: string
+  author_user_id: string
 }
 
+const schema = yup.object().shape({
+  title: yup.string().required('Required.'),
+  channel_id: yup.string().required('Required.'),
+  poll_options: yup.array().of(
+    yup.object().shape({
+      name: yup.string(),
+    })
+  ),
+  allow_options_for_anyone: yup.boolean(),
+  single_vote: yup.boolean(),
+  end_time: yup.date().required('Required.'),
+  description: yup.string().required('Required.'),
+  author_user_id: yup.string().required('Required'),
+})
+
 const options = [
-  { value: 'chocolate', label: '#chocolate' },
-  { value: 'strawberry', label: '#strawberry' },
-  { value: 'vanilla', label: '#vanilla' },
+  { value: '1234', label: '#chocolate' },
+  { value: '2345', label: '#strawberry' },
+  { value: '3456', label: '#vanilla' },
 ]
 
 const roles = [
-  { value: 'level1', label: 'Level 1' },
-  { value: 'level2', label: 'Level 2' },
-  { value: 'level3', label: 'Level 3' },
+  { value: 'level-1', label: 'Level 1' },
+  { value: 'level-2', label: 'Level 2' },
+  { value: 'level-3', label: 'Level 3' },
 ]
 
-const CreatePollForm: React.FC<BoxProps> = ({ ...props }) => {
+const PollForm: React.FC<BoxProps> = ({ ...props }) => {
+  const { data: session } = useSession()
+  const router = useRouter()
+  const guildId = router.asPath.split('/')[2]
+
   const {
     register,
     handleSubmit,
@@ -54,10 +76,7 @@ const CreatePollForm: React.FC<BoxProps> = ({ ...props }) => {
     formState: { errors, isSubmitting },
     watch,
   } = useForm<Poll>({
-    defaultValues: {
-      poll_options: [{ name: '' }],
-      author_discord_id: '',
-    },
+    resolver: yupResolver(schema),
   })
   const { fields, append, remove } = useFieldArray({
     control,
@@ -68,7 +87,7 @@ const CreatePollForm: React.FC<BoxProps> = ({ ...props }) => {
 
   const submit = async (data: Poll) => {
     try {
-      const res = await privateBaseAxios.post('/polls/create', data)
+      const res = await privateBaseAxios.post('/poll/create', data)
 
       if (res.data) {
         toast({
@@ -85,17 +104,18 @@ const CreatePollForm: React.FC<BoxProps> = ({ ...props }) => {
     <DarkMode>
       <Box {...props} color='gray.100'>
         <form onSubmit={handleSubmit(submit)}>
-          <FormControl>
-            <FormLabel htmlFor='pollTitle'>Poll Title</FormLabel>
+          <FormControl isInvalid={!!errors.title?.message}>
+            <FormLabel htmlFor='title'>Poll Title</FormLabel>
             <Input
               borderColor='gray.400'
               type='text'
               placeholder='ex: Favorite animal?'
-              id='pollTitle'
+              id='title'
               {...register('title')}
             />
+            <FormErrorMessage>{errors.title?.message}</FormErrorMessage>
           </FormControl>
-          <FormControl>
+          <FormControl isInvalid={!!errors.channel_id?.message}>
             <FormLabel mt='1rem' htmlFor='channel_id'>
               Channel
             </FormLabel>
@@ -109,11 +129,13 @@ const CreatePollForm: React.FC<BoxProps> = ({ ...props }) => {
                   isSearchable={false}
                   onBlur={onBlur}
                   onChange={i => {
-                    setValue('channel_id', i?.label ?? '')
+                    setValue('channel_id', i?.value ?? '')
+                    clearErrors('channel_id')
                   }}
                 />
               )}
             />
+            <FormErrorMessage>{errors.channel_id?.message}</FormErrorMessage>
           </FormControl>
           <FormControl>
             <FormLabel mt='1rem' htmlFor='options'>
@@ -162,9 +184,9 @@ const CreatePollForm: React.FC<BoxProps> = ({ ...props }) => {
                           </Box>
                         )}
                       </Flex>
-                      <ThemedFormErrorMessage>
+                      <FormErrorMessage>
                         {errors.poll_options?.[i]?.name?.message}
-                      </ThemedFormErrorMessage>
+                      </FormErrorMessage>
                     </Box>
                   )}
                 />
@@ -217,7 +239,7 @@ const CreatePollForm: React.FC<BoxProps> = ({ ...props }) => {
               </Checkbox>
             </Flex>
           </FormControl>
-          <FormControl>
+          <FormControl isInvalid={!!errors.end_time?.message}>
             <FormLabel mt='1rem' htmlFor='endTime'>
               End time
             </FormLabel>
@@ -241,18 +263,22 @@ const CreatePollForm: React.FC<BoxProps> = ({ ...props }) => {
                   selected={value}
                   onChange={(date: Date) => {
                     setValue('end_time', date)
+                    clearErrors('end_time')
                   }}
                   onReset={() => {
                     setValue('end_time', null)
+                    clearErrors('end_time')
                   }}
                   id='endTime'
                   showTimeSelect
                   dateFormat='MMMM d, yyyy h:mm aa'
+                  isInvalid={!!errors.end_time?.message}
                 />
               )}
-            ></Controller>
+            />
+            <FormErrorMessage>{errors.end_time?.message}</FormErrorMessage>
           </FormControl>
-          <FormControl>
+          <FormControl isInvalid={!!errors.description?.message}>
             <FormLabel mt='1rem' htmlFor='description'>
               Description
             </FormLabel>
@@ -262,6 +288,7 @@ const CreatePollForm: React.FC<BoxProps> = ({ ...props }) => {
               rows={6}
               {...register('description')}
             />
+            <FormErrorMessage>{errors.description?.message}</FormErrorMessage>
           </FormControl>
           <FormControl>
             <FormLabel mt='1rem' htmlFor='roleRestrictions'>
@@ -287,6 +314,11 @@ const CreatePollForm: React.FC<BoxProps> = ({ ...props }) => {
               )}
             />
           </FormControl>
+          <input
+            type='hidden'
+            {...register('author_user_id')}
+            value='623190782abb88dc97fdfb2a'
+          />
           <Flex mt='4rem'>
             <Button
               type='submit'
@@ -295,7 +327,13 @@ const CreatePollForm: React.FC<BoxProps> = ({ ...props }) => {
               isDisabled={isSubmitting}
             >
               Create poll{' '}
-              {`${watch('channel_id') ? `in ${watch('channel_id')}` : ''}`}
+              {`${
+                watch('channel_id')
+                  ? `in ${
+                      options.find(o => o.value === watch('channel_id'))?.label
+                    }`
+                  : ''
+              }`}
             </Button>
           </Flex>
         </form>
@@ -304,4 +342,4 @@ const CreatePollForm: React.FC<BoxProps> = ({ ...props }) => {
   )
 }
 
-export default CreatePollForm
+export default PollForm

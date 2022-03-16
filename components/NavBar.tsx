@@ -23,6 +23,7 @@ const LoginText: React.FC = () => {
     <HStack justifyContent='center' alignItems='center' color='gray.200'>
       <Text
         as='span'
+        cursor='pointer'
         onClick={() => {
           signIn('discord')
         }}

@@ -1,5 +1,4 @@
 import axios from 'axios'
-
 export const privateBaseAxios = axios.create({
   baseURL:
     process.env.NODE_ENV === 'production'
@@ -15,3 +14,8 @@ export const discordAxios = (accessToken: string) =>
       Authorization: `Bearer ${accessToken}`,
     },
   })
+
+export const discordFetcher = (url: string, accessToken: string) =>
+  discordAxios(accessToken).get(url)
+
+export const privateBaseFetcher = (url: string) => privateBaseAxios.get(url)
