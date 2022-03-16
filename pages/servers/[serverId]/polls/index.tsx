@@ -14,6 +14,7 @@ import {
   Button,
   Container,
 } from '@chakra-ui/react'
+import { useRouter } from 'next/router'
 import Govcrumb from 'components/BreadCrumb'
 import useServers from 'hooks/useServers'
 import styled from '@emotion/styled'
@@ -25,6 +26,7 @@ import { DeleteIcon, EditIcon } from '@chakra-ui/icons'
 import { FaDiscord } from 'react-icons/fa'
 import { FiBarChart } from 'react-icons/fi'
 import DeletePoll from 'components/polls/DeletePoll'
+
 
 const StyledTable = styled(Table)`
   & {
@@ -50,6 +52,7 @@ const pollOptions = [
 ]
 
 const Polls: NextPage = () => {
+  const router = useRouter()
   const { loading, currentServer } = useServers()
 
   const { data, error, mutate } = useSWR('/poll/list', privateBaseFetcher)
@@ -157,8 +160,11 @@ const Polls: NextPage = () => {
                               color: 'white',
                               backgroundColor: 'teal.500',
                             }}
+                            onClick={() => router.push(`${router.asPath}/results/${p._id}`)}
                           >
-                            <FiBarChart fontSize='15px' />
+                            <FiBarChart 
+                              fontSize='15px' 
+                              />
                           </Button>
                         </Flex>
                       </Td>
