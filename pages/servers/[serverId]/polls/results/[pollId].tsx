@@ -4,32 +4,33 @@ import {
   Box,
   Flex,
   Text,
+  Spinner
 } from '@chakra-ui/react'
-
-import { BiBarChartSquare } from 'react-icons/bi'
-
+import { useRouter } from 'next/router'
+import useSWR from 'swr'
+import { privateBaseFetcher } from 'constants/axios'
+import { Poll } from 'interfaces'
 import Govcrumb from 'components/BreadCrumb'
 import DisplayPollResults from 'components/polls/DisplayPollResults'
 
 const PollResults: NextPage = () => {
+
+  const router = useRouter()
+
+  const { data, error, mutate } = useSWR(`/poll/${router.query.pollId}`, privateBaseFetcher)
+  const pollData = data?.data ? (data?.data as Poll) : {} as Poll
+  const isLoadingPoll = !data && !error
+
   return (
     <Box bg='dark-2' minH='calc(100vh - 90px)' pt='4rem' pb='8rem'>
       <Box bg='dark-1' maxW='2xl' mx='auto' p='2rem 3rem'>
         <Govcrumb />
-        <Flex
-          color='gray.100'
-          fontSize='2xl'
-          fontWeight='600'
-          mt='3rem'
-          alignItems='center'
-          mx='auto'
-          maxW='max-content'>
-          <BiBarChartSquare fontSize='36px' />
-          <Text as='span' display='block' align='center' ml='1rem'>
-            Poll Name Here ..
-          </Text>
-        </Flex>
-        <DisplayPollResults mt='2rem' />
+        {isLoadingPoll && (
+          <Flex>
+            <Spinner color='gray.200' mx='auto' />
+          </Flex>
+        )}
+        <DisplayPollResults pollData={pollData}/>
       </Box>
     </Box>
   )
