@@ -22,6 +22,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { capitalize } from 'lodash'
 
 interface Poll {
   title: string
@@ -63,10 +64,6 @@ const roles = [
 ]
 
 const PollForm: React.FC<BoxProps> = ({ ...props }) => {
-  const { data: session } = useSession()
-  const router = useRouter()
-  const guildId = router.asPath.split('/')[2]
-
   const {
     register,
     handleSubmit,

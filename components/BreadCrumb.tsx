@@ -1,14 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
-import { Text, Breadcrumb, BreadcrumbItem, BreadcrumbLink } from '@chakra-ui/react'
+import {
+  Text,
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+} from '@chakra-ui/react'
 import { ChevronRightIcon } from '@chakra-ui/icons'
 import { capitalize } from 'lodash'
 
 export interface T_crumbs {
   href: string
   name: string
+  disabled?: boolean
 }
-;[]
 
 type GovcrumbProps = {
   currentServerName?: string
@@ -62,7 +67,7 @@ const Govcrumb: React.FC<GovcrumbProps> = ({ currentServerName }) => {
             {_crumb.disabled ? (
               <Text>{_crumb.name}</Text>
             ) : (
-              <BreadcrumbLink color='#fe0000' fontWeight={700} href={_crumb.href}>{_crumb.name}</BreadcrumbLink>
+              <BreadcrumbLink href={_crumb.href}>{_crumb.name}</BreadcrumbLink>
             )}
           </BreadcrumbItem>
         )
