@@ -6,6 +6,7 @@ import { Poll } from 'interfaces'
 import { BiBarChartSquare } from 'react-icons/bi'
 import Card from 'components/common/Card'
 import PollGraph from 'components/polls/PollGraph'
+import TimeGraph from 'components/polls/TimeGraph'
 
 const results = [{
     id: 1,
@@ -20,6 +21,7 @@ const results = [{
     title: 'Option 3',
     count: 80,
 }]
+
 
 type DisplayPollResultsProps = {
     pollData: Poll
@@ -53,10 +55,9 @@ const DisplayPollResults: React.FC<DisplayPollResultsProps> = ({pollData}) => {
             <Flex width={450}>
                 <PollGraph data={results}/>
             </Flex>
-
-            <Grid>
-                Voters
-            </Grid>
+            <Flex width={450}>
+                <TimeGraph />
+            </Flex>
         </VStack>
     )
 

@@ -1,5 +1,4 @@
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, LegendItem, ChartData } from 'chart.js';
-import { m } from 'framer-motion';
 import { Pie } from 'react-chartjs-2';
 ChartJS.register(ArcElement, Tooltip, Legend);
 
