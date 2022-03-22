@@ -41,7 +41,11 @@ const ServerSelect: NextPage = () => {
                   role='group'
                 >
                   <Link href={`/servers/${_server.id}`}>
-                    <Box p={1} borderRadius='full' _groupHover={{ bg: 'teal' }}>
+                    <Box
+                      p={1}
+                      borderRadius='full'
+                      _groupHover={{ bg: 'blue.500' }}
+                    >
                       {_server.icon ? (
                         <Image
                           src={img}
@@ -51,15 +55,16 @@ const ServerSelect: NextPage = () => {
                         />
                       ) : (
                         <Flex
-                        borderRadius='full'
-                        background='grey'
-                        boxSize='50px'
-                        justifyContent='center'
-                        alignItems='center'>
-                        <Text fontSize='medium'>
-                          {_server.name.slice(0, 2).toUpperCase()}
-                        </Text>
-                      </Flex>
+                          borderRadius='full'
+                          background='grey'
+                          boxSize='50px'
+                          justifyContent='center'
+                          alignItems='center'
+                        >
+                          <Text fontSize='medium'>
+                            {_server.name.slice(0, 2).toUpperCase()}
+                          </Text>
+                        </Flex>
                       )}
                     </Box>
                   </Link>

@@ -81,12 +81,14 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
   })
 
   const toast = useToast()
+  const router = useRouter()
 
   const submit = async (data: Poll) => {
     try {
       const res = await privateBaseAxios.post('/poll/create', data)
 
       if (res.data) {
+        await router.push(router.asPath.replace('/create', ''))
         toast({
           status: 'success',
           description: 'The poll has been created successfully.',
@@ -281,7 +283,6 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             </FormLabel>
             <Textarea
               borderColor='gray.400'
-              type='text'
               rows={6}
               {...register('description')}
             />

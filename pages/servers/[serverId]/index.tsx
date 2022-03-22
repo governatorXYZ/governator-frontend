@@ -43,9 +43,9 @@ const Dashboard: NextPage = () => {
           <NextLink href={`${router.asPath}/polls`}>
             <a>
               <Flex
-                color='teal.300'
+                color='blue.300'
                 _hover={{
-                  color: 'teal.100',
+                  color: 'blue.100',
                 }}
                 alignItems='center'
                 cursor='pointer'
@@ -93,7 +93,7 @@ const Dashboard: NextPage = () => {
                       <NextLink href={_button.href}>
                         <Button
                           leftIcon={_button.icon}
-                          colorScheme='teal'
+                          color='blue.600'
                           variant='solid'
                           minW='3xs'
                         >
