@@ -85,15 +85,40 @@ const votes = [{
   created_at: '2022-03-28 14:30:00.000Z'
 }]
 
+const results = [{
+  id: 1,
+  title: 'Option 1',
+  count: 20,
+},{
+  id: 2,
+  title: 'Option 2',
+  count: 30,
+},{
+  id: 3,
+  title: 'Option 3',
+  count: 80,
+}]
+
+
 export const graphOptions = {
   responsive: true,
   plugins: {
     legend: {
-      position: 'top' as const,
+      position: 'top',
+      labels: {
+        color: 'white',
+        font: {
+          size: 18
+        },
+      }
     },
     title: {
       display: true,
       text: 'Total Votes Over Time',
+      color: 'white',
+      font: {
+        size: 28
+      }
     },
   },
 };
@@ -101,12 +126,12 @@ export const graphOptions = {
 const TimeGraph: React.FC<TimeGraphProps> = ({ data }) => {
 
   const backgroundColors = [
-    'rgba(255, 99, 132, 0.2)',
-    'rgba(54, 162, 235, 0.2)',
-    'rgba(255, 206, 86, 0.2)',
-    'rgba(75, 192, 192, 0.2)',
-    'rgba(153, 102, 255, 0.2)',
-    'rgba(255, 159, 64, 0.2)',
+    'rgba(255, 99, 132)',
+    'rgba(54, 162, 235)',
+    'rgba(255, 206, 86)',
+    'rgba(75, 192, 192)',
+    'rgba(153, 102, 255)',
+    'rgba(255, 159, 64)',
   ]
   const borderColors = [
     'rgba(255, 99, 132, 1)',
@@ -128,12 +153,15 @@ const TimeGraph: React.FC<TimeGraphProps> = ({ data }) => {
     week = week.clone().add(1,'week')
   }
 
-  console.log({weeks})
-
   const options = Array.from(new Set(votes.map(_vote => _vote.vote)))
+  const optionsMap = results.reduce((acc,cur) => {
+    acc[`${cur.id}`] = cur.title
+    return acc
+  },{})
 
   /* Create results cumulative sum */
   const votesOverTime: any = options.reduce((acc,_option) => {
+    console.log({_option, test: optionsMap[_option]})
     acc[_option] = weeks.reduce((weeks_acc, _week) => {
       weeks_acc[_week] = {
         count: 0,
@@ -173,7 +201,7 @@ const TimeGraph: React.FC<TimeGraphProps> = ({ data }) => {
   const labels = weeks
   const datasets = options.map((_option,idx) => {
     return {
-      label: _option,
+      label: optionsMap[_option],
       data: Object.values(votesOverTime[_option]).map(_data => _data.cumSumCount),
       borderColor: borderColors[idx],
       backgroundColor: backgroundColors[idx]
