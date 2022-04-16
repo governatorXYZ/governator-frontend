@@ -175,21 +175,27 @@ const Home: NextPage = () => {
                 </Button>
 
                 {publicRuntimeConfig.WAITLIST_MODE ? (
-                  <Link href='#'>
-                    <Button color='gray.700'>
-                      <Text as='span' cursor='pointer'>
-                        <Text
-                          as='span'
-                          role='img'
-                          display='inline-block'
-                          mr='0.75rem'
-                        >
-                          🙋‍♂️
-                        </Text>
-                        Join the waitlist
+                  <Button
+                    color='gray.700'
+                    onClick={() => {
+                      window.open(
+                        'https://airtable.com/shrWMfKtVfdBvv5dL',
+                        '_blank'
+                      )
+                    }}
+                  >
+                    <Text as='span' cursor='pointer'>
+                      <Text
+                        as='span'
+                        role='img'
+                        display='inline-block'
+                        mr='0.75rem'
+                      >
+                        🙋‍♂️
                       </Text>
-                    </Button>
-                  </Link>
+                      Join the waitlist
+                    </Text>
+                  </Button>
                 ) : (
                   <Button color='gray.700' leftIcon={<SiNotion />}>
                     Read docs on Notion
