@@ -2,7 +2,6 @@ import { useSession, signIn, signOut } from 'next-auth/react'
 import {
   Box,
   HStack,
-  VStack,
   Flex,
   Text,
   Image,
@@ -16,20 +15,33 @@ import {
   MenuDivider,
 } from '@chakra-ui/react'
 import { AiOutlineCaretDown } from 'react-icons/ai'
+import getConfig from 'next/config'
 import Link from 'next/link'
 
 const LoginText: React.FC = () => {
+  const { publicRuntimeConfig } = getConfig()
+
   return (
     <HStack justifyContent='center' alignItems='center' color='gray.200'>
-      <Text
-        as='span'
-        cursor='pointer'
-        onClick={() => {
-          signIn('discord')
-        }}
-      >
-        Login
-      </Text>
+      {publicRuntimeConfig.WAITLIST_MODE ? (
+        <Text
+          as='a'
+          href='https://airtable.com/shrWMfKtVfdBvv5dL'
+          target='_blank'
+        >
+          Join the waitlist
+        </Text>
+      ) : (
+        <Text
+          as='span'
+          cursor='pointer'
+          onClick={() => {
+            signIn('discord')
+          }}
+        >
+          Login
+        </Text>
+      )}
     </HStack>
   )
 }

@@ -18,6 +18,8 @@ import { HiOutlineBadgeCheck } from 'react-icons/hi'
 import styled from '@emotion/styled'
 import { useEffect, useState } from 'react'
 import { sample } from 'lodash'
+import Link from 'next/link'
+import getConfig from 'next/config'
 
 const StyledBox = styled(Box)`
   background-color: #29303a;
@@ -59,6 +61,7 @@ const Quote: React.FC = () => {
 }
 
 const Home: NextPage = () => {
+  const { publicRuntimeConfig } = getConfig()
   return (
     <StyledBox
       minH='calc(100vh - 60px)'
@@ -163,12 +166,35 @@ const Home: NextPage = () => {
               }}
             >
               <Flex gap='1rem' mt='4rem'>
-                <Button colorScheme='purple' leftIcon={<FaDiscord />}>
+                <Button
+                  colorScheme='purple'
+                  leftIcon={<FaDiscord />}
+                  isDisabled
+                >
                   Add to Discord
                 </Button>
-                <Button color='gray.700' leftIcon={<SiNotion />}>
-                  Read docs on Notion
-                </Button>
+
+                {publicRuntimeConfig.WAITLIST_MODE ? (
+                  <Link href='#'>
+                    <Button color='gray.700'>
+                      <Text as='span' cursor='pointer'>
+                        <Text
+                          as='span'
+                          role='img'
+                          display='inline-block'
+                          mr='0.75rem'
+                        >
+                          🙋‍♂️
+                        </Text>
+                        Join the waitlist
+                      </Text>
+                    </Button>
+                  </Link>
+                ) : (
+                  <Button color='gray.700' leftIcon={<SiNotion />}>
+                    Read docs on Notion
+                  </Button>
+                )}
               </Flex>
             </motion.div>
           </Box>
