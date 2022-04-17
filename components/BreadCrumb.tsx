@@ -53,6 +53,7 @@ const Govcrumb: React.FC<GovcrumbProps> = ({ currentServerName }) => {
     })
 
     setCrumb(crumbs)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.query, currentServerName])
 
   return (

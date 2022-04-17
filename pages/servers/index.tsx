@@ -30,7 +30,7 @@ const ServerSelect: NextPage = () => {
             templateColumns='repeat(auto-fill,minmax(120px,1fr))'
             w='full'
           >
-            {servers.map((_server: any, idx) => {
+            {servers.map((_server, idx) => {
               const img = `https://cdn.discordapp.com/icons/${_server.id}/${_server.icon}.png`
 
               return (
@@ -40,7 +40,7 @@ const ServerSelect: NextPage = () => {
                   cursor='pointer'
                   role='group'
                 >
-                  <Link href={`/servers/${_server.id}`}>
+                  <Link href={`/servers/${_server.id}`} passHref>
                     <Box
                       p={1}
                       borderRadius='full'

@@ -1,4 +1,4 @@
-import { Flex, VStack, Text, Grid } from '@chakra-ui/react'
+import { Flex, VStack, Text } from '@chakra-ui/react'
 
 import { Poll } from 'interfaces'
 import { BiBarChartSquare } from 'react-icons/bi'

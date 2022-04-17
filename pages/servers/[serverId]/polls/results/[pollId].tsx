@@ -1,6 +1,5 @@
 import type { NextPage } from 'next'
-// import { useCallback, useEffect, useState } from 'react'
-import { Box, Flex, Text, Spinner } from '@chakra-ui/react'
+import { Box, Flex, Spinner } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import useSWR from 'swr'
 import { privateBaseFetcher } from 'constants/axios'
@@ -11,7 +10,7 @@ import DisplayPollResults from 'components/polls/DisplayPollResults'
 const PollResults: NextPage = () => {
   const router = useRouter()
 
-  const { data, error, mutate } = useSWR(
+  const { data, error } = useSWR(
     `/poll/${router.query.pollId}`,
     privateBaseFetcher
   )

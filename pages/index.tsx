@@ -18,7 +18,6 @@ import { HiOutlineBadgeCheck } from 'react-icons/hi'
 import styled from '@emotion/styled'
 import { useEffect, useState } from 'react'
 import { sample } from 'lodash'
-import Link from 'next/link'
 import getConfig from 'next/config'
 
 const StyledBox = styled(Box)`

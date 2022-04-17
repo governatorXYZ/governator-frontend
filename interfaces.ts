@@ -7,11 +7,11 @@ export interface Poll {
 }
 
 export interface RenderedPoll {
-  id: string
-  created: string
-  name: string
-  channel: string | undefined
-  author: number
-  votes: number
-  actions: JSX.Element
+  id?: string
+  created?: string
+  name?: string
+  channel?: string | undefined
+  author?: number
+  votes?: number
+  actions?: JSX.Element
 }
