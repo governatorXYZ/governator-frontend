@@ -1,46 +1,72 @@
 import styled from '@emotion/styled'
-import { Box } from '@chakra-ui/react'
+import { Box, Button } from '@chakra-ui/react'
 
 import 'react-datepicker/dist/react-datepicker.css'
 import DatePicker, { ReactDatePickerProps } from 'react-datepicker'
-import { FiCalendar } from 'react-icons/fi'
+import { FiCalendar, FiX } from 'react-icons/fi'
 import { useRef } from 'react'
-import { UseFormRegisterReturn } from 'react-hook-form'
 
-const StyledDatePicker = styled(DatePicker)`
+const StyledDatePicker = styled(DatePicker)<{ isInvalid: boolean | undefined }>`
   background: transparent;
   width: 100%;
   padding: 0.5rem 1rem;
-  border: 1px solid #a0aec0;
+  border: ${props =>
+    props.isInvalid ? '1px solid #fc8181' : '1px solid #a0aec0'};
   border-radius: 6px;
 `
 
-const ThemedDateTimePicker: React.FC<ReactDatePickerProps> = ({
+interface ThemedDateTimePickerProps extends ReactDatePickerProps {
+  onReset: () => void
+  isInvalid?: boolean
+}
+
+const ThemedDateTimePicker: React.FC<ThemedDateTimePickerProps> = ({
   selected,
+  onReset,
   onChange,
+  isInvalid,
 }) => {
   const ref = useRef<DatePicker>(null)
 
   return (
     <Box color='gray.200' mt='1rem' pos='relative'>
       <StyledDatePicker
+        isInvalid={isInvalid}
         selected={selected}
         onChange={onChange}
         showTimeSelect
         dateFormat='MMMM d, yyyy h:mm aa'
         ref={ref}
       />
-      <Box
+      {selected && (
+        <Button
+          pos='absolute'
+          bottom='5px'
+          right='50px'
+          size='sm'
+          px='0.5rem'
+          backgroundColor='transparent'
+          onClick={onReset}
+          cursor='pointer'
+        >
+          <FiX fontSize='20px' />
+        </Button>
+      )}
+      <Button
         pos='absolute'
-        bottom='30%'
-        right='20px'
+        bottom='5px'
+        right='10px'
+        size='sm'
+        px='0.5rem'
+        backgroundColor='transparent'
         onClick={() => {
           ref.current?.setFocus()
         }}
+        color={isInvalid ? '#fc8181' : 'gray.200'}
         cursor='pointer'
       >
         <FiCalendar fontSize='20px' />
-      </Box>
+      </Button>
     </Box>
   )
 }
