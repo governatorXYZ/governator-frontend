@@ -14,7 +14,7 @@ import { FaDiscord } from 'react-icons/fa'
 import { SiNotion } from 'react-icons/si'
 import { FiBarChart, FiMessageSquare } from 'react-icons/fi'
 import { AiOutlineTrophy } from 'react-icons/ai'
-import { HiOutlineBadgeCheck } from 'react-icons/hi'
+import { MdLoop } from 'react-icons/md'
 import styled from '@emotion/styled'
 import { useEffect, useState } from 'react'
 import { sample } from 'lodash'
@@ -66,15 +66,13 @@ const Home: NextPage = () => {
       minH='calc(100vh - 60px)'
       pt='8rem'
       overflowX='hidden'
-      color='gray.100'
-    >
+      color='gray.100'>
       <Container maxW='container.xl'>
         <Grid
           templateColumns='350px 1fr'
           columnGap='4rem'
           mx='auto'
-          maxW='max-content'
-        >
+          maxW='max-content'>
           <Box
             h='350px'
             w='350px'
@@ -83,8 +81,7 @@ const Home: NextPage = () => {
             borderRadius='10px'
             backgroundColor='white'
             pos='relative'
-            overflow='hidden'
-          >
+            overflow='hidden'>
             <motion.div
               initial={{
                 position: 'relative',
@@ -93,8 +90,7 @@ const Home: NextPage = () => {
                 x: [-200, -5, -10],
                 opacity: [0.25, 1, 1],
               }}
-              transition={{ duration: 2 }}
-            >
+              transition={{ duration: 2 }}>
               <Image
                 src='./images/gov-bot.jpeg'
                 alt='gov-bot'
@@ -118,15 +114,13 @@ const Home: NextPage = () => {
                 }}
                 transition={{
                   delay: 2,
-                }}
-              >
+                }}>
                 <Text
                   as='span'
                   display='block'
                   color='gray.800'
                   fontSize='sm'
-                  mx='auto'
-                >
+                  mx='auto'>
                   <Quote />
                 </Text>
               </motion.div>
@@ -139,15 +133,13 @@ const Home: NextPage = () => {
                 animate={{
                   opacity: 1,
                   transition: { duration: 1.5, delay: 0.5 },
-                }}
-              >
+                }}>
                 <Text
                   as='span'
                   fontSize='4xl'
                   display='block'
                   className='roboto-mono'
-                  maxW='30ch'
-                >
+                  maxW='30ch'>
                   The best governance tool made for DAOs.
                 </Text>
 
@@ -162,14 +154,12 @@ const Home: NextPage = () => {
               animate={{
                 opacity: 1,
                 transition: { duration: 1, delay: 0.75 },
-              }}
-            >
+              }}>
               <Flex gap='1rem' mt='4rem'>
                 <Button
                   colorScheme='purple'
                   leftIcon={<FaDiscord />}
-                  isDisabled
-                >
+                  isDisabled>
                   Add to Discord
                 </Button>
 
@@ -181,15 +171,13 @@ const Home: NextPage = () => {
                         'https://airtable.com/shrWMfKtVfdBvv5dL',
                         '_blank'
                       )
-                    }}
-                  >
+                    }}>
                     <Text as='span' cursor='pointer'>
                       <Text
                         as='span'
                         role='img'
                         display='inline-block'
-                        mr='0.75rem'
-                      >
+                        mr='0.75rem'>
                         🙋‍♂️
                       </Text>
                       Join the waitlist
@@ -226,8 +214,7 @@ const Home: NextPage = () => {
             mx='auto'
             fontSize='3xl'
             borderBottom='1px solid'
-            borderColor='gray.400'
-          >
+            borderColor='gray.400'>
             What does it do?
           </Text>
         </Flex>
@@ -236,16 +223,14 @@ const Home: NextPage = () => {
           gap='4rem'
           maxW='max-content'
           mx='auto'
-          mt='6rem'
-        >
+          mt='6rem'>
           <Flex
             direction='column'
             alignItems='center'
             justifyItems='center'
             backgroundColor='gray.800'
             p='2rem'
-            borderRadius='6px'
-          >
+            borderRadius='6px'>
             <Box color='gray.300'>
               <FiMessageSquare fontSize='60px' />
             </Box>
@@ -254,9 +239,8 @@ const Home: NextPage = () => {
               display='block'
               mt='1rem'
               maxW='30ch'
-              textAlign='center'
-            >
-              Posts a message asking for candidates for a position
+              textAlign='center'>
+              Posts a private Discord poll that only members can vote on.
             </Text>
           </Flex>
           <Flex
@@ -265,8 +249,26 @@ const Home: NextPage = () => {
             justifyItems='center'
             backgroundColor='gray.800'
             p='2rem'
-            borderRadius='6px'
-          >
+            borderRadius='6px'>
+            <Box color='gray.300'>
+              <FiBarChart fontSize='60px' />
+            </Box>
+            <Text
+              as='span'
+              display='block'
+              mt='0.5rem'
+              maxW='40ch'
+              textAlign='center'>
+              Use token voting directly in Discord.
+            </Text>
+          </Flex>
+          <Flex
+            direction='column'
+            alignItems='center'
+            justifyItems='center'
+            backgroundColor='gray.800'
+            p='2rem'
+            borderRadius='6px'>
             <Box color='gray.300'>
               <AiOutlineTrophy fontSize='60px' />
             </Box>
@@ -275,8 +277,7 @@ const Home: NextPage = () => {
               display='block'
               mt='0.5rem'
               maxW='40ch'
-              textAlign='center'
-            >
+              textAlign='center'>
               Tallies the votes and announces the winner - exactly on time!
             </Text>
           </Flex>
@@ -286,41 +287,17 @@ const Home: NextPage = () => {
             justifyItems='center'
             backgroundColor='gray.800'
             p='2rem'
-            borderRadius='6px'
-          >
+            borderRadius='6px'>
             <Box color='gray.300'>
-              <HiOutlineBadgeCheck fontSize='60px' />
+              <MdLoop fontSize='60px' />
             </Box>
             <Text
               as='span'
               display='block'
               mt='0.5rem'
               maxW='40ch'
-              textAlign='center'
-            >
-              Changes special Discord roles, redirects streamed funds, issues
-              POAPs, and more!
-            </Text>
-          </Flex>
-          <Flex
-            direction='column'
-            alignItems='center'
-            justifyItems='center'
-            backgroundColor='gray.800'
-            p='2rem'
-            borderRadius='6px'
-          >
-            <Box color='gray.300'>
-              <FiBarChart fontSize='60px' />
-            </Box>
-            <Text
-              as='span'
-              display='block'
-              mt='0.5rem'
-              maxW='40ch'
-              textAlign='center'
-            >
-              Posts a private Discord poll that only members can vote on
+              textAlign='center'>
+              Automatically run the poll again and again!
             </Text>
           </Flex>
         </Grid>
