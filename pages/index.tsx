@@ -1,4 +1,5 @@
 import type { NextPage } from 'next'
+import Head from 'next/head'
 import {
   Box,
   Container,
@@ -62,249 +63,255 @@ const Quote: React.FC = () => {
 const Home: NextPage = () => {
   const { publicRuntimeConfig } = getConfig()
   return (
-    <StyledBox
-      minH='calc(100vh - 60px)'
-      pt='8rem'
-      overflowX='hidden'
-      color='gray.100'>
-      <Container maxW='container.xl'>
-        <Grid
-          templateColumns='350px 1fr'
-          columnGap='4rem'
-          mx='auto'
-          maxW='max-content'>
-          <Box
-            h='350px'
-            w='350px'
-            border='1px solid'
-            borderColor='transparent'
-            borderRadius='10px'
-            backgroundColor='white'
-            pos='relative'
-            overflow='hidden'>
-            <motion.div
-              initial={{
-                position: 'relative',
-              }}
-              animate={{
-                x: [-200, -5, -10],
-                opacity: [0.25, 1, 1],
-              }}
-              transition={{ duration: 2 }}>
-              <Image
-                src='./images/gov-bot.jpeg'
-                alt='gov-bot'
-                border='1px solid'
-                borderColor='transparent'
-                borderRadius='10px'
-              />
+    <>
+      <Head>
+        <title>Governator.xyz</title>
+      </Head>
+      <StyledBox
+        minH='calc(100vh - 60px)'
+        pt='8rem'
+        overflowX='hidden'
+        color='gray.100'>
+        <Container maxW='container.xl'>
+          <Grid
+            templateColumns='350px 1fr'
+            columnGap='4rem'
+            mx='auto'
+            maxW='max-content'>
+            <Box
+              h='350px'
+              w='350px'
+              border='1px solid'
+              borderColor='transparent'
+              borderRadius='10px'
+              backgroundColor='white'
+              pos='relative'
+              overflow='hidden'>
               <motion.div
-                className='roboto-mono'
                 initial={{
-                  zIndex: 2,
-                  position: 'absolute',
-                  top: 35,
-                  width: '360px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  opacity: 0,
+                  position: 'relative',
                 }}
                 animate={{
-                  opacity: 1,
+                  x: [-200, -5, -10],
+                  opacity: [0.25, 1, 1],
                 }}
-                transition={{
-                  delay: 2,
-                }}>
-                <Text
-                  as='span'
-                  display='block'
-                  color='gray.800'
-                  fontSize='sm'
-                  mx='auto'>
-                  <Quote />
-                </Text>
+                transition={{ duration: 2 }}>
+                <Image
+                  src='./images/gov-bot.jpeg'
+                  alt='gov-bot'
+                  border='1px solid'
+                  borderColor='transparent'
+                  borderRadius='10px'
+                />
+                <motion.div
+                  className='roboto-mono'
+                  initial={{
+                    zIndex: 2,
+                    position: 'absolute',
+                    top: 35,
+                    width: '360px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    opacity: 0,
+                  }}
+                  animate={{
+                    opacity: 1,
+                  }}
+                  transition={{
+                    delay: 2,
+                  }}>
+                  <Text
+                    as='span'
+                    display='block'
+                    color='gray.800'
+                    fontSize='sm'
+                    mx='auto'>
+                    <Quote />
+                  </Text>
+                </motion.div>
               </motion.div>
-            </motion.div>
-          </Box>
-          <Box>
+            </Box>
             <Box>
+              <Box>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{
+                    opacity: 1,
+                    transition: { duration: 1.5, delay: 0.5 },
+                  }}>
+                  <Text
+                    as='span'
+                    fontSize='4xl'
+                    display='block'
+                    className='roboto-mono'
+                    maxW='30ch'>
+                    The best governance tool made for DAOs.
+                  </Text>
+
+                  <Text as='p' mt='1rem' fontSize='lg'>
+                    Make use of private polls and automated elections on
+                    Discord.
+                  </Text>
+                </motion.div>
+              </Box>
+
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{
                   opacity: 1,
-                  transition: { duration: 1.5, delay: 0.5 },
+                  transition: { duration: 1, delay: 0.75 },
                 }}>
-                <Text
-                  as='span'
-                  fontSize='4xl'
-                  display='block'
-                  className='roboto-mono'
-                  maxW='30ch'>
-                  The best governance tool made for DAOs.
-                </Text>
+                <Flex gap='1rem' mt='4rem'>
+                  <Button
+                    colorScheme='purple'
+                    leftIcon={<FaDiscord />}
+                    isDisabled>
+                    Add to Discord
+                  </Button>
 
-                <Text as='p' mt='1rem' fontSize='lg'>
-                  Make use of private polls and automated elections on Discord.
-                </Text>
+                  {publicRuntimeConfig.WAITLIST_MODE ? (
+                    <Button
+                      color='gray.700'
+                      onClick={() => {
+                        window.open(
+                          'https://airtable.com/shrWMfKtVfdBvv5dL',
+                          '_blank'
+                        )
+                      }}>
+                      <Text as='span' cursor='pointer'>
+                        <Text
+                          as='span'
+                          role='img'
+                          display='inline-block'
+                          mr='0.75rem'>
+                          🙋‍♂️
+                        </Text>
+                        Join the waitlist
+                      </Text>
+                    </Button>
+                  ) : (
+                    <Button color='gray.700' leftIcon={<SiNotion />}>
+                      Read docs on Notion
+                    </Button>
+                  )}
+                </Flex>
               </motion.div>
             </Box>
-
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{
-                opacity: 1,
-                transition: { duration: 1, delay: 0.75 },
-              }}>
-              <Flex gap='1rem' mt='4rem'>
-                <Button
-                  colorScheme='purple'
-                  leftIcon={<FaDiscord />}
-                  isDisabled>
-                  Add to Discord
-                </Button>
-
-                {publicRuntimeConfig.WAITLIST_MODE ? (
-                  <Button
-                    color='gray.700'
-                    onClick={() => {
-                      window.open(
-                        'https://airtable.com/shrWMfKtVfdBvv5dL',
-                        '_blank'
-                      )
-                    }}>
-                    <Text as='span' cursor='pointer'>
-                      <Text
-                        as='span'
-                        role='img'
-                        display='inline-block'
-                        mr='0.75rem'>
-                        🙋‍♂️
-                      </Text>
-                      Join the waitlist
-                    </Text>
-                  </Button>
-                ) : (
-                  <Button color='gray.700' leftIcon={<SiNotion />}>
-                    Read docs on Notion
-                  </Button>
-                )}
-              </Flex>
-            </motion.div>
-          </Box>
-        </Grid>
-      </Container>
-      <Box mt='10rem' mb='8rem'>
-        <SVGWall />
-        <Grid backgroundColor='black' placeItems='center' h='100px'>
-          <Flex maxW='max-content' className='roboto-mono' pt='0.5rem'>
-            <Text as='span' display='block' mt='-1px' mr='6px'>
-              Built in the forges of
+          </Grid>
+        </Container>
+        <Box mt='10rem' mb='8rem'>
+          <SVGWall />
+          <Grid backgroundColor='black' placeItems='center' h='100px'>
+            <Flex maxW='max-content' className='roboto-mono' pt='0.5rem'>
+              <Text as='span' display='block' mt='-1px' mr='6px'>
+                Built in the forges of
+              </Text>
+              <Image src='./images/bankless-dao.png' alt='BanklessDAO' />
+            </Flex>
+          </Grid>
+          <SVGWall />
+        </Box>
+        <Container maxW='container.xl' mb='12rem'>
+          <Flex>
+            <Text
+              as='span'
+              className='roboto-mono'
+              display='block'
+              mx='auto'
+              fontSize='3xl'
+              borderBottom='1px solid'
+              borderColor='gray.400'>
+              What does it do?
             </Text>
-            <Image src='./images/bankless-dao.png' alt='BanklessDAO' />
           </Flex>
-        </Grid>
-        <SVGWall />
-      </Box>
-      <Container maxW='container.xl' mb='12rem'>
-        <Flex>
-          <Text
-            as='span'
-            className='roboto-mono'
-            display='block'
+          <Grid
+            templateColumns='repeat(2, 400px)'
+            gap='4rem'
+            maxW='max-content'
             mx='auto'
-            fontSize='3xl'
-            borderBottom='1px solid'
-            borderColor='gray.400'>
-            What does it do?
-          </Text>
-        </Flex>
-        <Grid
-          templateColumns='repeat(2, 400px)'
-          gap='4rem'
-          maxW='max-content'
-          mx='auto'
-          mt='6rem'>
-          <Flex
-            direction='column'
-            alignItems='center'
-            justifyItems='center'
-            backgroundColor='gray.800'
-            p='2rem'
-            borderRadius='6px'>
-            <Box color='gray.300'>
-              <FiMessageSquare fontSize='60px' />
-            </Box>
-            <Text
-              as='span'
-              display='block'
-              mt='1rem'
-              maxW='30ch'
-              textAlign='center'>
-              Posts a private Discord poll that only members can vote on.
-            </Text>
-          </Flex>
-          <Flex
-            direction='column'
-            alignItems='center'
-            justifyItems='center'
-            backgroundColor='gray.800'
-            p='2rem'
-            borderRadius='6px'>
-            <Box color='gray.300'>
-              <FiBarChart fontSize='60px' />
-            </Box>
-            <Text
-              as='span'
-              display='block'
-              mt='0.5rem'
-              maxW='40ch'
-              textAlign='center'>
-              Use token voting directly in Discord.
-            </Text>
-          </Flex>
-          <Flex
-            direction='column'
-            alignItems='center'
-            justifyItems='center'
-            backgroundColor='gray.800'
-            p='2rem'
-            borderRadius='6px'>
-            <Box color='gray.300'>
-              <AiOutlineTrophy fontSize='60px' />
-            </Box>
-            <Text
-              as='span'
-              display='block'
-              mt='0.5rem'
-              maxW='40ch'
-              textAlign='center'>
-              Tallies the votes and announces the winner - exactly on time!
-            </Text>
-          </Flex>
-          <Flex
-            direction='column'
-            alignItems='center'
-            justifyItems='center'
-            backgroundColor='gray.800'
-            p='2rem'
-            borderRadius='6px'>
-            <Box color='gray.300'>
-              <MdLoop fontSize='60px' />
-            </Box>
-            <Text
-              as='span'
-              display='block'
-              mt='0.5rem'
-              maxW='40ch'
-              textAlign='center'>
-              Automatically run the poll again and again!
-            </Text>
-          </Flex>
-        </Grid>
-      </Container>
-      <SVGWall />
-      <Box backgroundColor='black' h='400px' />
-    </StyledBox>
+            mt='6rem'>
+            <Flex
+              direction='column'
+              alignItems='center'
+              justifyItems='center'
+              backgroundColor='gray.800'
+              p='2rem'
+              borderRadius='6px'>
+              <Box color='gray.300'>
+                <FiMessageSquare fontSize='60px' />
+              </Box>
+              <Text
+                as='span'
+                display='block'
+                mt='1rem'
+                maxW='30ch'
+                textAlign='center'>
+                Posts a private Discord poll that only members can vote on.
+              </Text>
+            </Flex>
+            <Flex
+              direction='column'
+              alignItems='center'
+              justifyItems='center'
+              backgroundColor='gray.800'
+              p='2rem'
+              borderRadius='6px'>
+              <Box color='gray.300'>
+                <FiBarChart fontSize='60px' />
+              </Box>
+              <Text
+                as='span'
+                display='block'
+                mt='0.5rem'
+                maxW='40ch'
+                textAlign='center'>
+                Use token voting directly in Discord.
+              </Text>
+            </Flex>
+            <Flex
+              direction='column'
+              alignItems='center'
+              justifyItems='center'
+              backgroundColor='gray.800'
+              p='2rem'
+              borderRadius='6px'>
+              <Box color='gray.300'>
+                <AiOutlineTrophy fontSize='60px' />
+              </Box>
+              <Text
+                as='span'
+                display='block'
+                mt='0.5rem'
+                maxW='40ch'
+                textAlign='center'>
+                Tallies the votes and announces the winner - exactly on time!
+              </Text>
+            </Flex>
+            <Flex
+              direction='column'
+              alignItems='center'
+              justifyItems='center'
+              backgroundColor='gray.800'
+              p='2rem'
+              borderRadius='6px'>
+              <Box color='gray.300'>
+                <MdLoop fontSize='60px' />
+              </Box>
+              <Text
+                as='span'
+                display='block'
+                mt='0.5rem'
+                maxW='40ch'
+                textAlign='center'>
+                Automatically run the poll again and again!
+              </Text>
+            </Flex>
+          </Grid>
+        </Container>
+        <SVGWall />
+        <Box backgroundColor='black' h='400px' />
+      </StyledBox>
+    </>
   )
 }
 
