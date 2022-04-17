@@ -9,6 +9,7 @@ import {
   Title,
   Tooltip,
   Legend,
+  ChartOptions,
 } from 'chart.js'
 import { Line } from 'react-chartjs-2'
 
@@ -116,7 +117,7 @@ const results = [
   },
 ]
 
-export const graphOptions = {
+export const graphOptions: ChartOptions<'line'> = {
   responsive: true,
   plugins: {
     legend: {
@@ -139,7 +140,7 @@ export const graphOptions = {
   },
 }
 
-const TimeGraph: React.FC<TimeGraphProps> = ({ data }) => {
+const TimeGraph: React.FC<TimeGraphProps> = () => {
   const backgroundColors = [
     'rgba(255, 99, 132)',
     'rgba(54, 162, 235)',
@@ -170,22 +171,23 @@ const TimeGraph: React.FC<TimeGraphProps> = ({ data }) => {
 
   const options = Array.from(new Set(votes.map(_vote => _vote.vote)))
   const optionsMap = results.reduce((acc, cur) => {
-    acc[`${cur.id}`] = cur.title
+    acc[cur.id] = cur.title
     return acc
-  }, {})
+  }, {} as Record<string, string>)
 
   /* Create results cumulative sum */
-  const votesOverTime: any = options.reduce((acc, _option) => {
+  const votesOverTime = options.reduce((acc, _option) => {
     console.log({ _option, test: optionsMap[_option] })
     acc[_option] = weeks.reduce((weeks_acc, _week) => {
       weeks_acc[_week] = {
         count: 0,
         voters: [],
+        cumSumCount: 0,
       }
       return weeks_acc
-    }, {})
+    }, {} as Record<string, { count: number; voters: string[]; cumSumCount: number }>)
     return acc
-  }, {})
+  }, {} as Record<string, Record<string, { count: number; voters: string[]; cumSumCount: number }>>)
 
   console.log({ votesOverTime })
 
@@ -194,8 +196,8 @@ const TimeGraph: React.FC<TimeGraphProps> = ({ data }) => {
     const voteDate = moment(_vote.created_at)
       .startOf('week')
       .format('DD/MM/YYYY')
-    votesOverTime[_vote.vote][voteDate]['count'] += 1
-    votesOverTime[_vote.vote][voteDate]['voters'].push(_vote.author_id)
+    votesOverTime[_vote.vote][voteDate].count += 1
+    votesOverTime[_vote.vote][voteDate].voters.push(_vote.author_id)
     return null
   })
 
@@ -207,8 +209,8 @@ const TimeGraph: React.FC<TimeGraphProps> = ({ data }) => {
     let cumSumCount = 0
     /* For each date */
     weeks.map(_week => {
-      cumSumCount += votesOverTime[_option][_week]['count']
-      votesOverTime[_option][_week]['cumSumCount'] = cumSumCount
+      cumSumCount += votesOverTime[_option][_week].count
+      votesOverTime[_option][_week].cumSumCount = cumSumCount
     })
   })
 

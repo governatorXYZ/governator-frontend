@@ -16,7 +16,7 @@ const StyledDatePicker = styled(DatePicker)<{ isInvalid: boolean | undefined }>`
 `
 
 interface ThemedDateTimePickerProps extends ReactDatePickerProps {
-  onReset: () => void
+  onReset?: () => void
   isInvalid?: boolean
 }
 

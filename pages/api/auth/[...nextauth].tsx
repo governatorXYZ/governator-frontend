@@ -13,7 +13,7 @@ export default NextAuth({
     // ...add more providers here
   ],
   callbacks: {
-    async jwt({ token, user, account, profile, isNewUser }) {
+    async jwt({ token, account }) {
       // console.log({token, user, account, profile, isNewUser})
       if (account?.access_token) {
         token.accessToken = account.access_token

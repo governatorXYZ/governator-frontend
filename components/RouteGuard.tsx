@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
 import { Grid, Spinner } from '@chakra-ui/react'
@@ -17,6 +17,7 @@ const RouteGuard: React.FC = ({ children }) => {
     if (status === 'unauthenticated') {
       router.push({ pathname: '/' })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status])
 
   if (router.asPath === '/' || status === 'authenticated') {
