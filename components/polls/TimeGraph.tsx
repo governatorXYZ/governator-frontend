@@ -161,7 +161,7 @@ const TimeGraph: React.FC<TimeGraphProps> = ({ data }) => {
 
   /* Create results cumulative sum */
   const votesOverTime: any = options.reduce((acc,_option) => {
-    console.log({_option, test: optionsMap[_option]})
+    // console.log({_option, test: optionsMap[_option]})
     acc[_option] = weeks.reduce((weeks_acc, _week) => {
       weeks_acc[_week] = {
         count: 0,
@@ -172,7 +172,7 @@ const TimeGraph: React.FC<TimeGraphProps> = ({ data }) => {
     return acc
   },{})
 
-  console.log({votesOverTime})
+  // console.log({votesOverTime})
 
   /* Populate votesOverTime */
   votes.map(_vote => {
@@ -182,7 +182,7 @@ const TimeGraph: React.FC<TimeGraphProps> = ({ data }) => {
     return null
   })
 
-  console.log({votesOverTime})
+  // console.log({votesOverTime})
 
   /* Make results into cumsum */
   /* For each option */
@@ -195,7 +195,7 @@ const TimeGraph: React.FC<TimeGraphProps> = ({ data }) => {
     })  
   })
 
-  console.log({votesOverTime})
+  // console.log({votesOverTime})
 
   /* Define graph data */
   const labels = weeks
@@ -213,7 +213,7 @@ const TimeGraph: React.FC<TimeGraphProps> = ({ data }) => {
     datasets
   }
 
-  console.log({graphData})
+  // console.log({graphData})
 
   return (
     <Line data={graphData} options={graphOptions}/>
