@@ -6,7 +6,7 @@ import { Poll } from 'interfaces'
 import { BiBarChartSquare } from 'react-icons/bi'
 import Card from 'components/common/Card'
 import PollGraph from 'components/polls/PollGraph'
-import TimeGraph from 'components/polls/TimeGraph'
+// import TimeGraph from 'components/polls/TimeGraph'
 
 const results = [{
     id: 1,
@@ -24,10 +24,15 @@ const results = [{
 
 
 type DisplayPollResultsProps = {
-    pollData: Poll
+    pollData: Poll,
+    voteData: any,
 }
   
-const DisplayPollResults: React.FC<DisplayPollResultsProps> = ({pollData}) => {
+const DisplayPollResults: React.FC<DisplayPollResultsProps> = ({pollData, voteData}) => {
+
+    const totalVotes = voteData && voteData.reduce((acc: number,cur: any) => {
+        return acc += cur.count
+    },0)
 
     return (
         <VStack spacing='16px'>
@@ -48,16 +53,16 @@ const DisplayPollResults: React.FC<DisplayPollResultsProps> = ({pollData}) => {
                 justifyContent='space-evenly'
                 alignItems='center'
                 width='100%'>
-                <Card title='Total Votes:' value='100' />
+                <Card title='Total Votes:' value={totalVotes} />
                 <Card title='Unique Voters:' value='85' />
             </Flex>
 
             <Flex width={450}>
                 <PollGraph data={results}/>
             </Flex>
-            <Flex width={450}>
+            {/* <Flex width={450}>
                 <TimeGraph />
-            </Flex>
+            </Flex> */}
         </VStack>
     )
 
