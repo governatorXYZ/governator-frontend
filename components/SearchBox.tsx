@@ -11,8 +11,8 @@ import { debounce } from 'lodash'
 import { FiSearch, FiX } from 'react-icons/fi'
 
 interface SearchBoxProps {
-  setValue: (args: any) => void
-  originalValues: any
+  setValue: (args: Record<string, any>[]) => void
+  originalValues: Record<string, any>[]
   searchKeys: string[]
   isDisabled?: boolean
   placeholder?: string
@@ -56,6 +56,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
 
       setValue(newValues)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [keyword])
   return (
     <Box maxW='max-content'>
@@ -79,9 +80,11 @@ const SearchBox: React.FC<SearchBoxProps> = ({
             color='gray.400'
             cursor='pointer'
             onClick={() => {
-              ref.current!.value = ''
-              setKeyword('')
-              setValue(originalValues)
+              if (ref.current) {
+                ref.current.value = ''
+                setKeyword('')
+                setValue(originalValues)
+              }
             }}
           >
             <FiX />

@@ -17,6 +17,7 @@ import {
 import { AiOutlineCaretDown } from 'react-icons/ai'
 import getConfig from 'next/config'
 import Link from 'next/link'
+import { Session } from 'next-auth/core/types'
 
 const LoginText: React.FC = () => {
   const { publicRuntimeConfig } = getConfig()
@@ -46,7 +47,7 @@ const LoginText: React.FC = () => {
   )
 }
 
-const UserAvatar: React.FC<{ session: any }> = ({ session }) => {
+const UserAvatar: React.FC<{ session: Session }> = ({ session }) => {
   const name = session?.user?.name
   const image = session?.user?.image
 

@@ -1,27 +1,10 @@
-import { 
-    Flex, VStack, Text, Grid,
-} from '@chakra-ui/react';
+import { Flex, VStack, Text } from '@chakra-ui/react'
 
 import { Poll } from 'interfaces'
 import { BiBarChartSquare } from 'react-icons/bi'
 import Card from 'components/common/Card'
 import PollGraph from 'components/polls/PollGraph'
 // import TimeGraph from 'components/polls/TimeGraph'
-
-const results = [{
-    id: 1,
-    title: 'Option 1',
-    count: 20,
-},{
-    id: 2,
-    title: 'Option 2',
-    count: 30,
-},{
-    id: 3,
-    title: 'Option 3',
-    count: 80,
-}]
-
 
 type DisplayPollResultsProps = {
     pollData: Poll,
@@ -68,4 +51,4 @@ const DisplayPollResults: React.FC<DisplayPollResultsProps> = ({pollData, voteDa
 
 }
 
-export default DisplayPollResults;
+export default DisplayPollResults
