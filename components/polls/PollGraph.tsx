@@ -1,20 +1,20 @@
-import { Chart as ChartJS, ArcElement, Tooltip, Legend, LegendItem, ChartData } from 'chart.js';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, LegendItem, ChartData, LayoutPosition } from 'chart.js';
+import _ from 'lodash';
 import { Pie } from 'react-chartjs-2';
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 type PollGraphProps = {
   data?: {
-    id: number,
-    title: string,
+    _id: string,
     count: number
   }[]
 }
 
 const PollGraph: React.FC<PollGraphProps> = ({ data }) => {
 
-  const labels = data.map(_data => _data.title)
-  const count = data.map(_data => _data.count)
-  const sum = count.reduce((acc, cur) => acc += cur, 0.0)
+  const labels = data?.map(_data => _data._id) || []
+  const count = data?.map(_data => _data.count) || []
+  const sum = count?.reduce((acc, cur) => acc += cur, 0.0)
 
   const backgroundColors = [
     'rgba(255, 99, 132)',
@@ -67,13 +67,13 @@ const PollGraph: React.FC<PollGraphProps> = ({ data }) => {
       },
       legend: {
         display: true,
-        position: 'left',
+        position: "left" as LayoutPosition,
         labels: {
           color: 'white',
           font: {
             size: 18
           },
-          filter: (legendItem, data) => {
+          filter: (legendItem: LegendItem, data:any) => {
             // First, retrieve the data corresponding to that label
             const label = legendItem.text
             const labelIndex = _.findIndex(data.labels, (labelName) => labelName === label) // I'm using lodash here
@@ -82,22 +82,22 @@ const PollGraph: React.FC<PollGraphProps> = ({ data }) => {
 
             // Second, mutate the legendItem to include the new text
             legendItem.text = `${percentage}% - ${legendItem.text}`
-            legendItem.count = qtd
+            // legendItem.count = qtd
 
             // Third, the filter method expects a bool, so return true to show the modified legendItem in the legend
             return true
           },
-          sort: (a: LegendItem, b: LegendItem): number => {
-            if (a.count < b.count) return 1
-            if (a.count > b.count) return -1
-            return 0
-          }
+          // sort: (a: LegendItem, b: LegendItem): number => {
+          //   if (a.count < b.count) return 1
+          //   if (a.count > b.count) return -1
+          //   return 0
+          // }
 
         }
       }
     },
     layout: {
-      padding: '0px 10px'
+      padding: 5
     }
   }
 
