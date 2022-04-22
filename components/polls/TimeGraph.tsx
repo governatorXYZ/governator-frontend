@@ -1,242 +1,226 @@
-import React from 'react'
-import moment from 'moment'
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  ChartOptions,
-} from 'chart.js'
-import { Line } from 'react-chartjs-2'
+export {};
+// import React from 'react';
+// import moment from 'moment';
+// import {
+//   Chart as ChartJS,
+//   CategoryScale,
+//   LinearScale,
+//   PointElement,
+//   LineElement,
+//   Title,
+//   Tooltip,
+//   Legend,
+// } from 'chart.js';
+// import { Line } from 'react-chartjs-2';
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-)
+// ChartJS.register(
+//   CategoryScale,
+//   LinearScale,
+//   PointElement,
+//   LineElement,
+//   Title,
+//   Tooltip,
+//   Legend
+// );
 
-type TimeGraphProps = {
-  data?: {
-    author_id: string
-    vote: number
-    created_at: string
-  }[]
-}
+// type TimeGraphProps = {
+//   data?: {
+//     author_id: string,
+//     vote: number,
+//     created_at: string
+//   }[]
+// }
 
-const votes = [
-  {
-    author_id: 'id_1',
-    vote: 1,
-    created_at: '2022-03-12 14:30:00.000Z',
-  },
-  {
-    author_id: 'id_2',
-    vote: 1,
-    created_at: '2022-03-11 14:30:00.000Z',
-  },
-  {
-    author_id: 'id_3',
-    vote: 2,
-    created_at: '2022-03-22 14:30:00.000Z',
-  },
-  {
-    author_id: 'id_4',
-    vote: 2,
-    created_at: '2022-03-21 14:30:00.000Z',
-  },
-  {
-    author_id: 'id_5',
-    vote: 2,
-    created_at: '2022-03-08 14:30:00.000Z',
-  },
-  {
-    author_id: 'id_6',
-    vote: 2,
-    created_at: '2022-03-13 14:30:00.000Z',
-  },
-  {
-    author_id: 'id_7',
-    vote: 2,
-    created_at: '2022-03-08 14:30:00.000Z',
-  },
-  {
-    author_id: 'id_8',
-    vote: 2,
-    created_at: '2022-03-11 14:30:00.000Z',
-  },
-  {
-    author_id: 'id_9',
-    vote: 3,
-    created_at: '2022-03-20 14:30:00.000Z',
-  },
-  {
-    author_id: 'id_10',
-    vote: 3,
-    created_at: '2022-03-19 14:30:00.000Z',
-  },
-  {
-    author_id: 'id_11',
-    vote: 3,
-    created_at: '2022-03-21 14:30:00.000Z',
-  },
-  {
-    author_id: 'id_12',
-    vote: 3,
-    created_at: '2022-03-14 14:30:00.000Z',
-  },
-  {
-    author_id: 'id_13',
-    vote: 3,
-    created_at: '2022-03-28 14:30:00.000Z',
-  },
-]
 
-const results = [
-  {
-    id: 1,
-    title: 'Option 1',
-    count: 20,
-  },
-  {
-    id: 2,
-    title: 'Option 2',
-    count: 30,
-  },
-  {
-    id: 3,
-    title: 'Option 3',
-    count: 80,
-  },
-]
+// const votes = [{
+//   author_id: 'id_1',
+//   vote: 1,
+//   created_at: '2022-03-12 14:30:00.000Z'
+// },{
+//   author_id: 'id_2',
+//   vote: 1,
+//   created_at: '2022-03-11 14:30:00.000Z'
+// },{
+//   author_id: 'id_3',
+//   vote: 2,
+//   created_at: '2022-03-22 14:30:00.000Z'
+// },{
+//   author_id: 'id_4',
+//   vote: 2,
+//   created_at: '2022-03-21 14:30:00.000Z'
+// },{
+//   author_id: 'id_5',
+//   vote: 2,
+//   created_at: '2022-03-08 14:30:00.000Z'
+// },{
+//   author_id: 'id_6',
+//   vote: 2,
+//   created_at: '2022-03-13 14:30:00.000Z'
+// },{
+//   author_id: 'id_7',
+//   vote: 2,
+//   created_at: '2022-03-08 14:30:00.000Z'
+// },{
+//   author_id: 'id_8',
+//   vote: 2,
+//   created_at: '2022-03-11 14:30:00.000Z'
+// },{
+//   author_id: 'id_9',
+//   vote: 3,
+//   created_at: '2022-03-20 14:30:00.000Z'
+// },{
+//   author_id: 'id_10',
+//   vote: 3,
+//   created_at: '2022-03-19 14:30:00.000Z'
+// },{
+//   author_id: 'id_11',
+//   vote: 3,
+//   created_at: '2022-03-21 14:30:00.000Z'
+// },{
+//   author_id: 'id_12',
+//   vote: 3,
+//   created_at: '2022-03-14 14:30:00.000Z'
+// },{
+//   author_id: 'id_13',
+//   vote: 3,
+//   created_at: '2022-03-28 14:30:00.000Z'
+// }]
 
-export const graphOptions: ChartOptions<'line'> = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: 'top',
-      labels: {
-        color: 'white',
-        font: {
-          size: 18,
-        },
-      },
-    },
-    title: {
-      display: true,
-      text: 'Total Votes Over Time',
-      color: 'white',
-      font: {
-        size: 28,
-      },
-    },
-  },
-}
+// const results = [{
+//   id: 1,
+//   title: 'Option 1',
+//   count: 20,
+// },{
+//   id: 2,
+//   title: 'Option 2',
+//   count: 30,
+// },{
+//   id: 3,
+//   title: 'Option 3',
+//   count: 80,
+// }]
 
-const TimeGraph: React.FC<TimeGraphProps> = () => {
-  const backgroundColors = [
-    'rgba(255, 99, 132)',
-    'rgba(54, 162, 235)',
-    'rgba(255, 206, 86)',
-    'rgba(75, 192, 192)',
-    'rgba(153, 102, 255)',
-    'rgba(255, 159, 64)',
-  ]
-  const borderColors = [
-    'rgba(255, 99, 132, 1)',
-    'rgba(54, 162, 235, 1)',
-    'rgba(255, 206, 86, 1)',
-    'rgba(75, 192, 192, 1)',
-    'rgba(153, 102, 255, 1)',
-    'rgba(255, 159, 64, 1)',
-  ]
 
-  const dates = votes.map(_vote => moment(_vote.created_at))
-  const MAX_DATE = moment.max(dates)
-  const MIN_DATE = moment.min(dates).startOf('week')
-  const weeks: string[] = []
-  let week = MIN_DATE
+// export const graphOptions = {
+//   responsive: true,
+//   plugins: {
+//     legend: {
+//       position: 'top',
+//       labels: {
+//         color: 'white',
+//         font: {
+//           size: 18
+//         },
+//       }
+//     },
+//     title: {
+//       display: true,
+//       text: 'Total Votes Over Time',
+//       color: 'white',
+//       font: {
+//         size: 28
+//       }
+//     },
+//   },
+// };
 
-  while (week <= MAX_DATE) {
-    weeks.push(week.format('DD/MM/YYYY'))
-    week = week.clone().add(1, 'week')
-  }
+// const TimeGraph: React.FC<TimeGraphProps> = ({ data }) => {
 
-  const options = Array.from(new Set(votes.map(_vote => _vote.vote)))
-  const optionsMap = results.reduce((acc, cur) => {
-    acc[cur.id] = cur.title
-    return acc
-  }, {} as Record<string, string>)
+//   const backgroundColors = [
+//     'rgba(255, 99, 132)',
+//     'rgba(54, 162, 235)',
+//     'rgba(255, 206, 86)',
+//     'rgba(75, 192, 192)',
+//     'rgba(153, 102, 255)',
+//     'rgba(255, 159, 64)',
+//   ]
+//   const borderColors = [
+//     'rgba(255, 99, 132, 1)',
+//     'rgba(54, 162, 235, 1)',
+//     'rgba(255, 206, 86, 1)',
+//     'rgba(75, 192, 192, 1)',
+//     'rgba(153, 102, 255, 1)',
+//     'rgba(255, 159, 64, 1)',
+//   ]
 
-  /* Create results cumulative sum */
-  const votesOverTime = options.reduce((acc, _option) => {
-    console.log({ _option, test: optionsMap[_option] })
-    acc[_option] = weeks.reduce((weeks_acc, _week) => {
-      weeks_acc[_week] = {
-        count: 0,
-        voters: [],
-        cumSumCount: 0,
-      }
-      return weeks_acc
-    }, {} as Record<string, { count: number; voters: string[]; cumSumCount: number }>)
-    return acc
-  }, {} as Record<string, Record<string, { count: number; voters: string[]; cumSumCount: number }>>)
+//   const dates = votes.map(_vote => moment(_vote.created_at))
+//   const MAX_DATE = moment.max(dates)
+//   const MIN_DATE = moment.min(dates).startOf('week')
+//   const weeks: string[] = []
+//   let week = MIN_DATE;
 
-  console.log({ votesOverTime })
+//   while ( week <= MAX_DATE ) {
+//     weeks.push( week.format('DD/MM/YYYY'));
+//     week = week.clone().add(1,'week')
+//   }
 
-  /* Populate votesOverTime */
-  votes.map(_vote => {
-    const voteDate = moment(_vote.created_at)
-      .startOf('week')
-      .format('DD/MM/YYYY')
-    votesOverTime[_vote.vote][voteDate].count += 1
-    votesOverTime[_vote.vote][voteDate].voters.push(_vote.author_id)
-    return null
-  })
+//   const options = Array.from(new Set(votes.map(_vote => _vote.vote)))
+//   const optionsMap = results.reduce((acc,cur) => {
+//     acc[`${cur.id}`] = cur.title
+//     return acc
+//   },{})
 
-  console.log({ votesOverTime })
+//   /* Create results cumulative sum */
+//   const votesOverTime: any = options.reduce((acc,_option) => {
+//     // console.log({_option, test: optionsMap[_option]})
+//     acc[_option] = weeks.reduce((weeks_acc, _week) => {
+//       weeks_acc[_week] = {
+//         count: 0,
+//         voters: []
+//       }
+//       return weeks_acc
+//     },{})
+//     return acc
+//   },{})
 
-  /* Make results into cumsum */
-  /* For each option */
-  options.map(_option => {
-    let cumSumCount = 0
-    /* For each date */
-    weeks.map(_week => {
-      cumSumCount += votesOverTime[_option][_week].count
-      votesOverTime[_option][_week].cumSumCount = cumSumCount
-    })
-  })
+//   // console.log({votesOverTime})
 
-  console.log({ votesOverTime })
+//   /* Populate votesOverTime */
+//   votes.map(_vote => {
+//     const voteDate = moment(_vote.created_at).startOf('week').format('DD/MM/YYYY')
+//     votesOverTime[_vote.vote][voteDate]['count'] += 1
+//     votesOverTime[_vote.vote][voteDate]['voters'].push(_vote.author_id)
+//     return null
+//   })
 
-  /* Define graph data */
-  const labels = weeks
-  const datasets = options.map((_option, idx) => {
-    return {
-      label: optionsMap[_option],
-      data: Object.values(votesOverTime[_option]).map(
-        _data => _data.cumSumCount
-      ),
-      borderColor: borderColors[idx],
-      backgroundColor: backgroundColors[idx],
-    }
-  })
+//   // console.log({votesOverTime})
 
-  const graphData = {
-    labels,
-    datasets,
-  }
+//   /* Make results into cumsum */
+//   /* For each option */
+//   options.map(_option => {
+//     let cumSumCount = 0
+//     /* For each date */
+//     weeks.map(_week => {
+//       cumSumCount += votesOverTime[_option][_week]['count']
+//       votesOverTime[_option][_week]['cumSumCount'] = cumSumCount
+//     })  
+//   })
 
-  console.log({ graphData })
+//   // console.log({votesOverTime})
 
-  return <Line data={graphData} options={graphOptions} />
-}
+//   /* Define graph data */
+//   const labels = weeks
+//   const datasets = options.map((_option,idx) => {
+//     return {
+//       label: optionsMap[_option],
+//       data: Object.values(votesOverTime[_option]).map(_data => _data.cumSumCount),
+//       borderColor: borderColors[idx],
+//       backgroundColor: backgroundColors[idx]
+//     }
+//   })
 
-export default TimeGraph
+//   const graphData = {
+//     labels,
+//     datasets
+//   }
+
+//   // console.log({graphData})
+
+//   return (
+//     <Line data={graphData} options={graphOptions}/>
+//   )
+
+
+// }
+
+// export default TimeGraph;

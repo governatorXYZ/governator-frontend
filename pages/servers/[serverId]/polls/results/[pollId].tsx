@@ -7,15 +7,27 @@ import { Poll } from 'interfaces'
 import Govcrumb from 'components/BreadCrumb'
 import DisplayPollResults from 'components/polls/DisplayPollResults'
 
+
+
 const PollResults: NextPage = () => {
+
+  const usePollData = (): any => {
+    const { data } = useSWR(`/poll/${router.query.pollId}`, privateBaseFetcher)
+    const pollData = data?.data ? (data?.data as Poll) : {} as Poll
+    return { pollData, error }
+  }
+  const useVotesData = () => {
+    const { data } = useSWR(`/vote/results/${router.query.pollId}`, privateBaseFetcher)
+    const votesData = data?.data ? data?.data : []
+    return { votesData }
+  }
+
   const router = useRouter()
 
-  const { data, error } = useSWR(
-    `/poll/${router.query.pollId}`,
-    privateBaseFetcher
-  )
-  const pollData = data?.data ? (data?.data as Poll) : ({} as Poll)
-  const isLoadingPoll = !data && !error
+  const { pollData, error } = usePollData()
+  const { votesData } = useVotesData()
+  
+  const isLoadingPoll = !pollData && !error
 
   return (
     <Box bg='dark-2' minH='calc(100vh - 90px)' pt='4rem' pb='8rem'>
@@ -26,7 +38,7 @@ const PollResults: NextPage = () => {
             <Spinner color='gray.200' mx='auto' />
           </Flex>
         )}
-        <DisplayPollResults pollData={pollData} />
+        <DisplayPollResults pollData={pollData} voteData={votesData}/>
       </Box>
     </Box>
   )

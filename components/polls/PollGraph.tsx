@@ -5,6 +5,7 @@ import {
   Legend,
   ChartOptions,
   LegendItem,
+  LayoutPosition
 } from 'chart.js'
 import { findIndex } from 'lodash'
 import { Pie } from 'react-chartjs-2'
@@ -12,20 +13,19 @@ ChartJS.register(ArcElement, Tooltip, Legend)
 
 type PollGraphProps = {
   data?: {
-    id: number
-    title: string
+    _id: number
     count: number
   }[]
 }
-
 interface NewLegendItem extends LegendItem {
   count: number
 }
 
 const PollGraph: React.FC<PollGraphProps> = ({ data = [] }) => {
-  const labels = data.map(_data => _data.title)
-  const count = data.map(_data => _data.count)
-  const sum = count.reduce((acc, cur) => (acc += cur), 0.0)
+  
+  const labels = data?.map(_data => _data._id) || []
+  const count = data?.map(_data => _data.count) || []
+  const sum = count?.reduce((acc, cur) => acc += cur, 0.0)
 
   const backgroundColors = [
     'rgba(255, 99, 132)',
@@ -69,7 +69,7 @@ const PollGraph: React.FC<PollGraphProps> = ({ data = [] }) => {
       },
       legend: {
         display: true,
-        position: 'left',
+        position: "left" as LayoutPosition,
         labels: {
           color: 'white',
           font: {
@@ -87,7 +87,7 @@ const PollGraph: React.FC<PollGraphProps> = ({ data = [] }) => {
 
             // Second, mutate the legendItem to include the new text
             legendItem.text = `${percentage}% - ${legendItem.text}`
-            legendItem.count = qtd
+            // legendItem.count = qtd
 
             // Third, the filter method expects a bool, so return true to show the modified legendItem in the legend
             return true
