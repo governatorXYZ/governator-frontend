@@ -16,17 +16,15 @@ import DisplayPollResults from 'components/polls/DisplayPollResults'
 
 
 const PollResults: NextPage = () => {
-  
-  const usePollData = () => {
+
+  const usePollData = (): any => {
     const { data } = useSWR(`/poll/${router.query.pollId}`, privateBaseFetcher)
     const pollData = data?.data ? (data?.data as Poll) : {} as Poll
     return { pollData, error }
   }
   const useVotesData = () => {
-    console.log("url", `/vote/results/${router.query.pollId}`)
     const { data } = useSWR(`/vote/results/${router.query.pollId}`, privateBaseFetcher)
     const votesData = data?.data ? data?.data : []
-    console.log({data})
     return { votesData }
   }
 
@@ -36,8 +34,6 @@ const PollResults: NextPage = () => {
   const { votesData } = useVotesData()
   
   const isLoadingPoll = !pollData && !error
-
-  console.log({pollData, votesData})
 
   return (
     <Box bg='dark-2' minH='calc(100vh - 90px)' pt='4rem' pb='8rem'>

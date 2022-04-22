@@ -54,11 +54,11 @@ const DisplayPollResults: React.FC<DisplayPollResultsProps> = ({pollData, voteDa
                 alignItems='center'
                 width='100%'>
                 <Card title='Total Votes:' value={totalVotes} />
-                <Card title='Unique Voters:' value='85' />
+                {/* <Card title='Unique Voters:' value='85' /> */}
             </Flex>
 
             <Flex width={450}>
-                <PollGraph data={results}/>
+                <PollGraph data={voteData}/>
             </Flex>
             {/* <Flex width={450}>
                 <TimeGraph />
