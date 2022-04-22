@@ -1,11 +1,5 @@
 import type { NextPage } from 'next'
-// import { useCallback, useEffect, useState } from 'react'
-import {
-  Box,
-  Flex,
-  Text,
-  Spinner
-} from '@chakra-ui/react'
+import { Box, Flex, Spinner } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import useSWR from 'swr'
 import { privateBaseFetcher } from 'constants/axios'

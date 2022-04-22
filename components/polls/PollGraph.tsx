@@ -1,17 +1,28 @@
-import { Chart as ChartJS, ArcElement, Tooltip, Legend, LegendItem, ChartData, LayoutPosition } from 'chart.js';
-import _ from 'lodash';
-import { Pie } from 'react-chartjs-2';
-ChartJS.register(ArcElement, Tooltip, Legend);
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+  ChartOptions,
+  LegendItem,
+  LayoutPosition
+} from 'chart.js'
+import { findIndex } from 'lodash'
+import { Pie } from 'react-chartjs-2'
+ChartJS.register(ArcElement, Tooltip, Legend)
 
 type PollGraphProps = {
   data?: {
-    _id: string,
+    _id: number
     count: number
   }[]
 }
+interface NewLegendItem extends LegendItem {
+  count: number
+}
 
-const PollGraph: React.FC<PollGraphProps> = ({ data }) => {
-
+const PollGraph: React.FC<PollGraphProps> = ({ data = [] }) => {
+  
   const labels = data?.map(_data => _data._id) || []
   const count = data?.map(_data => _data.count) || []
   const sum = count?.reduce((acc, cur) => acc += cur, 0.0)
@@ -41,29 +52,20 @@ const PollGraph: React.FC<PollGraphProps> = ({ data }) => {
         data: count,
         backgroundColor: backgroundColors.slice(0, labels.length),
         borderColor: borderColors.slice(0, labels.length),
-        borderWidth: 1
-      }
-    ]
+        borderWidth: 1,
+      },
+    ],
   }
 
-  // const options = {
-  //   legend: {
-  //     display: false
-  //   },
-  //   legendCallback: (chartInstance: any) => {
-  //     <div>hello world</div>
-  //   }
-  // }
-
-  const options = {
+  const options: ChartOptions<'pie'> = {
     plugins: {
       title: {
         display: true,
         text: 'Votes',
         color: 'white',
         font: {
-          size: 28
-        }
+          size: 28,
+        },
       },
       legend: {
         display: true,
@@ -71,14 +73,17 @@ const PollGraph: React.FC<PollGraphProps> = ({ data }) => {
         labels: {
           color: 'white',
           font: {
-            size: 18
+            size: 18,
           },
-          filter: (legendItem: LegendItem, data:any) => {
+          filter: (legendItem: NewLegendItem, data) => {
             // First, retrieve the data corresponding to that label
             const label = legendItem.text
-            const labelIndex = _.findIndex(data.labels, (labelName) => labelName === label) // I'm using lodash here
-            const qtd = data.datasets[0].data[labelIndex]
-            const percentage = (qtd * 100 / sum).toFixed(2)
+            const labelIndex = findIndex(
+              data.labels,
+              labelName => labelName === label
+            ) // I'm using lodash here
+            const qtd = data.datasets[0].data[labelIndex] as number
+            const percentage = ((qtd * 100) / sum).toFixed(2)
 
             // Second, mutate the legendItem to include the new text
             legendItem.text = `${percentage}% - ${legendItem.text}`
@@ -87,18 +92,17 @@ const PollGraph: React.FC<PollGraphProps> = ({ data }) => {
             // Third, the filter method expects a bool, so return true to show the modified legendItem in the legend
             return true
           },
-          // sort: (a: LegendItem, b: LegendItem): number => {
-          //   if (a.count < b.count) return 1
-          //   if (a.count > b.count) return -1
-          //   return 0
-          // }
-
-        }
-      }
+          sort: (a: NewLegendItem, b: NewLegendItem): number => {
+            if (a.count < b.count) return 1
+            if (a.count > b.count) return -1
+            return 0
+          },
+        },
+      },
     },
     layout: {
-      padding: 5
-    }
+      padding: 0,
+    },
   }
 
   const dataBackup = {
@@ -126,11 +130,9 @@ const PollGraph: React.FC<PollGraphProps> = ({ data }) => {
         borderWidth: 1,
       },
     ],
-  };
+  }
 
-  return (
-    <Pie data={pollData || dataBackup} options={options} />
-  )
+  return <Pie data={pollData || dataBackup} options={options} />
 }
 
 export default PollGraph

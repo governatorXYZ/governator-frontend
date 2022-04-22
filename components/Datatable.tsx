@@ -17,8 +17,8 @@ import React from 'react'
 import { Column, useSortBy, useTable } from 'react-table'
 
 interface DataTableProps {
-  data: Array<any>
-  columns: Array<Column<any>>
+  columns: Array<Column<object>>
+  data: Array<object>
   loading: boolean
 }
 
@@ -41,7 +41,7 @@ const StyledTable = styled(Table)`
 
 const DataTable: React.FC<DataTableProps> = ({ data, columns, loading }) => {
   const memoizedData = React.useMemo(() => data, [data])
-  const memoizedColumns = React.useMemo(() => columns, [])
+  const memoizedColumns = React.useMemo(() => columns, [columns])
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     useTable({ columns: memoizedColumns, data: memoizedData }, useSortBy)
@@ -51,15 +51,15 @@ const DataTable: React.FC<DataTableProps> = ({ data, columns, loading }) => {
       <StyledTable {...getTableProps()} color='gray.200'>
         <Thead>
           {headerGroups.map(headerGroup => (
-            <Tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column: any, index: number) => {
+            <Tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
+              {headerGroup.headers.map((column, index: number) => {
                 const lastColumn = index === headerGroup.headers.length - 1
 
                 return (
                   <Th
                     {...(!lastColumn &&
                       column.getHeaderProps(column.getSortByToggleProps()))}
-                    isNumeric={column.isNumeric}
+                    key={column.id}
                     color='gray.200'
                   >
                     <Box
@@ -102,11 +102,11 @@ const DataTable: React.FC<DataTableProps> = ({ data, columns, loading }) => {
             rows.map(row => {
               prepareRow(row)
               return (
-                <Tr {...row.getRowProps()}>
+                <Tr {...row.getRowProps()} key={row.id}>
                   {row.cells.map(cell => (
                     <Td
                       {...cell.getCellProps()}
-                      isNumeric={(cell.column as any).isNumeric}
+                      key={`${cell.column.id}-${cell.row.id}`}
                     >
                       {cell.render('Cell')}
                     </Td>

@@ -1,63 +1,60 @@
 import type { NextPage } from 'next'
-import moment from 'moment';
-import { 
-    Box, 
-    VStack, 
-    Text, 
-    Flex,
-    Table,
-    Thead,
-    Tbody,
-    Tr,
-    Th,
-    Td,
-  } from '@chakra-ui/react'
-  
-  const polls = [
-    {
-      created: Date.now(),
-      name: 'Poll Number 1',
-      channel: '#govbot',
-      author: 'Ken#7046',
-      votes: 1337,
-    },
-    {
-      created: Date.now(),
-      name: 'Poll Number 2',
-      channel: '#dev-guild',
-      author: 'stradford',
-      votes: 10,
-    },
-    {
-      created: Date.now(),
-      name: 'Poll Number 3',
-      channel: '#govbot',
-      author: 'jamesmontgomery.eth',
-      votes: 20,
-    },
-    {
-      created: Date.now(),
-      name: 'Poll Number 4',
-      channel: '#govbot',
-      author: 'Joel',
-      votes: 30,
-    },
-    {
-      created: Date.now(),
-      name: 'Poll Number 5',
-      channel: '#govbot-backend',
-      author: 'Tiki',
-      votes: 40,
-    }
-  ]
+import moment from 'moment'
+import {
+  Box,
+  VStack,
+  Text,
+  Flex,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+} from '@chakra-ui/react'
+
+const polls = [
+  {
+    created: Date.now(),
+    name: 'Poll Number 1',
+    channel: '#govbot',
+    author: 'Ken#7046',
+    votes: 1337,
+  },
+  {
+    created: Date.now(),
+    name: 'Poll Number 2',
+    channel: '#dev-guild',
+    author: 'stradford',
+    votes: 10,
+  },
+  {
+    created: Date.now(),
+    name: 'Poll Number 3',
+    channel: '#govbot',
+    author: 'jamesmontgomery.eth',
+    votes: 20,
+  },
+  {
+    created: Date.now(),
+    name: 'Poll Number 4',
+    channel: '#govbot',
+    author: 'Joel',
+    votes: 30,
+  },
+  {
+    created: Date.now(),
+    name: 'Poll Number 5',
+    channel: '#govbot-backend',
+    author: 'Tiki',
+    votes: 40,
+  },
+]
 
 const PollListings: NextPage = () => {
-
-    const actionButtons = () => {
-        return (
-            <Box>HELLO</Box>
-        )
-    }
+  const actionButtons = () => {
+    return <Box>HELLO</Box>
+  }
 
   return (
     <Box>
@@ -72,7 +69,12 @@ const PollListings: NextPage = () => {
               </Text>
 
               {/* Render Poll Listings */}
-              <Table variant='striped' colorScheme='blackAlpha' color='whiteAlpha.800' border='2px solid black'>
+              <Table
+                variant='striped'
+                colorScheme='blackAlpha'
+                color='whiteAlpha.800'
+                border='2px solid black'
+              >
                 <Thead>
                   <Tr bg='gray.800'>
                     <Th>Created</Th>
@@ -84,7 +86,7 @@ const PollListings: NextPage = () => {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {polls.map((_poll,idx) => {
+                  {polls.map((_poll, idx) => {
                     return (
                       <Tr key={`poll-${idx}`}>
                         <Td>{moment(_poll.created).format('LL')}</Td>
@@ -104,7 +106,6 @@ const PollListings: NextPage = () => {
       </Box>
     </Box>
   )
-
 }
 
-export default PollListings;
+export default PollListings

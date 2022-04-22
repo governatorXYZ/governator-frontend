@@ -18,11 +18,9 @@ import { FiPlus, FiTrash } from 'react-icons/fi'
 import { Select } from 'chakra-react-select'
 import ThemedDateTimePicker from 'components/ThemedDateTimePicker'
 import { privateBaseAxios } from 'constants/axios'
-import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { capitalize } from 'lodash'
 
 interface Poll {
   title: string

@@ -39,6 +39,10 @@ const Polls: NextPage = () => {
 
   const [polls, setPolls] = useState<RenderedPoll[]>([])
 
+  const setNewPolls = (newPolls: Record<string, any>[]) => {
+    setPolls(newPolls)
+  }
+
   const originalPolls = pollsData.map(p => ({
     id: p._id,
     created: luxon.DateTime.fromISO(p.createdAt).toFormat('LLL dd yyyy t'),
@@ -116,6 +120,7 @@ const Polls: NextPage = () => {
     if (data) {
       setPolls(originalPolls)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data])
 
   return (
@@ -146,7 +151,7 @@ const Polls: NextPage = () => {
               <Box>
                 <Flex mb='1rem'>
                   <SearchBox
-                    setValue={setPolls}
+                    setValue={setNewPolls}
                     originalValues={originalPolls}
                     searchKeys={['name']}
                     placeholder='Search poll name...'
