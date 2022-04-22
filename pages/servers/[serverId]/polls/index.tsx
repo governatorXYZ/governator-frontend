@@ -77,7 +77,6 @@ const Polls: NextPage = () => {
               color: 'white',
               backgroundColor: 'teal.500',
             }}
-            href="#"
           >
             <FiBarChart fontSize='15px' />
           </Button>
