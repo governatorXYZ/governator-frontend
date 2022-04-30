@@ -11,9 +11,9 @@ export default async function handler(
 
   const response = await axios({
     method: req.method as 'GET' | 'DELETE',
-    url: `${process.env.NEXT_PUBLIC_API_ENDPOINT}/${url}`,
+    url: `${process.env.GOVERNATOR_API_ENDPOINT}/${url}`,
     headers: {
-      'X-API-KEY': process.env.NEXT_PUBLIC_API_KEY as string
+      'X-API-KEY': process.env.GOVERNATOR_API_KEY as string
     },
     data: req.body
   })
