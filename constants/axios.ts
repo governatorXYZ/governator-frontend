@@ -4,10 +4,7 @@ export const privateBaseAxios = axios.create({
   baseURL:
     process.env.NODE_ENV === 'production'
       ? ''
-      : process.env.NEXT_PUBLIC_API_ENDPOINT,
-  headers: {
-    'X-API-KEY': process.env.NEXT_PUBLIC_API_KEY as string
-  }
+      : '/api',
 })
 
 export const discordAxios = (accessToken: string) =>

@@ -13,7 +13,7 @@ type DisplayPollResultsProps = {
   
 const DisplayPollResults: React.FC<DisplayPollResultsProps> = ({pollData, voteData}) => {
 
-    const totalVotes = voteData && voteData.reduce((acc: number,cur: any) => {
+    const totalVotes = voteData && voteData.aggregate && voteData.aggregate.reduce((acc: number,cur: any) => {
         return acc += cur.count
     },0)
 
@@ -41,7 +41,7 @@ const DisplayPollResults: React.FC<DisplayPollResultsProps> = ({pollData, voteDa
             </Flex>
 
             <Flex width={450}>
-                <PollGraph data={voteData}/>
+                <PollGraph data={voteData.aggregate}/>
             </Flex>
             {/* <Flex width={450}>
                 <TimeGraph />

@@ -22,7 +22,7 @@ interface NewLegendItem extends LegendItem {
 }
 
 const PollGraph: React.FC<PollGraphProps> = ({ data = [] }) => {
-  
+
   const labels = data?.map(_data => _data._id) || []
   const count = data?.map(_data => _data.count) || []
   const sum = count?.reduce((acc, cur) => acc += cur, 0.0)
