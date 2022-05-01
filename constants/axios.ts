@@ -1,10 +1,7 @@
 import axios from 'axios'
 
 export const privateBaseAxios = axios.create({
-  baseURL:
-    process.env.NODE_ENV === 'production'
-      ? ''
-      : '/api',
+  baseURL: '/api'
 })
 
 export const discordAxios = (accessToken: string) =>
