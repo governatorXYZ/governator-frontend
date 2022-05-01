@@ -7,7 +7,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
 
-  const url = req.query.slug.join('/')
+  const url = typeof(req.query.slug)==='string' ? req.query.slug : req.query.slug.join('/')
 
   const response = await axios({
     method: req.method as 'GET' | 'DELETE',
