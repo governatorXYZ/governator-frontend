@@ -20,16 +20,15 @@ import Link from 'next/link'
 import { Session } from 'next-auth/core/types'
 
 const LoginText: React.FC = () => {
-  const { publicRuntimeConfig } = getConfig()
+  const waitlistDisabled = process.env.NEXT_PUBLIC_WAITLIST_ENABLED !== 'true'
 
   return (
     <HStack justifyContent='center' alignItems='center' color='gray.200'>
-      {publicRuntimeConfig.WAITLIST_MODE ? (
+      {!waitlistDisabled ? (
         <Text
           as='a'
           href='https://airtable.com/shrWMfKtVfdBvv5dL'
-          target='_blank'
-        >
+          target='_blank'>
           Join the waitlist
         </Text>
       ) : (
@@ -38,8 +37,7 @@ const LoginText: React.FC = () => {
           cursor='pointer'
           onClick={() => {
             signIn('discord')
-          }}
-        >
+          }}>
           Login
         </Text>
       )}
@@ -82,8 +80,7 @@ const UserAvatar: React.FC<{ session: Session }> = ({ session }) => {
           <MenuItem
             onClick={() => {
               signOut()
-            }}
-          >
+            }}>
             Logout
           </MenuItem>
         </MenuGroup>
@@ -104,8 +101,7 @@ const NavBar: React.FC = () => {
               as='span'
               color='gray.200'
               fontSize='lg'
-              className='roboto-mono'
-            >
+              className='roboto-mono'>
               <Link href='/'>governator.xyz</Link>
             </Text>
           </Box>

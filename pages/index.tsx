@@ -61,7 +61,7 @@ const Quote: React.FC = () => {
 }
 
 const Home: NextPage = () => {
-  const { publicRuntimeConfig } = getConfig()
+  const waitlistDisabled = process.env.NEXT_PUBLIC_WAITLIST_ENABLED !== 'true'
   return (
     <>
       <Head>
@@ -169,7 +169,7 @@ const Home: NextPage = () => {
                     Add to Discord
                   </Button>
 
-                  {publicRuntimeConfig.WAITLIST_MODE ? (
+                  {!waitlistDisabled ? (
                     <Button
                       color='gray.700'
                       onClick={() => {
