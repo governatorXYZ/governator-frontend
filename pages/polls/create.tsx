@@ -9,7 +9,7 @@ import {
 } from '@chakra-ui/react'
 import { ChevronRightIcon } from '@chakra-ui/icons'
 import { BiBarChartSquare } from 'react-icons/bi'
-import CreatePollForm from 'components/polls/CreatePollForm'
+import PollForm from 'components/polls/PollForm'
 
 const CreatePoll: NextPage = () => {
   return (
@@ -47,7 +47,7 @@ const CreatePoll: NextPage = () => {
             Creating Poll
           </Text>
         </Flex>
-        <CreatePollForm mt='2rem' />
+        <PollForm mt='2rem' />
       </Box>
     </Box>
   )

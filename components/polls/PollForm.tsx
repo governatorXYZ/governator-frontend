@@ -21,6 +21,8 @@ import { privateBaseAxios } from 'constants/axios'
 import { useRouter } from 'next/router'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { useEffect } from 'react'
+import useServer from 'hooks/useServer'
 
 interface Poll {
   title: string
@@ -49,19 +51,10 @@ const schema = yup.object().shape({
   author_user_id: yup.string().required('Required'),
 })
 
-const options = [
-  { value: '1234', label: '#chocolate' },
-  { value: '2345', label: '#strawberry' },
-  { value: '3456', label: '#vanilla' },
-]
-
-const roles = [
-  { value: 'level-1', label: 'Level 1' },
-  { value: 'level-2', label: 'Level 2' },
-  { value: 'level-3', label: 'Level 3' },
-]
-
 const PollForm: React.FC<BoxProps> = ({ ...props }) => {
+  const router = useRouter()
+  const { roles, channels } = useServer()
+
   const {
     register,
     handleSubmit,
@@ -79,7 +72,6 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
   })
 
   const toast = useToast()
-  const router = useRouter()
 
   const submit = async (data: Poll) => {
     try {
@@ -96,6 +88,10 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
       toast({ status: 'error', description: 'An error has occured.' })
     }
   }
+
+  useEffect(() => {
+    append({})
+  }, [])
 
   return (
     <DarkMode>
@@ -122,7 +118,7 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
               render={({ field: { onBlur } }) => (
                 <Select
                   id='channel_id'
-                  options={options}
+                  options={channels}
                   isSearchable={false}
                   onBlur={onBlur}
                   onChange={i => {
@@ -326,7 +322,7 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
               {`${
                 watch('channel_id')
                   ? `in ${
-                      options.find(o => o.value === watch('channel_id'))?.label
+                      channels.find(o => o.value === watch('channel_id'))?.label
                     }`
                   : ''
               }`}

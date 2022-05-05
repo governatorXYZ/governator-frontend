@@ -22,103 +22,106 @@ import DeletePoll from 'components/polls/DeletePoll'
 import DataTable from 'components/Datatable'
 import React, { useEffect, useState } from 'react'
 import SearchBox from 'components/SearchBox'
+import useServer from 'hooks/useServer'
 
-const pollOptions = [
-  { value: '1234', label: '#chocolate' },
-  { value: '2345', label: '#strawberry' },
-  { value: '3456', label: '#vanilla' },
+const columns = [
+  {
+    Header: 'Created',
+    accessor: 'created',
+  },
+  {
+    Header: 'Name',
+    accessor: 'name',
+  },
+  {
+    Header: 'Channel',
+    accessor: 'channel',
+  },
+  {
+    Header: 'Author',
+    accessor: 'author',
+  },
+  {
+    Header: 'Votes',
+    accessor: 'votes',
+  },
+  {
+    Header: 'Actions',
+    accessor: 'actions',
+  },
 ]
 
 const Polls: NextPage = () => {
   const router = useRouter()
   const { loading, currentServer } = useServers()
+  const { channels, loading: isLoadingChannels } = useServer()
 
   const { data, error, mutate } = useSWR('/poll/list', privateBaseFetcher)
   const pollsData = data?.data ? (data?.data as Poll[]) : []
   const isLoadingPolls = !data && !error
 
   const [polls, setPolls] = useState<RenderedPoll[]>([])
+  const [originalPolls, setOriginalPolls] = useState<RenderedPoll[]>([])
 
   const setNewPolls = (newPolls: Record<string, any>[]) => {
     setPolls(newPolls)
   }
 
-  const originalPolls = pollsData.map(p => ({
-    id: p._id,
-    created: luxon.DateTime.fromISO(p.createdAt).toFormat('LLL dd yyyy t'),
-    name: p.title,
-    channel: pollOptions.find(opt => opt.value === `${p.channel_id}`)?.label,
-    author: p.author_user_id,
-    votes: 0,
-    actions: (
-      <Flex w='max-content' mx='auto'>
-        <DeletePoll poll={p} mutate={mutate} />
-        <Button
-          variant='ghost'
-          size='sm'
-          color='purple.500'
-          _active={{
-            color: 'white',
-            backgroundColor: 'purple.300',
-          }}
-          _hover={{
-            color: 'white',
-            backgroundColor: 'purple.500',
-          }}
-        >
-          <FaDiscord fontSize='15px' />
-        </Button>
-        <NextLink href={`${router.asPath}/results/${p._id}`}>
-          <Button
-            variant='ghost'
-            size='sm'
-            color='teal.500'
-            _active={{
-              color: 'white',
-              backgroundColor: 'teal.300',
-            }}
-            _hover={{
-              color: 'white',
-              backgroundColor: 'teal.500',
-            }}
-          >
-            <FiBarChart fontSize='15px' />
-          </Button>
-        </NextLink>
-      </Flex>
-    ),
-  }))
-
-  const columns = [
-    {
-      Header: 'Created',
-      accessor: 'created',
-    },
-    {
-      Header: 'Name',
-      accessor: 'name',
-    },
-    {
-      Header: 'Channel',
-      accessor: 'channel',
-    },
-    {
-      Header: 'Author',
-      accessor: 'author',
-    },
-    {
-      Header: 'Votes',
-      accessor: 'votes',
-    },
-    {
-      Header: 'Actions',
-      accessor: 'actions',
-    },
-  ]
+  const fetchPolls = () =>
+    pollsData.map(p => {
+      return {
+        id: p._id,
+        created: luxon.DateTime.fromISO(p.createdAt).toFormat('LLL dd yyyy t'),
+        name: p.title,
+        channel: isLoadingChannels
+          ? 'Loading...'
+          : channels.find(opt => opt.value === `${p.channel_id}`)?.label,
+        author: p.author_user_id,
+        votes: 0,
+        actions: (
+          <Flex w='max-content' mx='auto'>
+            <DeletePoll poll={p} mutate={mutate} />
+            <Button
+              variant='ghost'
+              size='sm'
+              color='purple.500'
+              _active={{
+                color: 'white',
+                backgroundColor: 'purple.300',
+              }}
+              _hover={{
+                color: 'white',
+                backgroundColor: 'purple.500',
+              }}
+            >
+              <FaDiscord fontSize='15px' />
+            </Button>
+            <NextLink href={`${router.asPath}/results/${p._id}`}>
+              <Button
+                variant='ghost'
+                size='sm'
+                color='teal.500'
+                _active={{
+                  color: 'white',
+                  backgroundColor: 'teal.300',
+                }}
+                _hover={{
+                  color: 'white',
+                  backgroundColor: 'teal.500',
+                }}
+              >
+                <FiBarChart fontSize='15px' />
+              </Button>
+            </NextLink>
+          </Flex>
+        ),
+      }
+    })
 
   useEffect(() => {
     if (data) {
-      setPolls(originalPolls)
+      setOriginalPolls(fetchPolls())
+      setPolls(fetchPolls())
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data])
