@@ -14,18 +14,25 @@ import {
   useToast,
 } from '@chakra-ui/react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
-import { FiPlus, FiTrash } from 'react-icons/fi'
+import { FiPlus } from 'react-icons/fi'
 import { Select } from 'chakra-react-select'
 import ThemedDateTimePicker from 'components/ThemedDateTimePicker'
 import { privateBaseAxios } from 'constants/axios'
 import { useRouter } from 'next/router'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { useEffect } from 'react'
+import useServer from 'hooks/useServer'
+import PollOption from './PollOption'
 
 interface Poll {
   title: string
   channel_id: string
-  poll_options: { name: string }[]
+  poll_options: {
+    _id: string
+    poll_option_name: string
+    poll_option_emoji: string
+  }[]
   allow_options_for_anyone: boolean
   single_vote: boolean
   end_time: Date | null
@@ -39,7 +46,9 @@ const schema = yup.object().shape({
   channel_id: yup.string().required('Required.'),
   poll_options: yup.array().of(
     yup.object().shape({
-      name: yup.string(),
+      _id: yup.string(),
+      poll_option_name: yup.string(),
+      poll_option_emoji: yup.string(),
     })
   ),
   allow_options_for_anyone: yup.boolean(),
@@ -49,19 +58,10 @@ const schema = yup.object().shape({
   author_user_id: yup.string().required('Required'),
 })
 
-const options = [
-  { value: '1234', label: '#chocolate' },
-  { value: '2345', label: '#strawberry' },
-  { value: '3456', label: '#vanilla' },
-]
-
-const roles = [
-  { value: 'level-1', label: 'Level 1' },
-  { value: 'level-2', label: 'Level 2' },
-  { value: 'level-3', label: 'Level 3' },
-]
-
 const PollForm: React.FC<BoxProps> = ({ ...props }) => {
+  const router = useRouter()
+  const { roles, channels } = useServer()
+
   const {
     register,
     handleSubmit,
@@ -78,12 +78,42 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
     name: 'poll_options',
   })
 
+  const emojiExists = (emoji: string) =>
+    watch('poll_options').some(p => p.poll_option_emoji === emoji)
+
   const toast = useToast()
-  const router = useRouter()
+
+  const createEmoji = (emojiIterator: number) => {
+    const listings = [
+      '1️⃣',
+      '2️⃣',
+      '3️⃣',
+      '4️⃣',
+      '5️⃣',
+      '6️⃣',
+      '7️⃣',
+      '8️⃣',
+      '9️⃣',
+      '🔟',
+    ]
+    return listings[emojiIterator]
+  }
 
   const submit = async (data: Poll) => {
     try {
-      const res = await privateBaseAxios.post('/poll/create', data)
+      const pollOptions = data.poll_options.map((p, i) => {
+        if (p._id) return p
+        const newEmoji = createEmoji(i)
+        return {
+          _id: newEmoji,
+          poll_option_name: p.poll_option_name,
+          poll_option_emoji: newEmoji,
+        }
+      })
+
+      const submittedData = { ...data, poll_options: pollOptions }
+
+      const res = await privateBaseAxios.post('/poll/create', submittedData)
 
       if (res.data) {
         await router.push(router.asPath.replace('/create', ''))
@@ -96,6 +126,11 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
       toast({ status: 'error', description: 'An error has occured.' })
     }
   }
+
+  useEffect(() => {
+    append({ poll_option_name: '' })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <DarkMode>
@@ -122,8 +157,8 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
               render={({ field: { onBlur } }) => (
                 <Select
                   id='channel_id'
-                  options={options}
-                  isSearchable={false}
+                  options={channels}
+                  isSearchable
                   onBlur={onBlur}
                   onChange={i => {
                     setValue('channel_id', i?.value ?? '')
@@ -149,59 +184,33 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             </Text>
             {fields.map((f, i) => (
               <Box key={f.id}>
-                <Controller
+                <PollOption
+                  remove={remove}
                   control={control}
-                  name={`poll_options.${i}.name`}
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <Box>
-                      <Flex alignItems='center'>
-                        <Input
-                          onChange={e => {
-                            onChange(e)
-                            clearErrors('poll_options')
-                          }}
-                          borderColor='gray.400'
-                          onBlur={onBlur}
-                          value={value}
-                          mb='6px'
-                          {...(fields.length > 1 && { w: '92%' })}
-                        />
-                        {fields.length > 1 && (
-                          <Box position='relative' color='gray.300'>
-                            <Button
-                              onClick={() => {
-                                remove(i)
-                              }}
-                              ml='10px'
-                              size='sm'
-                              variant='outline'
-                            >
-                              <FiTrash />
-                            </Button>
-                          </Box>
-                        )}
-                      </Flex>
-                      <FormErrorMessage>
-                        {errors.poll_options?.[i]?.name?.message}
-                      </FormErrorMessage>
-                    </Box>
-                  )}
+                  i={i}
+                  fields={fields}
+                  clearErrors={clearErrors}
+                  errors={errors}
+                  setValue={setValue}
+                  emojiExists={emojiExists}
                 />
               </Box>
             ))}
-            <Button
-              onClick={() => {
-                append({ name: '' })
-              }}
-              variant='outline'
-              size='sm'
-              fontSize='13px'
-              leftIcon={<FiPlus />}
-              fontWeight='400'
-              mr='8px'
-            >
-              Add another option
-            </Button>
+            {fields.length < 8 && (
+              <Button
+                onClick={() => {
+                  append({ poll_option_name: '' })
+                }}
+                variant='outline'
+                size='sm'
+                fontSize='13px'
+                leftIcon={<FiPlus />}
+                fontWeight='400'
+                mr='8px'
+              >
+                Add another option
+              </Button>
+            )}
           </FormControl>
           <FormControl>
             <Flex alignItems='center' mt='1rem'>
@@ -298,7 +307,7 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
                   id='roleRestrictions'
                   options={roles}
                   isMulti
-                  isSearchable={false}
+                  isSearchable
                   onBlur={onBlur}
                   onChange={i => {
                     setValue(
@@ -326,7 +335,7 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
               {`${
                 watch('channel_id')
                   ? `in ${
-                      options.find(o => o.value === watch('channel_id'))?.label
+                      channels.find(o => o.value === watch('channel_id'))?.label
                     }`
                   : ''
               }`}

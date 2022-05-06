@@ -3,7 +3,7 @@ export interface Poll {
   createdAt: string
   title: string
   channel_id: number
-  author_user_id: number
+  author_user_id: number | string
 }
 
 export interface RenderedPoll {
@@ -11,7 +11,7 @@ export interface RenderedPoll {
   created?: string
   name?: string
   channel?: string | undefined
-  author?: number
+  author?: number | string
   votes?: number
   actions?: JSX.Element
 }
