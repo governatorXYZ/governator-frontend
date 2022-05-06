@@ -8,8 +8,11 @@ import { useRouter } from 'next/router'
 /**
  * @important to remove in the future
  * hardcode BOT GARAGE's server id as allowed
+ * included the server name for readability in case we have more to whitelist
  */
-  const MVP_ALLOWED_GUILDS = ["851552281249972254"];
+const MVP_ALLOWED_GUILDS = {
+  "The DAO Bot Garage": "851552281249972254"
+};
 
 const useServers = () => {
   const { data: session } = useSession()
@@ -28,7 +31,7 @@ const useServers = () => {
           '/users/@me/guilds'
         )
         setLoading(false)
-        const serversData = data.data.filter(_guild => MVP_ALLOWED_GUILDS.includes( _guild.id ) )
+        const serversData = data.data.filter(_guild => Object.values(MVP_ALLOWED_GUILDS).includes(_guild.id))
         setServers(serversData)
       } catch (e) {
         console.log({ e })
