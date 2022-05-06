@@ -31,7 +31,7 @@ const useServers = () => {
           '/users/@me/guilds'
         )
         setLoading(false)
-        const serversData = data.data.filter(_guild => Object.values(MVP_ALLOWED_GUILDS).includes(_guild.id))
+        const serversData = data.data.filter( (_guild: { id: string }) => Object.values(MVP_ALLOWED_GUILDS).includes(_guild.id))
         setServers(serversData)
       } catch (e) {
         console.log({ e })
