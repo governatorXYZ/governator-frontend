@@ -5,6 +5,12 @@ import { useState, useCallback, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 
+/**
+ * @important to remove in the future
+ * hardcode BOT GARAGE's server id as allowed
+ */
+  const MVP_ALLOWED_GUILDS = ["851552281249972254"];
+
 const useServers = () => {
   const { data: session } = useSession()
   const [servers, setServers] = useAtom(serversAtom)
@@ -22,7 +28,8 @@ const useServers = () => {
           '/users/@me/guilds'
         )
         setLoading(false)
-        setServers(data.data)
+        const serversData = data.data.filter(_guild => MVP_ALLOWED_GUILDS.includes( _guild.id ) )
+        setServers(serversData)
       } catch (e) {
         console.log({ e })
         setLoading(false)
