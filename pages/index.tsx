@@ -1,4 +1,5 @@
 import type { NextPage } from 'next'
+import { GetServerSideProps } from 'next'
 import Head from 'next/head'
 import {
   Box,
@@ -19,7 +20,6 @@ import { MdLoop } from 'react-icons/md'
 import styled from '@emotion/styled'
 import { useEffect, useState } from 'react'
 import { sample } from 'lodash'
-import getConfig from 'next/config'
 import Link from 'next/link'
 
 const StyledBox = styled(Box)`
@@ -61,8 +61,7 @@ const Quote: React.FC = () => {
   return <Box>&quot;{sentence}&quot;</Box>
 }
 
-const Home: NextPage = () => {
-  const waitlistDisabled = process.env.NEXT_PUBLIC_WAITLIST_ENABLED !== 'true'
+const Home: NextPage = waitlistDisabled => {
   return (
     <>
       <Head>
@@ -72,15 +71,13 @@ const Home: NextPage = () => {
         minH='calc(100vh - 60px)'
         pt='8rem'
         overflowX='hidden'
-        color='gray.100'
-      >
+        color='gray.100'>
         <Container maxW='container.xl'>
           <Grid
             templateColumns='350px 1fr'
             columnGap='4rem'
             mx='auto'
-            maxW='max-content'
-          >
+            maxW='max-content'>
             <Box
               h='350px'
               w='350px'
@@ -89,8 +86,7 @@ const Home: NextPage = () => {
               borderRadius='10px'
               backgroundColor='white'
               pos='relative'
-              overflow='hidden'
-            >
+              overflow='hidden'>
               <motion.div
                 initial={{
                   position: 'relative',
@@ -99,8 +95,7 @@ const Home: NextPage = () => {
                   x: [-200, -5, -10],
                   opacity: [0.25, 1, 1],
                 }}
-                transition={{ duration: 2 }}
-              >
+                transition={{ duration: 2 }}>
                 <Image
                   src='./images/gov-bot.jpeg'
                   alt='gov-bot'
@@ -124,15 +119,13 @@ const Home: NextPage = () => {
                   }}
                   transition={{
                     delay: 2,
-                  }}
-                >
+                  }}>
                   <Text
                     as='span'
                     display='block'
                     color='gray.800'
                     fontSize='sm'
-                    mx='auto'
-                  >
+                    mx='auto'>
                     <Quote />
                   </Text>
                 </motion.div>
@@ -145,15 +138,13 @@ const Home: NextPage = () => {
                   animate={{
                     opacity: 1,
                     transition: { duration: 1.5, delay: 0.5 },
-                  }}
-                >
+                  }}>
                   <Text
                     as='span'
                     fontSize='4xl'
                     display='block'
                     className='roboto-mono'
-                    maxW='30ch'
-                  >
+                    maxW='30ch'>
                     The best governance tool made for DAOs.
                   </Text>
 
@@ -169,14 +160,12 @@ const Home: NextPage = () => {
                 animate={{
                   opacity: 1,
                   transition: { duration: 1, delay: 0.75 },
-                }}
-              >
+                }}>
                 <Flex gap='1rem' mt='4rem'>
                   <Button
                     colorScheme='purple'
                     leftIcon={<FaDiscord />}
-                    isDisabled
-                  >
+                    isDisabled>
                     Add to Discord
                   </Button>
 
@@ -188,15 +177,13 @@ const Home: NextPage = () => {
                           'https://airtable.com/shrWMfKtVfdBvv5dL',
                           '_blank'
                         )
-                      }}
-                    >
+                      }}>
                       <Text as='span' cursor='pointer'>
                         <Text
                           as='span'
                           role='img'
                           display='inline-block'
-                          mr='0.75rem'
-                        >
+                          mr='0.75rem'>
                           🙋‍♂️
                         </Text>
                         Join the waitlist
@@ -233,8 +220,7 @@ const Home: NextPage = () => {
               mx='auto'
               fontSize='3xl'
               borderBottom='1px solid'
-              borderColor='gray.400'
-            >
+              borderColor='gray.400'>
               What does it do?
             </Text>
           </Flex>
@@ -243,16 +229,14 @@ const Home: NextPage = () => {
             gap='4rem'
             maxW='max-content'
             mx='auto'
-            mt='6rem'
-          >
+            mt='6rem'>
             <Flex
               direction='column'
               alignItems='center'
               justifyItems='center'
               backgroundColor='gray.800'
               p='2rem'
-              borderRadius='6px'
-            >
+              borderRadius='6px'>
               <Box color='gray.300'>
                 <FiMessageSquare fontSize='60px' />
               </Box>
@@ -261,8 +245,7 @@ const Home: NextPage = () => {
                 display='block'
                 mt='1rem'
                 maxW='30ch'
-                textAlign='center'
-              >
+                textAlign='center'>
                 Posts a private Discord poll that only members can vote on.
               </Text>
             </Flex>
@@ -272,8 +255,7 @@ const Home: NextPage = () => {
               justifyItems='center'
               backgroundColor='gray.800'
               p='2rem'
-              borderRadius='6px'
-            >
+              borderRadius='6px'>
               <Box color='gray.300'>
                 <FiBarChart fontSize='60px' />
               </Box>
@@ -282,8 +264,7 @@ const Home: NextPage = () => {
                 display='block'
                 mt='0.5rem'
                 maxW='40ch'
-                textAlign='center'
-              >
+                textAlign='center'>
                 Use token voting directly in Discord.
               </Text>
             </Flex>
@@ -293,8 +274,7 @@ const Home: NextPage = () => {
               justifyItems='center'
               backgroundColor='gray.800'
               p='2rem'
-              borderRadius='6px'
-            >
+              borderRadius='6px'>
               <Box color='gray.300'>
                 <AiOutlineTrophy fontSize='60px' />
               </Box>
@@ -303,8 +283,7 @@ const Home: NextPage = () => {
                 display='block'
                 mt='0.5rem'
                 maxW='40ch'
-                textAlign='center'
-              >
+                textAlign='center'>
                 Tallies the votes and announces the winner - exactly on time!
               </Text>
             </Flex>
@@ -314,8 +293,7 @@ const Home: NextPage = () => {
               justifyItems='center'
               backgroundColor='gray.800'
               p='2rem'
-              borderRadius='6px'
-            >
+              borderRadius='6px'>
               <Box color='gray.300'>
                 <MdLoop fontSize='60px' />
               </Box>
@@ -324,8 +302,7 @@ const Home: NextPage = () => {
                 display='block'
                 mt='0.5rem'
                 maxW='40ch'
-                textAlign='center'
-              >
+                textAlign='center'>
                 Automatically run the poll again and again!
               </Text>
             </Flex>
@@ -338,8 +315,7 @@ const Home: NextPage = () => {
           alignItems='center'
           justifyContent='space-between'
           p='40px'
-          px='60px'
-        >
+          px='60px'>
           <Image
             src='./images/bankless.png'
             alt='BanklessDAO'
@@ -350,8 +326,7 @@ const Home: NextPage = () => {
               <a>
                 <Button
                   variant='ghost'
-                  _hover={{ backgroundColor: 'rgba(255,255,255,0.15)' }}
-                >
+                  _hover={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
                   <FiGlobe fontSize='20px' />
                 </Button>
               </a>
@@ -360,8 +335,7 @@ const Home: NextPage = () => {
               <a>
                 <Button
                   variant='ghost'
-                  _hover={{ backgroundColor: 'rgba(255,255,255,0.15)' }}
-                >
+                  _hover={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
                   <FaDiscord fontSize='20px' />
                 </Button>
               </a>
@@ -370,8 +344,7 @@ const Home: NextPage = () => {
               <a>
                 <Button
                   variant='ghost'
-                  _hover={{ backgroundColor: 'rgba(255,255,255,0.15)' }}
-                >
+                  _hover={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
                   <FiTwitter fontSize='20px' />
                 </Button>
               </a>
@@ -380,8 +353,7 @@ const Home: NextPage = () => {
               <a>
                 <Button
                   variant='ghost'
-                  _hover={{ backgroundColor: 'rgba(255,255,255,0.15)' }}
-                >
+                  _hover={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
                   <AiOutlineMedium fontSize='20px' />
                 </Button>
               </a>
@@ -391,6 +363,18 @@ const Home: NextPage = () => {
       </StyledBox>
     </>
   )
+}
+
+export const getServerSideProps: GetServerSideProps = async context => {
+  const waitlistDisabled =
+    context.query.waitlist === 'true'
+      ? true
+      : process.env.NEXT_PUBLIC_WAITLIST_DISABLED === 'true'
+  return {
+    props: {
+      waitlistDisabled: waitlistDisabled,
+    }, // will be passed to the page component as props
+  }
 }
 
 export default Home
