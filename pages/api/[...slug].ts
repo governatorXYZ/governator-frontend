@@ -10,7 +10,7 @@ export default async function handler(
   const url = typeof(req.query.slug)==='string' ? req.query.slug : req.query.slug.join('/')
 
   const response = await axios({
-    method: req.method as 'GET' | 'DELETE',
+    method: req.method as 'GET' | 'DELETE' | 'POST',
     url: `${process.env.GOVERNATOR_API_ENDPOINT}/${url}`,
     headers: {
       'X-API-KEY': process.env.GOVERNATOR_API_KEY as string
