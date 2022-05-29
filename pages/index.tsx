@@ -1,5 +1,6 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
+import { useSession } from 'next-auth/react';
 import {
   Box,
   Container,
@@ -21,6 +22,7 @@ import { useEffect, useState } from 'react'
 import { sample } from 'lodash'
 import getConfig from 'next/config'
 import Link from 'next/link'
+import { privateBaseAxios } from '../constants/axios';
 
 const StyledBox = styled(Box)`
   background-color: #29303a;
@@ -62,7 +64,37 @@ const Quote: React.FC = () => {
 }
 
 const Home: NextPage = () => {
+
+  const { data: session } = useSession()
+
   const waitlistDisabled = process.env.NEXT_PUBLIC_WAITLIST_ENABLED !== 'true'
+
+  useEffect(() => {
+
+    async function checkAndCreateUser() {
+      const userId = session?.userId;
+      if (!userId) {
+        return
+      }
+
+      /* Check if user already exists in database */
+      const userRes = await privateBaseAxios.get(`account/discord/get-by-account-id/${userId}`)
+      const user = userRes.data
+
+      /* Create user if does not already exist */
+      if (user) {
+        return
+      }
+      const data = {
+        _id: userId,
+        discord_username: session?.name
+      }
+      await privateBaseAxios.post('/account/discord/create', data)
+    }
+    checkAndCreateUser();
+
+  },[session])
+
   return (
     <>
       <Head>

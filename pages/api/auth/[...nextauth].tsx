@@ -13,18 +13,24 @@ export default NextAuth({
     // ...add more providers here
   ],
   callbacks: {
-    async jwt({ token, account }) {
-      // console.log({token, user, account, profile, isNewUser})
+    /* return {token, user, account, profile, isNewUser} */
+    async jwt({token, user, account}) {
       if (account?.access_token) {
         token.accessToken = account.access_token
         token.refreshToken = account.refresh_token
       }
+      if (user) {
+        token.userId = user.id
+        token.name = user.name
+        token.email = user.email
+      }
       return token
     },
     async session({ session, token }) {
-      // session.user = session.user
       session.accessToken = token.accessToken
-
+      session.userId = token.userId
+      session.email = token.email
+      session.name = token.name
       return session
     },
   },
