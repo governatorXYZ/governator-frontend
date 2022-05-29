@@ -20,6 +20,7 @@ import Link from 'next/link'
 import { Session } from 'next-auth/core/types'
 
 const LoginText: React.FC = () => {
+
   const waitlistDisabled = process.env.NEXT_PUBLIC_WAITLIST_ENABLED !== 'true'
 
   return (
@@ -77,6 +78,11 @@ const UserAvatar: React.FC<{ session: Session }> = ({ session }) => {
       <MenuList color='gray.800'>
         <MenuGroup title={`Signed in as ${name}`} fontWeight='400'>
           <MenuDivider />
+          <MenuItem>
+            <Link href='/account'>
+              My Account
+            </Link>
+          </MenuItem>
           <MenuItem
             onClick={() => {
               signOut()
