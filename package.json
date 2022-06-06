@@ -25,6 +25,7 @@
     "discord-api-types": "^0.29.0",
     "discord.js": "^13.6.0",
     "emoji-picker-react": "^3.5.1",
+    "ethers": "^5.6.8",
     "framer-motion": "^5.6.0",
     "fuse.js": "^6.5.3",
     "jotai": "^1.6.1",
@@ -42,6 +43,7 @@
     "react-input-emoji": "^4.1.0",
     "react-select": "^5.2.2",
     "react-table": "^7.7.0",
+    "siwe": "^1.1.6",
     "swr": "^1.2.2",
     "yup": "^0.32.11"
   },
