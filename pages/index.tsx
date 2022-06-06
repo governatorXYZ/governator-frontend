@@ -93,7 +93,7 @@ const Home: NextPage = () => {
     }
     checkAndCreateUser();
 
-  },[session])
+  },[session?.name, session?.userId])
 
   return (
     <>
