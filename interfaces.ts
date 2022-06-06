@@ -15,3 +15,14 @@ export interface RenderedPoll {
   votes?: number
   actions?: JSX.Element
 }
+
+export interface Address {
+  _id: string
+  createdAt: string
+  updatedAt: string
+  user_id: string
+  provider_id: string
+  verified: boolean
+  verification_message: string
+  nonce: string
+}

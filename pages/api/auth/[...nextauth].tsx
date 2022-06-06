@@ -20,7 +20,7 @@ export default NextAuth({
         token.refreshToken = account.refresh_token
       }
       if (user) {
-        token.userId = user.id
+        token.discordId = user.id
         token.name = user.name
         token.email = user.email
       }
@@ -28,7 +28,7 @@ export default NextAuth({
     },
     async session({ session, token }) {
       session.accessToken = token.accessToken
-      session.userId = token.userId
+      session.discordId = token.discordId
       session.email = token.email
       session.name = token.name
       return session
