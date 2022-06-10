@@ -15,13 +15,10 @@ import {
   MenuDivider,
 } from '@chakra-ui/react'
 import { AiOutlineCaretDown } from 'react-icons/ai'
-import getConfig from 'next/config'
 import Link from 'next/link'
 import { Session } from 'next-auth/core/types'
 
-const LoginText: React.FC = () => {
-  const waitlistDisabled = process.env.NEXT_PUBLIC_WAITLIST_ENABLED !== 'true'
-
+const LoginText = ({ waitlistDisabled }: { waitlistDisabled: boolean }) => {
   return (
     <HStack justifyContent='center' alignItems='center' color='gray.200'>
       {!waitlistDisabled ? (
@@ -89,7 +86,7 @@ const UserAvatar: React.FC<{ session: Session }> = ({ session }) => {
   )
 }
 
-const NavBar: React.FC = () => {
+const NavBar = ({ waitlistDisabled }: { waitlistDisabled: boolean }) => {
   const { data: session } = useSession()
 
   return (
@@ -119,7 +116,7 @@ const NavBar: React.FC = () => {
                 <UserAvatar session={session} />
               </HStack>
             ) : (
-              <LoginText />
+              <LoginText waitlistDisabled={waitlistDisabled} />
             )}
           </Box>
         </Flex>
