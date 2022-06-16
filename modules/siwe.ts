@@ -47,73 +47,72 @@ class Siwe {
       return {user_id: ''};
     }
 
-    return provider.send('eth_requestAccounts', [])
-      .then(async (wallets: string[]) => {
+    const wallets = await provider.send('eth_requestAccounts', [])
 
-        console.log({wallets})
+    const walletAddress = wallets[0];
 
-        const walletAddress = wallets[0];
+    /* Check if eth wallet already exists in database */
+    const walletRes = await privateBaseAxios.get(`/account/ethereum/get-by-account-id/${walletAddress}`);
+    const wallet = walletRes.data;
 
-        /* Check if eth wallet already exists in database */
-        const walletRes = await privateBaseAxios.get(`/account/ethereum/get-by-account-id/${walletAddress}`)
-        const wallet = walletRes.data
+    /* Return is already exists */
+    if (wallet) {
+      return wallet;
+    }
 
+    /* Create if wallet does not exist in database */
+    const data = {
+      _id: walletAddress
+    };
+    const newEthAccount = await privateBaseAxios.post('/account/ethereum/create', data);
 
-        /* Return is already exists */
-        if (wallet) {
-          return wallet;
-        }
+    return newEthAccount.data;
 
-        console.log({walletAddress})
-
-        /* Create if wallet does not exist in database */
-        const data = {
-          _id: walletAddress
-        };
-        const newEthAccount = await privateBaseAxios.post('/account/ethereum/create', data);
-        console.log({newEthAccount})
-        return newEthAccount.data;
-      })
-      .catch(() => console.log('user rejected request'));
   }
 
-  static async signInWithEthereum(nonce: string) {
-
-    console.log({signer})
+  static async signInWithEthereum(discordId: string) {
 
     if (!signer) {
       alert('Wallet not connected!')
       return;
     }
 
+    const walletAddress = await signer.getAddress();
+
+    /* Get nonce from server */
+    const nonceRes = await privateBaseAxios.get(`/siwe/nonce/${walletAddress}`)
+    const nonce = nonceRes.data
+
     const message = this.createSiweMessage(
-      await signer.getAddress(),
-      'Sign in with Ethereum to the app. - link to discord_id ${discord_id}',
+      walletAddress,
+      `Sign in with Ethereum to the app. - link to discord_id ${discordId}`,
       nonce
     );
     const signature = await signer.signMessage(message);
-    const updatedEthAccount = await this.sendForVerification(message, signature);
+    const updatedEthAccount = await this.sendForVerification(message, signature, discordId);
 
-    console.log({ updatedEthAccount })
     return updatedEthAccount
   }
 
-  static async sendForVerification(message: string, signature: string) {
+  static async sendForVerification(message: string, signature: string, discordId: string) {
 
     const address = await signer.getAddress();
     const data = {
       _id: address,
       verification_message: message,
-      signed_message: signature
+      signed_message: signature,
+      link_account: {
+        "provider_id": "discord",
+        "_id": discordId
+      }
     }
 
-    const updatedEthAccount = await privateBaseAxios.post('/web3/verify', data)
-
-    console.log({ updatedEthAccount })
-
-    console.log(await res.text());
-
+    const updatedEthAccount = await privateBaseAxios.post('/siwe/verify', data)
     return updatedEthAccount.data
+  }
+
+  static async removeWallet(walletAddress: string) {
+    await privateBaseAxios.delete(`/account/ethereum/delete/${walletAddress}`)
   }
 
 }

@@ -1,4 +1,5 @@
 import type { NextPage } from 'next';
+import { useSession } from 'next-auth/react'
 import moment from 'moment';
 import useSWR from 'swr';
 import { useAtom } from 'jotai';
@@ -11,6 +12,7 @@ import {
   Text,
   Flex,
 } from '@chakra-ui/react'
+import CustomButton from '../components/common/Button';
 
 import { Address } from '../interfaces';
 
@@ -42,21 +44,26 @@ const Account: NextPage = () => {
 
   const [user, setUser] = useAtom(userAtom);
 
+    const connectWallet = async (): Promise<void> => {
+    const ethWallet = await Siwe.connectWallet();
+    setUser({ userId: ethWallet.user_id });
+  };
+
+  const signInWithEthereum = async (): Promise<void> => {
+    await Siwe.signInWithEthereum(session?.discordId as unknown as string);
+    mutate();
+  }
+
+  const removeWallet = async (walletAddress:string): Promise<void> => {
+    await Siwe.removeWallet(walletAddress)
+    mutate();
+  }
+
   const useAddressesData = (): any => {
 
-    console.log({ user })
-    /**
-     * @ken cannot have conditional custom hooks. 
-     * how to prevent repeated failed calls when user.userId is ''
-     */
-    // if (!user || !user.userId) {
-    //   return { addressesData: [], error: false }
-    // }
-
-    const { data, error } = useSWR(`/account/ethereum/get-by-user-id/${user?.userId}`, privateBaseFetcher)
+    const { data, error, mutate } = useSWR(`/account/ethereum/get-by-user-id/${user?.userId}`, privateBaseFetcher)
     const rawData = data?.data ? (data?.data) as Address[] : [] as Address[]
     const addressesData = rawData.map((_address: Address, idx: number) => {
-      console.log({ _address })
       return {
         idx: idx + 1,
         _id: _address._id,
@@ -64,49 +71,10 @@ const Account: NextPage = () => {
         actions: (
           <Flex w='max-content' mx='auto'>
             {!_address.verified ?
-              <Button
-                variant='ghost'
-                size='sm'
-                color='purple.500'
-                _active={{
-                  color: 'white',
-                  backgroundColor: 'purple.300',
-                }}
-                _hover={{
-                  color: 'white',
-                  backgroundColor: 'purple.500',
-                }}
-                onClick={() => Siwe.signInWithEthereum(_address.nonce)}
-              >
-                {`Verify ${_address.nonce}`}
-              </Button> :
+              <CustomButton text='Verify' onClick={() => signInWithEthereum()}/> :
               <div>
-              <Button
-                variant='ghost'
-                size='sm'
-                color='purple.500'
-                _active={{
-                  color: 'white',
-                  backgroundColor: 'purple.300',
-                }}
-                _hover={{
-                  color: 'white',
-                  backgroundColor: 'purple.500',
-                }}
-              >Remove</Button>
-              <Button
-                variant='ghost'
-                size='sm'
-                color='purple.500'
-                _active={{
-                  color: 'white',
-                  backgroundColor: 'purple.300',
-                }}
-                _hover={{
-                  color: 'white',
-                  backgroundColor: 'purple.500',
-                }}
-              >Reverify</Button>
+                <CustomButton text='Remove' onClick={() => removeWallet(_address._id)}/>
+                <CustomButton text='Reverify' onClick={() => null}/>
               </div>
             }
           </Flex>
@@ -114,22 +82,12 @@ const Account: NextPage = () => {
       }
     })
 
-    return { addressesData, error }
+    return { addressesData, error, mutate }
   }
 
-  const connectWallet = async (): Promise<void> => {
-    const ethWallet = await Siwe.connectWallet();
-    setUser({ userId: ethWallet.user_id });
-  };
-
-  const signInWithEthereum = async (nonce: string): Promise<void> => {
-    console.log("SIGING IN")
-    const updatedEthWallet = await signInWithEthereum(nonce);
-    console.log({ updatedEthWallet })
-  }
-
-  const { addressesData, error } = useAddressesData()
+  const { addressesData, error, mutate } = useAddressesData()
   const isLoadingAddresses = !addressesData && !error
+  const { data: session } = useSession()
 
   return (
     <Box>
