@@ -23,6 +23,8 @@ import { sample } from 'lodash'
 import getConfig from 'next/config'
 import Link from 'next/link'
 import { privateBaseAxios } from '../constants/axios';
+import { useAtom } from 'jotai';
+import { userAtom } from 'atoms';
 
 const StyledBox = styled(Box)`
   background-color: #29303a;
@@ -66,34 +68,38 @@ const Quote: React.FC = () => {
 const Home: NextPage = () => {
 
   const { data: session } = useSession()
+  const [user, setUser] = useAtom(userAtom);
 
   const waitlistDisabled = process.env.NEXT_PUBLIC_WAITLIST_ENABLED !== 'true'
 
   useEffect(() => {
 
     async function checkAndCreateUser() {
-      const userId = session?.userId;
-      if (!userId) {
+      const discordId = session?.discordId;
+      if (!discordId) {
         return
       }
 
       /* Check if user already exists in database */
-      const userRes = await privateBaseAxios.get(`account/discord/get-by-account-id/${userId}`)
+      const userRes = await privateBaseAxios.get(`account/discord/get-by-account-id/${discordId}`)
       const user = userRes.data
 
       /* Create user if does not already exist */
       if (user) {
+        setUser(user.discord_id);
         return
       }
       const data = {
-        _id: userId,
+        _id: discordId,
         discord_username: session?.name
       }
-      await privateBaseAxios.post('/account/discord/create', data)
+      const userXhr = await privateBaseAxios.post('/account/discord/create', data);
+      const newUser = userXhr.data;
+      setUser(newUser.discord_id);
     }
     checkAndCreateUser();
 
-  },[session?.name, session?.userId])
+  },[session?.name, session?.discordId])
 
   return (
     <>
