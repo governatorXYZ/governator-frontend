@@ -3,7 +3,7 @@ import { useSession } from 'next-auth/react'
 import moment from 'moment';
 import useSWR from 'swr';
 import { useAtom } from 'jotai';
-import { userAtom } from 'atoms';
+import { userAtom, providerAtom } from 'atoms';
 
 import {
   Box,
@@ -12,14 +12,19 @@ import {
   Text,
   Flex,
 } from '@chakra-ui/react'
-import CustomButton from '../components/common/Button';
 
-import { Address } from '../interfaces';
-
+/* Modules */
 import { privateBaseFetcher } from '../constants/axios';
 import Siwe from '../modules/siwe';
+import Web3 from '../modules/web3';
 
+/* UI Components */
+import CustomButton from '../components/common/Button';
 import DataTable from 'components/Datatable';
+import Web3ConnectButton from 'components/Web3ConnectButton';
+
+/* Types */
+import { Address } from '../interfaces';
 
 const columns = [
   {
@@ -43,14 +48,17 @@ const columns = [
 const Account: NextPage = () => {
 
   const [user, setUser] = useAtom(userAtom);
+  const [provider, setProvider] = useAtom(providerAtom);
 
-    const connectWallet = async (): Promise<void> => {
+  /* For SIWE Connect Button */
+  const connectWallet = async (): Promise<void> => {
     const ethWallet = await Siwe.connectWallet();
-    setUser({ userId: ethWallet.user_id });
   };
+  /* END For SIWE Connect Button */
 
   const signInWithEthereum = async (): Promise<void> => {
-    await Siwe.signInWithEthereum(session?.discordId as unknown as string);
+    // await Siwe.signInWithEthereum(session?.discordId as unknown as string);
+    await Web3.signInWithEthereum(provider, session?.discordId as unknown as string);
     mutate();
   }
 
@@ -71,10 +79,13 @@ const Account: NextPage = () => {
         actions: (
           <Flex w='max-content' mx='auto'>
             {!_address.verified ?
-              <CustomButton text='Verify' onClick={() => signInWithEthereum()}/> :
               <div>
-                <CustomButton text='Remove' onClick={() => removeWallet(_address._id)}/>
-                <CustomButton text='Reverify' onClick={() => null}/>
+                <CustomButton color='purple' text='Verify' onClick={() => signInWithEthereum()}/>
+                <CustomButton color='red' text='Remove' onClick={() => removeWallet(_address._id)}/>
+              </div> :
+              <div>
+                <CustomButton color='purple' text='Reverify' onClick={() => null}/>
+                <CustomButton color='red' text='Remove' onClick={() => removeWallet(_address._id)}/>
               </div>
             }
           </Flex>
@@ -102,6 +113,7 @@ const Account: NextPage = () => {
               </Text>
 
               <Button onClick={() => connectWallet()}>Connect Wallet</Button>
+              <Web3ConnectButton />
 
               {/* Render Poll Listings */}
               <DataTable

@@ -2,6 +2,7 @@ import { Button } from "@chakra-ui/react";
 
 interface I_ButtonProps {
   text: string
+  color: string
   onClick: () => void;
 }
 
@@ -11,14 +12,14 @@ const CustomButton: React.FC<I_ButtonProps> = ({ ...props }) => {
     <Button
       variant='ghost'
       size='sm'
-      color='purple.500'
+      color={`${props.color}.500`}
       _active={{
         color: 'white',
-        backgroundColor: 'purple.300',
+        backgroundColor: `${props.color}.300`,
       }}
       _hover={{
         color: 'white',
-        backgroundColor: 'purple.500',
+        backgroundColor: `${props.color}.500`,
       }}
       onClick={props.onClick}
     >{props.text}</Button>
