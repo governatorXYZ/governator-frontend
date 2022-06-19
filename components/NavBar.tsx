@@ -18,6 +18,10 @@ import { AiOutlineCaretDown } from 'react-icons/ai'
 import getConfig from 'next/config'
 import Link from 'next/link'
 import { Session } from 'next-auth/core/types'
+import { privateBaseAxios } from '../constants/axios';
+import { useAtom } from 'jotai';
+import { userAtom } from 'atoms';
+import { useEffect } from 'react'
 
 const LoginText: React.FC = () => {
 
@@ -97,6 +101,36 @@ const UserAvatar: React.FC<{ session: Session }> = ({ session }) => {
 
 const NavBar: React.FC = () => {
   const { data: session } = useSession()
+  const [user, setUser] = useAtom(userAtom);
+
+  useEffect(() => {
+
+    async function checkAndCreateUser() {
+      const discordId = session?.discordId;
+      if (!discordId) {
+        return
+      }
+
+      /* Check if user already exists in database */
+      const userRes = await privateBaseAxios.get(`account/discord/get-by-account-id/${discordId}`)
+      const user = userRes.data
+
+      /* Create user if does not already exist */
+      if (user) {
+        setUser(user.user_id);
+        return
+      }
+      const data = {
+        _id: discordId,
+        discord_username: session?.name
+      }
+      const userXhr = await privateBaseAxios.post('/account/discord/create', data);
+      const newUser = userXhr.data;
+      setUser(newUser.user_id);
+    }
+    checkAndCreateUser();
+
+  },[session?.name, session?.discordId])
 
   return (
     <Flex bg='gray.700' h='60px'>
