@@ -112,21 +112,28 @@ const NavBar: React.FC = () => {
       }
 
       /* Check if user already exists in database */
-      const userRes = await privateBaseAxios.get(`account/discord/get-by-account-id/${discordId}`)
-      const user = userRes.data
+      const dicordUserRes = await privateBaseAxios.get(`account/discord/get-by-account-id/${discordId}`)
+      const discordUser = dicordUserRes.data
 
       /* Create user if does not already exist */
-      if (user) {
-        setUser(user.user_id);
+      if (discordUser) {
+        setUser({
+          ...user,
+          userId: discordUser.user_id
+        });
         return
       }
+
       const data = {
         _id: discordId,
         discord_username: session?.name
       }
       const userXhr = await privateBaseAxios.post('/account/discord/create', data);
       const newUser = userXhr.data;
-      setUser(newUser.user_id);
+      setUser({
+        ...user,
+        userId: newUser.user_id
+      });
     }
     checkAndCreateUser();
 
