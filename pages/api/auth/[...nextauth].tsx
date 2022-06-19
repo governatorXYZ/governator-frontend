@@ -28,7 +28,7 @@ export default NextAuth({
     },
     async session({ session, token }) {
       session.accessToken = token.accessToken
-      session.discordId = token.userId
+      session.discordId = token.sub
       session.email = token.email
       session.name = token.name
       return session
