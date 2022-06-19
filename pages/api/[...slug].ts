@@ -23,9 +23,10 @@ export default async function handler(
     res.status(response.status).json(response.data)
   } catch (error) {
     console.log({
-      status: error.response.status,
-      data: error.response.data
+      status: error?.response?.status,
+      data: error?.response?.data
     })
+    res.status(error?.response?.status).json(error?.response?.data)
   }
 
 
