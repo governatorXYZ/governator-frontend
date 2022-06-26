@@ -20,23 +20,9 @@ import { FiSmile, FiTrash } from 'react-icons/fi'
 import { useOutsideClick } from '@chakra-ui/react'
 import dynamic from 'next/dynamic'
 
-const Picker = dynamic(() => import('emoji-picker-react'), { ssr: false })
+import { Poll } from './PollForm';
 
-interface Poll {
-  title: string
-  channel_id: string
-  poll_options: {
-    _id: string
-    poll_option_name: string
-    poll_option_emoji: string
-  }[]
-  allow_options_for_anyone: boolean
-  single_vote: boolean
-  end_time: Date | null
-  description: string
-  role_restrictions: string[]
-  author_user_id: string
-}
+const Picker = dynamic(() => import('emoji-picker-react'), { ssr: false })
 
 interface PollOptionProps {
   control: Control<Poll, any>
