@@ -9,6 +9,8 @@ export const channelsAtom = atom<{ value: string; label: string }[]>([])
 
 export const rolesAtom = atom<{ value: string; label: string }[]>([])
 
+export const strategiesAtom = atom<{ value: string; label: string }[]>([])
+
 export const userAtom = atom<{ userId: string }>({ userId: '' })
 
 export const providerAtom = atom<ethers.providers.Web3Provider>(null as unknown as ethers.providers.Web3Provider)

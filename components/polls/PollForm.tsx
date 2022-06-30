@@ -122,7 +122,7 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
 
       const tokenStrategies = [{
         strategy_id: data.token_strategies,
-        block_height: data.block_height
+        block_height: parseInt(data.block_height)
       }]
 
       const clientConfig = [{
