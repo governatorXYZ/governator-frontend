@@ -50,17 +50,13 @@ const Web3ConnectButton: React.FC = (props) => {
 
     /* Once provider is chosen */
     const provider = new ethers.providers.Web3Provider(instance);
+
     setProvider(provider);
     const signer = provider.getSigner();
 
     /* Get signer wallet address */
     const walletAddress = await signer.getAddress();
     console.log({ walletAddress });
-
-    console.log({ 
-      provider,
-      signer
-    })
 
     await Siwe.createWalletAccount(walletAddress, user.userId);
 
