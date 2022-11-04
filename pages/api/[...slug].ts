@@ -10,7 +10,7 @@ export default async function handler(
   try {
 
     const url = typeof(req.query.slug)==='string' ? req.query.slug : req.query.slug.join('/')
-  
+
     const response = await axios({
       method: req.method as 'GET' | 'DELETE' | 'POST',
       url: `${process.env.GOVERNATOR_API_ENDPOINT}/${url}`,
@@ -19,13 +19,16 @@ export default async function handler(
       },
       data: req.body
     })
-  
+
     res.status(response.status).json(response.data)
   } catch (error) {
     console.log({
+      // @ts-ignore
       status: error?.response?.status,
+      // @ts-ignore
       data: error?.response?.data
     })
+    // @ts-ignore
     res.status(error?.response?.status).json(error?.response?.data)
   }
 

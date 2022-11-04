@@ -8,6 +8,7 @@ import { userAtom, providerAtom } from 'atoms';
 
 /* Modules */
 import Siwe from '../modules/siwe';
+import { Button } from "@chakra-ui/react";
 
 /* UI Components */
 
@@ -46,7 +47,7 @@ const Web3ConnectButton: React.FC = (props) => {
 
     /* Clears provider and displays modal */
     await web3Modal.clearCachedProvider()
-    const instance = await web3Modal.connect(); 
+    const instance = await web3Modal.connect();
 
     /* Once provider is chosen */
     const provider = new ethers.providers.Web3Provider(instance);
@@ -62,7 +63,7 @@ const Web3ConnectButton: React.FC = (props) => {
 
   }
 
-  return <button onClick={connectWallet}>Connect</button>
+  return <Button onClick={connectWallet}>Connect Wallet</Button>
 }
 
 export default Web3ConnectButton

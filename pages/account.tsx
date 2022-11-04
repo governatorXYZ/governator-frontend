@@ -112,7 +112,7 @@ const Account: NextPage = () => {
                 My Account
               </Text>
 
-              <Button onClick={() => connectWallet()}>Connect Wallet</Button>
+              {/*<Button onClick={() => connectWallet()}>Connect Wallet</Button>*/}
               <Web3ConnectButton />
 
               {/* Render Poll Listings */}
