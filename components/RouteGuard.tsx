@@ -13,14 +13,16 @@ const RouteGuard: React.FC = ({ children }) => {
   const { status } = useSession()
   const router = useRouter()
 
+  const url = router.query.waitlist ? '/?waitlist=true' : '/'
+
   useEffect(() => {
     if (status === 'unauthenticated') {
-      router.push({ pathname: '/' })
+      router.push(url)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status])
 
-  if (router.asPath === '/' || status === 'authenticated') {
+  if (router.asPath.split('?')[0] === '/' || status === 'authenticated') {
     return <>{children}</>
   }
 
@@ -29,8 +31,7 @@ const RouteGuard: React.FC = ({ children }) => {
       placeItems='center'
       h='calc(100vh - 60px)'
       bg='gray.700'
-      color='gray.200'
-    >
+      color='gray.200'>
       <Spinner />
     </StyledGrid>
   )
