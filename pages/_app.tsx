@@ -17,7 +17,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   return (
     <SessionProvider session={session}>
       <ChakraProvider theme={theme}>
-        <NavBar waitlistDisabled={pageProps.waitlistDisabled ?? false} />
+        <NavBar />
         <RouteGuard>
           <Component {...pageProps} />
         </RouteGuard>

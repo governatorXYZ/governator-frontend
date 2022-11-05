@@ -15,10 +15,18 @@ import {
   MenuDivider,
 } from '@chakra-ui/react'
 import { AiOutlineCaretDown } from 'react-icons/ai'
+import getConfig from 'next/config'
 import Link from 'next/link'
 import { Session } from 'next-auth/core/types'
+import { privateBaseAxios } from '../constants/axios';
+import { useAtom } from 'jotai';
+import { userAtom } from 'atoms';
+import { useEffect } from 'react'
 
-const LoginText = ({ waitlistDisabled }: { waitlistDisabled: boolean }) => {
+const LoginText: React.FC = () => {
+
+  const waitlistDisabled = process.env.NEXT_PUBLIC_WAITLIST_ENABLED !== 'true'
+
   return (
     <HStack justifyContent='center' alignItems='center' color='gray.200'>
       {!waitlistDisabled ? (
@@ -74,6 +82,11 @@ const UserAvatar: React.FC<{ session: Session }> = ({ session }) => {
       <MenuList color='gray.800'>
         <MenuGroup title={`Signed in as ${name}`} fontWeight='400'>
           <MenuDivider />
+          <MenuItem>
+            <Link href='/account'>
+              My Account
+            </Link>
+          </MenuItem>
           <MenuItem
             onClick={() => {
               signOut()
@@ -86,8 +99,45 @@ const UserAvatar: React.FC<{ session: Session }> = ({ session }) => {
   )
 }
 
-const NavBar = ({ waitlistDisabled }: { waitlistDisabled: boolean }) => {
+const NavBar: React.FC = () => {
   const { data: session } = useSession()
+  const [user, setUser] = useAtom(userAtom);
+
+  useEffect(() => {
+
+    async function checkAndCreateUser() {
+      const discordId = session?.discordId;
+      if (!discordId) {
+        return
+      }
+
+      /* Check if user already exists in database */
+      const dicordUserRes = await privateBaseAxios.get(`account/discord/get-by-account-id/${discordId}`)
+      const discordUser = dicordUserRes.data
+
+      /* Create user if does not already exist */
+      if (discordUser) {
+        setUser({
+          ...user,
+          userId: discordUser.user_id
+        });
+        return
+      }
+
+      const data = {
+        _id: discordId,
+        discord_username: session?.name
+      }
+      const userXhr = await privateBaseAxios.post('/account/discord/create', data);
+      const newUser = userXhr.data;
+      setUser({
+        ...user,
+        userId: newUser.user_id
+      });
+    }
+    checkAndCreateUser();
+
+  },[session?.name, session?.discordId])
 
   return (
     <Flex bg='gray.700' h='60px'>
@@ -116,7 +166,7 @@ const NavBar = ({ waitlistDisabled }: { waitlistDisabled: boolean }) => {
                 <UserAvatar session={session} />
               </HStack>
             ) : (
-              <LoginText waitlistDisabled={waitlistDisabled} />
+              <LoginText />
             )}
           </Box>
         </Flex>
