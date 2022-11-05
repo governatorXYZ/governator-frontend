@@ -15,7 +15,6 @@ import {
   MenuDivider,
 } from '@chakra-ui/react'
 import { AiOutlineCaretDown } from 'react-icons/ai'
-import getConfig from 'next/config'
 import Link from 'next/link'
 import { Session } from 'next-auth/core/types'
 import { privateBaseAxios } from '../constants/axios';
@@ -99,7 +98,7 @@ const UserAvatar: React.FC<{ session: Session }> = ({ session }) => {
   )
 }
 
-const NavBar: React.FC = () => {
+const NavBar = ({ waitlistDisabled }: { waitlistDisabled: boolean }) => {
   const { data: session } = useSession()
   const [user, setUser] = useAtom(userAtom);
 
@@ -166,7 +165,7 @@ const NavBar: React.FC = () => {
                 <UserAvatar session={session} />
               </HStack>
             ) : (
-              <LoginText />
+              <LoginText waitlistDisabled={waitlistDisabled} />
             )}
           </Box>
         </Flex>
