@@ -21,7 +21,7 @@ const useStrategies = () => {
       ?.map((c: { _id: string, name: string }) => {
         return { value: c._id, label: c.name }
       })
-      .sort((curr, next) =>
+      .sort((curr: { label: { toLowerCase: () => number } }, next: { label: { toLowerCase: () => number } }) =>
         curr.label.toLowerCase() < next.label.toLowerCase() ? -1 : 1
       )
 

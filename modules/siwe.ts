@@ -18,38 +18,29 @@ if (typeof window !== "undefined" && window.ethereum) {
 
   domain = window.location.host;
   origin = window.location.origin;
-  // provider = new ethers.providers.Web3Provider(window.ethereum);
-  // signer = provider.getSigner();
+  provider = new ethers.providers.Web3Provider(window.ethereum);
+  signer = provider.getSigner();
 
 }
 
 class Siwe {
 
-  static createSiweMessage(address: string, statement: string, nonce: string) {
-    const siweMessage = new SiweMessage({
-      domain,
-      address,
-      statement,
-      uri: origin,
-      version: '1',
-      chainId: 1,
-      nonce,
-
-    });
-
-    return siweMessage.prepareMessage();
-  }
-
-  static async connectWallet(): Promise<{user_id: string}>  {
+  static async connectWallet(): Promise<string | null>  {
 
     if (!provider) {
       alert('No wallet found!')
-      return {user_id: ''};
+      return null;
     }
 
     const wallets = await provider.send('eth_requestAccounts', [])
 
     const walletAddress = wallets[0];
+
+    return walletAddress;
+
+  }
+
+  static async createWalletAccount(walletAddress: string, userId: string) {
 
     /* Check if eth wallet already exists in database */
     const walletRes = await privateBaseAxios.get(`/account/ethereum/get-by-account-id/${walletAddress}`);
@@ -64,9 +55,19 @@ class Siwe {
     const data = {
       _id: walletAddress
     };
-    const newEthAccount = await privateBaseAxios.post('/account/ethereum/create', data);
+    const newEthAccountXhr = await privateBaseAxios.post('/account/ethereum/create', data);
+    console.log({ newEthAccountXhr })
+    const newEthAccount = newEthAccountXhr.data
 
-    return newEthAccount.data;
+    /* Update user_id of newEthAccount */
+    const updateData = {
+      user_id: userId
+    }
+    console.log({ updateData })
+    const updatedAccountXhr = await privateBaseAxios.patch(`/account/ethereum/update/${newEthAccount._id}`, updateData)
+    const updatedAccount = updatedAccountXhr.data
+
+    return updatedAccount;
 
   }
 
@@ -106,6 +107,21 @@ class Siwe {
     return updatedEthAccount
   }
 
+  static createSiweMessage(address: string, statement: string, nonce: string) {
+    const siweMessage = new SiweMessage({
+      domain,
+      address,
+      statement,
+      uri: origin,
+      version: '1',
+      chainId: 1,
+      nonce,
+
+    });
+
+    return siweMessage.prepareMessage();
+  }
+
   static async sendForVerification(message: string, signature: string, discordId: string) {
 
     const address = await signer.getAddress();
@@ -125,46 +141,6 @@ class Siwe {
 
   static async removeWallet(walletAddress: string) {
     await privateBaseAxios.delete(`/account/ethereum/delete/${walletAddress}`)
-  }
-
-
-  /**
-   * ██╗    ██╗███████╗██████╗ ██████╗ ███╗   ███╗ ██████╗ ██████╗  █████╗ ██╗         ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗
-   * ██║    ██║██╔════╝██╔══██╗╚════██╗████╗ ████║██╔═══██╗██╔══██╗██╔══██╗██║         ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║██╔════╝
-   * ██║ █╗ ██║█████╗  ██████╔╝ █████╔╝██╔████╔██║██║   ██║██║  ██║███████║██║         █████╗  ██║   ██║██╔██╗ ██║██║        ██║   ██║██║   ██║██╔██╗ ██║███████╗
-   * ██║███╗██║██╔══╝  ██╔══██╗ ╚═══██╗██║╚██╔╝██║██║   ██║██║  ██║██╔══██║██║         ██╔══╝  ██║   ██║██║╚██╗██║██║        ██║   ██║██║   ██║██║╚██╗██║╚════██║
-   * ╚███╔███╔╝███████╗██████╔╝██████╔╝██║ ╚═╝ ██║╚██████╔╝██████╔╝██║  ██║███████╗    ██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ██║╚██████╔╝██║ ╚████║███████║
-   *  ╚══╝╚══╝ ╚══════╝╚═════╝ ╚═════╝ ╚═╝     ╚═╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝    ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝
-   */
-  static async createWalletAccount(walletAddress: string, userId: string) {
-
-    /* Check if eth wallet already exists in database */
-    const walletRes = await privateBaseAxios.get(`/account/ethereum/get-by-account-id/${walletAddress}`);
-    const wallet = walletRes.data;
-
-    /* Return is already exists */
-    if (wallet) {
-      return wallet;
-    }
-
-    /* Create if wallet does not exist in database */
-    const data = {
-      _id: walletAddress
-    };
-    const newEthAccountXhr = await privateBaseAxios.post('/account/ethereum/create', data);
-    console.log({ newEthAccountXhr })
-    const newEthAccount = newEthAccountXhr.data
-
-    /* Update user_id of newEthAccount */
-    const updateData = {
-      user_id: userId
-    }
-    console.log({ updateData })
-    const updatedAccountXhr = await privateBaseAxios.patch(`/account/ethereum/update/${newEthAccount._id}`, updateData)
-    const updatedAccount = updatedAccountXhr.data
-
-    return updatedAccount;
-
   }
 
 }

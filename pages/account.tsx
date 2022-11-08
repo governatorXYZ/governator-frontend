@@ -14,17 +14,20 @@ import {
 } from '@chakra-ui/react'
 
 /* Modules */
-import { privateBaseFetcher } from '../constants/axios';
+import {privateBaseAxios, privateBaseFetcher } from '../constants/axios';
 import Siwe from '../modules/siwe';
-import Web3 from '../modules/web3';
+// import Web3 from '../modules/web3';
 
 /* UI Components */
 import CustomButton from '../components/common/Button';
 import DataTable from 'components/Datatable';
-import Web3ConnectButton from 'components/Web3ConnectButton';
+// import Web3ConnectButton from 'components/Web3ConnectButton';
 
 /* Types */
 import { Address } from '../interfaces';
+
+import { useEffect } from 'react';
+
 
 const columns = [
   {
@@ -45,31 +48,48 @@ const columns = [
   }
 ]
 
-const Account: NextPage = () => {
+const Account: NextPage = (props) => {
 
   const [user, setUser] = useAtom(userAtom);
   const [provider, setProvider] = useAtom(providerAtom);
 
+  const { data: session } = useSession()
+
+  useEffect( () => {
+        const fetchUser = async () => {
+          setUser({userId: (await privateBaseAxios.get(`/user/discord/${session?.discordId}`)).data._id});
+        }
+        fetchUser();
+        console.log(user);
+      }, [(user.userId==='')]
+  )
+
   /* For SIWE Connect Button */
   const connectWallet = async (): Promise<void> => {
+    if (!user?.userId || user?.userId === '') {
+      alert('Please log in with Discord first')
+      return;
+    }
     const ethWallet = await Siwe.connectWallet();
+    if (!ethWallet) return;
+    await Siwe.createWalletAccount(ethWallet, user?.userId);
+    mutate!();
   };
   /* END For SIWE Connect Button */
 
   const signInWithEthereum = async (): Promise<void> => {
-    // await Siwe.signInWithEthereum(session?.discordId as unknown as string);
-    await Web3.signInWithEthereum(provider, session?.discordId as unknown as string);
-    mutate();
+    await Siwe.signInWithEthereum(session?.discordId as unknown as string);
+    mutate!();
   }
 
   const removeWallet = async (walletAddress:string): Promise<void> => {
     await Siwe.removeWallet(walletAddress)
-    mutate();
+    mutate!();
   }
 
   const useAddressesData = (): any => {
 
-    const { data, error, mutate } = useSWR(`/account/ethereum/get-by-user-id/${user?.userId}`, privateBaseFetcher)
+    const { data, error, mutate } = useSWR(`/account/ethereum/get-by-user-id/${user?.userId}`, privateBaseFetcher);
     const rawData = data?.data ? (data?.data) as Address[] : [] as Address[]
     const addressesData = rawData.map((_address: Address, idx: number) => {
       return {
@@ -84,7 +104,7 @@ const Account: NextPage = () => {
                 <CustomButton color='red' text='Remove' onClick={() => removeWallet(_address._id)}/>
               </div> :
               <div>
-                <CustomButton color='purple' text='Reverify' onClick={() => null}/>
+                <CustomButton color='purple' text='Reverify' onClick={() => signInWithEthereum()}/>
                 <CustomButton color='red' text='Remove' onClick={() => removeWallet(_address._id)}/>
               </div>
             }
@@ -96,9 +116,8 @@ const Account: NextPage = () => {
     return { addressesData, error, mutate }
   }
 
-  const { addressesData, error, mutate } = useAddressesData()
+  const {addressesData, error, mutate} = useAddressesData();
   const isLoadingAddresses = !addressesData && !error
-  const { data: session } = useSession()
 
   return (
     <Box>
@@ -113,7 +132,7 @@ const Account: NextPage = () => {
               </Text>
 
               <Button onClick={() => connectWallet()}>Connect Wallet</Button>
-              <Web3ConnectButton />
+              {/*<Web3ConnectButton />*/}
 
               {/* Render Poll Listings */}
               <DataTable
