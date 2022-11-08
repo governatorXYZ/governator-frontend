@@ -1,8 +1,6 @@
 import { ethers } from 'ethers';
 import { SiweMessage } from 'siwe';
-
 import { privateBaseAxios } from 'constants/axios';
-import { userAtom } from 'atoms'
 
 /* TYPES */
 import { GovernatorWindow } from "../types/global";
@@ -34,10 +32,7 @@ class Siwe {
 
     const wallets = await provider.send('eth_requestAccounts', [])
 
-    const walletAddress = wallets[0];
-
-    return walletAddress;
-
+    return wallets[0]; // Wallet address
   }
 
   static async createWalletAccount(walletAddress: string, userId: string) {
@@ -65,23 +60,14 @@ class Siwe {
     }
     console.log({ updateData })
     const updatedAccountXhr = await privateBaseAxios.patch(`/account/ethereum/update/${newEthAccount._id}`, updateData)
-    const updatedAccount = updatedAccountXhr.data
-
-    return updatedAccount;
-
+    return updatedAccountXhr.data
   }
 
   static async signInWithEthereum(discordId: string) {
 
-    console.log({
-      signer,
-      provider,
-    })
+    console.log({ signer, provider })
 
-    if (!signer) {
-      alert('Wallet not connected!')
-      return;
-    }
+    if (!signer) { alert('Wallet not connected!'); return }
 
     const walletAddress = await signer.getAddress();
 
@@ -89,6 +75,7 @@ class Siwe {
 
     /* Get nonce from server */
     const nonceRes = await privateBaseAxios.get(`/siwe/nonce/${walletAddress}`)
+
     const nonce = nonceRes.data
 
     console.log({ nonce })
@@ -102,9 +89,8 @@ class Siwe {
     console.log({ message })
 
     const signature = await signer.signMessage(message);
-    const updatedEthAccount = await this.sendForVerification(message, signature, discordId);
 
-    return updatedEthAccount
+    return await this.sendForVerification(message, signature, discordId);
   }
 
   static createSiweMessage(address: string, statement: string, nonce: string) {
@@ -136,6 +122,7 @@ class Siwe {
     }
 
     const updatedEthAccount = await privateBaseAxios.post('/siwe/verify', data)
+
     return updatedEthAccount.data
   }
 

@@ -4,6 +4,7 @@ import moment from 'moment';
 import useSWR from 'swr';
 import { useAtom } from 'jotai';
 import { userAtom, providerAtom } from 'atoms';
+import { useEffect } from 'react';
 
 import {
   Box,
@@ -16,18 +17,13 @@ import {
 /* Modules */
 import {privateBaseAxios, privateBaseFetcher } from '../constants/axios';
 import Siwe from '../modules/siwe';
-// import Web3 from '../modules/web3';
 
 /* UI Components */
 import CustomButton from '../components/common/Button';
 import DataTable from 'components/Datatable';
-// import Web3ConnectButton from 'components/Web3ConnectButton';
 
 /* Types */
 import { Address } from '../interfaces';
-
-import { useEffect } from 'react';
-
 
 const columns = [
   {
@@ -48,20 +44,20 @@ const columns = [
   }
 ]
 
-const Account: NextPage = (props) => {
+const Account: NextPage = () => {
 
   const [user, setUser] = useAtom(userAtom);
-  const [provider, setProvider] = useAtom(providerAtom);
+  // const [provider, setProvider] = useAtom(providerAtom);
 
   const { data: session } = useSession()
 
   useEffect( () => {
         const fetchUser = async () => {
-          setUser({userId: (await privateBaseAxios.get(`/user/discord/${session?.discordId}`)).data._id});
+          await setUser({userId: (await privateBaseAxios.get(`/user/discord/${session?.discordId}`)).data._id});
         }
-        fetchUser();
-        console.log(user);
-      }, [(user.userId==='')]
+        fetchUser().then(() => null)
+      },
+      [session?.discordId]
   )
 
   /* For SIWE Connect Button */
@@ -73,18 +69,18 @@ const Account: NextPage = (props) => {
     const ethWallet = await Siwe.connectWallet();
     if (!ethWallet) return;
     await Siwe.createWalletAccount(ethWallet, user?.userId);
-    mutate!();
+    mutate?.();
   };
   /* END For SIWE Connect Button */
 
   const signInWithEthereum = async (): Promise<void> => {
     await Siwe.signInWithEthereum(session?.discordId as unknown as string);
-    mutate!();
+    mutate?.();
   }
 
   const removeWallet = async (walletAddress:string): Promise<void> => {
     await Siwe.removeWallet(walletAddress)
-    mutate!();
+    mutate?.();
   }
 
   const useAddressesData = (): any => {
@@ -132,7 +128,6 @@ const Account: NextPage = (props) => {
               </Text>
 
               <Button onClick={() => connectWallet()}>Connect Wallet</Button>
-              {/*<Web3ConnectButton />*/}
 
               {/* Render Poll Listings */}
               <DataTable
