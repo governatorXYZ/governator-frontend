@@ -3,7 +3,7 @@ import { useSession } from 'next-auth/react'
 import moment from 'moment';
 import useSWR from 'swr';
 import { useAtom } from 'jotai';
-import { userAtom, providerAtom } from 'atoms';
+import { userAtom } from 'atoms';
 import { useEffect } from 'react';
 
 import {
@@ -56,7 +56,9 @@ const Account: NextPage = () => {
           await setUser({userId: (await privateBaseAxios.get(`/user/discord/${session?.discordId}`)).data._id});
         }
         fetchUser().then(() => null)
+        console.log('called')
       },
+
       [session?.discordId]
   )
 

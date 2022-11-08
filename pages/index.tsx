@@ -1,6 +1,5 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import { useSession } from 'next-auth/react';
 import {
   Box,
   Container,
@@ -20,7 +19,6 @@ import { MdLoop } from 'react-icons/md'
 import styled from '@emotion/styled'
 import { useEffect, useState } from 'react'
 import { sample } from 'lodash'
-import getConfig from 'next/config'
 import Link from 'next/link'
 
 const StyledBox = styled(Box)`
@@ -63,8 +61,6 @@ const Quote: React.FC = () => {
 }
 
 const Home: NextPage = () => {
-
-  const { data: session } = useSession()
 
   const waitlistDisabled = process.env.NEXT_PUBLIC_WAITLIST_ENABLED !== 'true'
 

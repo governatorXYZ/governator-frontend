@@ -15,7 +15,6 @@ import {
   MenuDivider,
 } from '@chakra-ui/react'
 import { AiOutlineCaretDown } from 'react-icons/ai'
-import getConfig from 'next/config'
 import Link from 'next/link'
 import { Session } from 'next-auth/core/types'
 import { privateBaseAxios } from '../constants/axios';
@@ -135,9 +134,10 @@ const NavBar: React.FC = () => {
         userId: newUser.user_id
       });
     }
-    checkAndCreateUser();
+    checkAndCreateUser().then(() => null);
+    console.log('called')
 
-  },[session?.name, session?.discordId])
+  },[session?.discordId])
 
   return (
     <Flex bg='gray.700' h='60px'>
