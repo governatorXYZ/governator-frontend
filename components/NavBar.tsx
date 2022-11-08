@@ -135,8 +135,6 @@ const NavBar: React.FC = () => {
       });
     }
     checkAndCreateUser().then(() => null);
-    console.log('called')
-
   },[session?.discordId])
 
   return (

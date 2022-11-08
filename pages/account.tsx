@@ -56,7 +56,6 @@ const Account: NextPage = () => {
           await setUser({userId: (await privateBaseAxios.get(`/user/discord/${session?.discordId}`)).data._id});
         }
         fetchUser().then(() => null)
-        console.log('called')
       },
 
       [session?.discordId]
