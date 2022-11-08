@@ -85,8 +85,8 @@ const Account: NextPage = () => {
   }
 
   const useAddressesData = (): any => {
-
-    const { data, error, mutate } = useSWR(`/account/ethereum/get-by-user-id/${user?.userId}`, privateBaseFetcher);
+    // user ? ['/api/orders', user] : null, fetchWithUser
+    const { data, error, mutate } = useSWR((user?.userId !== '') ? `/account/ethereum/get-by-user-id/${user?.userId}` : null, privateBaseFetcher);
     const rawData = data?.data ? (data?.data) as Address[] : [] as Address[]
     const addressesData = rawData.map((_address: Address, idx: number) => {
       return {
