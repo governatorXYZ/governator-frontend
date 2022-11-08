@@ -24,10 +24,12 @@ import { privateBaseAxios } from 'constants/axios'
 import { useRouter } from 'next/router'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useEffect } from 'react'
+import {useEffect, useState} from 'react'
 import useServer from 'hooks/useServer'
 import useStrategies from 'hooks/useStrategies'
 import PollOption from './PollOption'
+
+const EMPTY_STRATEGY_NAME = 'Empty strategy (returns voting power of 1)';
 
 export interface Poll {
   title: string
@@ -70,6 +72,8 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
   const router = useRouter()
   const { roles, channels } = useServer()
   const { strategies } = useStrategies();
+  const [isTokenVote, setIsTokenVote] = useState(false);
+  const [isSingleVoteChecked, setIsSingleVoteChecked] = useState(true);
 
   const {
     register,
@@ -79,9 +83,8 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
     setValue,
     formState: { errors, isSubmitting },
     watch,
-  } = useForm<Poll>({
-    resolver: yupResolver(schema),
-  })
+  } = useForm<Poll>({ resolver: yupResolver(schema) })
+
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'poll_options',
@@ -169,13 +172,13 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
       <Box {...props} color='gray.100'>
         <form onSubmit={handleSubmit(submit)}>
 
-          {/*  ██████╗ ███████╗███╗   ██╗███████╗██████╗  █████╗ ██╗     
-          {/* ██╔════╝ ██╔════╝████╗  ██║██╔════╝██╔══██╗██╔══██╗██║     
-          {/* ██║  ███╗█████╗  ██╔██╗ ██║█████╗  ██████╔╝███████║██║     
-          {/* ██║   ██║██╔══╝  ██║╚██╗██║██╔══╝  ██╔══██╗██╔══██║██║     
+          {/*  ██████╗ ███████╗███╗   ██╗███████╗██████╗  █████╗ ██╗
+          {/* ██╔════╝ ██╔════╝████╗  ██║██╔════╝██╔══██╗██╔══██╗██║
+          {/* ██║  ███╗█████╗  ██╔██╗ ██║█████╗  ██████╔╝███████║██║
+          {/* ██║   ██║██╔══╝  ██║╚██╗██║██╔══╝  ██╔══██╗██╔══██║██║
           {/* ╚██████╔╝███████╗██║ ╚████║███████╗██║  ██║██║  ██║███████╗
           {/*  ╚═════╝ ╚══════╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝
-          {/*                                                             */}                                                    
+          {/*                                                             */}
           <VStack spacing={2} marginTop={6}>
             <Heading fontSize="3xl" as="h1">General</Heading>
             <Text fontSize="m">{`Let's get the basics`}</Text>
@@ -248,6 +251,26 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
               </Button>
             )}
           </FormControl>
+          <FormControl>
+            <Flex alignItems='center' mt='1rem'>
+              <Checkbox
+                  isDisabled={isTokenVote}
+                  isChecked={isTokenVote ? true: isSingleVoteChecked}
+                  id='single_vote' {...register('single_vote')}
+                  onChange={(e) => {setIsSingleVoteChecked(e.target.checked)}}
+              >
+                <Text
+                    as='label'
+                    htmlFor='single_vote'
+                    mt='0.25rem'
+                    ml='0.25rem'
+                    fontWeight='500'
+                >
+                  Single vote per user
+                </Text>
+              </Checkbox>
+            </Flex>
+          </FormControl>
 
           <FormControl isInvalid={!!errors.end_time?.message}>
             <FormLabel mt='1rem' htmlFor='endTime'>
@@ -288,25 +311,6 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             />
             <FormErrorMessage>{errors.end_time?.message}</FormErrorMessage>
           </FormControl>
-
-          {/* <FormControl>
-            <Flex alignItems='center' mt='1rem'>
-              <Checkbox
-                id='allow_options_for_anyone'
-                {...register('allow_options_for_anyone')}
-              >
-                <Text
-                  as='label'
-                  htmlFor='allow_options_for_anyone'
-                  mt='0.25rem'
-                  ml='0.25rem'
-                  fontWeight='500'
-                >
-                  Allow anyone to add poll option
-                </Text>
-              </Checkbox>
-            </Flex>
-          </FormControl> */}
 
           {/* ██████╗ ███████╗███████╗████████╗██████╗ ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗
           {/* ██╔══██╗██╔════╝██╔════╝╚══██╔══╝██╔══██╗██║██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║
@@ -357,22 +361,6 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             <Text fontSize="m">How should votes be tallied?</Text>
           </VStack>
 
-          <FormControl>
-            <Flex alignItems='center' mt='1rem'>
-              <Checkbox id='single_vote' {...register('single_vote')}>
-                <Text
-                  as='label'
-                  htmlFor='single_vote'
-                  mt='0.25rem'
-                  ml='0.25rem'
-                  fontWeight='500'
-                >
-                  Single vote per user
-                </Text>
-              </Checkbox>
-            </Flex>
-          </FormControl>
-
            <FormControl>
             <FormLabel mt='1rem' htmlFor='tokenStrategies'>
               Token Strategy
@@ -380,6 +368,7 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             <Controller
               control={control}
               name='token_strategies'
+              defaultValue={EMPTY_STRATEGY_NAME}
               render={({ field: { onBlur } }) => (
                 <Select
                   id='tokenStrategies'
@@ -393,7 +382,8 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
                       'token_strategies',
                       i?.value ?? ''
                     )
-                    clearErrors('token_strategies')
+                    clearErrors('token_strategies');
+                    (i?.label === EMPTY_STRATEGY_NAME) ? setIsTokenVote(false) : setIsTokenVote(true);
                   }}
                 />
               )}
@@ -404,8 +394,10 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             <FormLabel htmlFor='title'>Block Height</FormLabel>
             <Input
               borderColor='gray.400'
+              defaultValue='0'
+              isDisabled={!isTokenVote}
               type='text'
-              placeholder='ex: 1050502021'
+              // placeholder='ex: 1050502021'
               id='block_height'
               {...register('block_height')}
             />
