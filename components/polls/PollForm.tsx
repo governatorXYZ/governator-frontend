@@ -28,6 +28,8 @@ import {useEffect, useState} from 'react'
 import useServer from 'hooks/useServer'
 import useStrategies from 'hooks/useStrategies'
 import PollOption from './PollOption'
+import {useAtom} from "jotai";
+import {userAtom} from "../../atoms";
 
 const EMPTY_STRATEGY_NAME = 'Empty strategy (returns voting power of 1)';
 
@@ -65,7 +67,7 @@ const schema = yup.object().shape({
   description: yup.string().required('Required.'),
   author_user_id: yup.string().required('Required'),
   token_strategies: yup.string().required('Required'),
-  block_height: yup.string().required('Required.'),
+  block_height: yup.string().default('0'),
 })
 
 const PollForm: React.FC<BoxProps> = ({ ...props }) => {
@@ -74,6 +76,11 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
   const { strategies } = useStrategies();
   const [isTokenVote, setIsTokenVote] = useState(false);
   const [isSingleVoteChecked, setIsSingleVoteChecked] = useState(true);
+  const [user] = useAtom(userAtom);
+
+  console.log(user);
+
+  const defaultStratId = (strategies.find((strat: {label: string, value: string}) => strat.label === EMPTY_STRATEGY_NAME ))?.value
 
   const {
     register,
@@ -81,9 +88,13 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
     control,
     clearErrors,
     setValue,
+    getValues,
     formState: { errors, isSubmitting },
     watch,
-  } = useForm<Poll>({ resolver: yupResolver(schema) })
+  } = useForm<Poll>({
+    resolver: yupResolver(schema),
+    // defaultValues: { token_strategies: defaultStratId },
+  })
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -111,7 +122,14 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
     return listings[emojiIterator]
   }
 
-  const submit = async (data: Poll) => {
+  //eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //@ts-ignore
+  const onError = async (errors, e) => {
+    console.log('submit error');
+    console.log(errors, e)
+  };
+
+  const onSubmit = async (data: Poll) => {
 
     try {
       const pollOptions = data.poll_options.map((p, i) => {
@@ -158,19 +176,29 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
         })
       }
     } catch (err) {
-      toast({ status: 'error', description: 'An error has occured.' })
+      //eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      if(err.response){
+        //eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        toast({ status: 'error', description: err.response.data })
+      } else {
+        //eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        toast({ status: 'error', description: err.message })
+      }
     }
   }
 
   useEffect(() => {
-    append({ poll_option_name: '' })
+    append({ poll_option_name: '' });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
     <DarkMode>
       <Box {...props} color='gray.100'>
-        <form onSubmit={handleSubmit(submit)}>
+        <form onSubmit={handleSubmit(onSubmit, onError)}>
 
           {/*  ██████╗ ███████╗███╗   ██╗███████╗██████╗  █████╗ ██╗
           {/* ██╔════╝ ██╔════╝████╗  ██║██╔════╝██╔══██╗██╔══██╗██║
@@ -368,12 +396,13 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             <Controller
               control={control}
               name='token_strategies'
-              defaultValue={EMPTY_STRATEGY_NAME}
+              {...(!getValues('token_strategies')) ? setValue('token_strategies', defaultStratId ? defaultStratId : '') : null}
               render={({ field: { onBlur } }) => (
                 <Select
                   id='tokenStrategies'
                   options={strategies}
-                  // isMulti
+                  defaultValue={{ label: EMPTY_STRATEGY_NAME, value: defaultStratId }}
+                    // isMulti
                   isSearchable
                   onBlur={onBlur}
                   onChange={i => {
@@ -441,9 +470,10 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
           </FormControl>
 
           <input
+            id='author_user_id'
             type='hidden'
             {...register('author_user_id')}
-            value='623190782abb88dc97fdfb2a'
+            {...setValue('author_user_id', user.userId)}
           />
           <Flex mt='4rem'>
             <Button
@@ -455,9 +485,7 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
               Create poll{' '}
               {`${
                 watch('channel_id')
-                  ? `in ${
-                      channels.find(o => o.value === watch('channel_id'))?.label
-                    }`
+                  ? `in ${ channels.find(o => o.value === watch('channel_id'))?.label }`
                   : ''
               }`}
             </Button>

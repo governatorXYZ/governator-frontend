@@ -17,7 +17,7 @@ import {
 import { AiOutlineCaretDown } from 'react-icons/ai'
 import Link from 'next/link'
 import { Session } from 'next-auth/core/types'
-import { privateBaseAxios } from '../constants/axios';
+import {privateBaseAxios} from '../constants/axios';
 import { useAtom } from 'jotai';
 import { userAtom } from 'atoms';
 import { useEffect } from 'react'
@@ -135,6 +135,9 @@ const NavBar: React.FC = () => {
       });
     }
     checkAndCreateUser().then(() => null);
+    console.log('called')
+
+    //eslint-disable-next-line react-hooks/exhaustive-deps
   },[session?.discordId])
 
   return (

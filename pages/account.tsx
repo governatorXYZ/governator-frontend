@@ -53,11 +53,12 @@ const Account: NextPage = () => {
 
   useEffect( () => {
         const fetchUser = async () => {
-          await setUser({userId: (await privateBaseAxios.get(`/user/discord/${session?.discordId}`)).data._id});
+          if (user.userId === '') await setUser({userId: (await privateBaseAxios.get(`/user/discord/${session?.discordId}`)).data._id});
         }
         fetchUser().then(() => null)
       },
 
+      //eslint-disable-next-line react-hooks/exhaustive-deps
       [session?.discordId]
   )
 
