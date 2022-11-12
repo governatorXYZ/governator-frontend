@@ -67,8 +67,6 @@ const Polls: NextPage = () => {
     setPolls(newPolls)
   }
 
-  console.log(channels)
-
   useEffect(() => {
     if (data) {
       setOriginalPolls(fetchPolls())
