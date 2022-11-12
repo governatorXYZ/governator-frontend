@@ -67,56 +67,7 @@ const Polls: NextPage = () => {
     setPolls(newPolls)
   }
 
-  const fetchPolls = () =>
-    pollsData.map(p => {
-      return {
-        id: p._id,
-        created: luxon.DateTime.fromISO(p.createdAt).toFormat('LLL dd yyyy t'),
-        name: p.title,
-        channel: isLoadingChannels
-          ? 'Loading...'
-          : channels.find(opt => opt.value === `${p.channel_id}`)?.label,
-        author: p.author_user_id,
-        votes: 0,
-        actions: (
-          <Flex w='max-content' mx='auto'>
-            <DeletePoll poll={p} mutate={mutate} />
-            <Button
-              variant='ghost'
-              size='sm'
-              color='purple.500'
-              _active={{
-                color: 'white',
-                backgroundColor: 'purple.300',
-              }}
-              _hover={{
-                color: 'white',
-                backgroundColor: 'purple.500',
-              }}
-            >
-              <FaDiscord fontSize='15px' />
-            </Button>
-            <NextLink href={`${router.asPath}/results/${p._id}`}>
-              <Button
-                variant='ghost'
-                size='sm'
-                color='teal.500'
-                _active={{
-                  color: 'white',
-                  backgroundColor: 'teal.300',
-                }}
-                _hover={{
-                  color: 'white',
-                  backgroundColor: 'teal.500',
-                }}
-              >
-                <FiBarChart fontSize='15px' />
-              </Button>
-            </NextLink>
-          </Flex>
-        ),
-      }
-    })
+  console.log(channels)
 
   useEffect(() => {
     if (data) {
@@ -124,7 +75,60 @@ const Polls: NextPage = () => {
       setPolls(fetchPolls())
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data])
+  }, [data, isLoadingChannels])
+
+
+  const fetchPolls = () => {
+    return pollsData.map(p => {
+      return {
+        id: p._id,
+        created: luxon.DateTime.fromISO(p.createdAt).toFormat('LLL dd yyyy t'),
+        name: p.title,
+        channel: isLoadingChannels
+            ? 'Loading...'
+            : (channels.find(chan => chan.value === (p.client_config.find((conf) => conf.provider_id === 'discord')?.channel_id)))?.label,
+        author: p.author_user_id,
+        votes: 0,
+        actions: (
+            <Flex w='max-content' mx='auto'>
+              <DeletePoll poll={p} mutate={mutate}/>
+              <Button
+                  variant='ghost'
+                  size='sm'
+                  color='purple.500'
+                  _active={{
+                    color: 'white',
+                    backgroundColor: 'purple.300',
+                  }}
+                  _hover={{
+                    color: 'white',
+                    backgroundColor: 'purple.500',
+                  }}
+              >
+                <FaDiscord fontSize='15px'/>
+              </Button>
+              <NextLink href={`${router.asPath}/results/${p._id}`}>
+                <Button
+                    variant='ghost'
+                    size='sm'
+                    color='teal.500'
+                    _active={{
+                      color: 'white',
+                      backgroundColor: 'teal.300',
+                    }}
+                    _hover={{
+                      color: 'white',
+                      backgroundColor: 'teal.500',
+                    }}
+                >
+                  <FiBarChart fontSize='15px'/>
+                </Button>
+              </NextLink>
+            </Flex>
+        ),
+      }
+    })
+  }
 
   return (
     <Box bg='dark-2' minH='calc(100vh - 60px)' pt='4rem' pb='8rem'>

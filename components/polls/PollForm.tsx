@@ -78,8 +78,6 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
   const [isSingleVoteChecked, setIsSingleVoteChecked] = useState(true);
   const [user] = useAtom(userAtom);
 
-  console.log(user);
-
   const defaultStratId = (strategies.find((strat: {label: string, value: string}) => strat.label === STANDARD_STRATEGY_NAME ))?.value
 
   const {

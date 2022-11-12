@@ -17,7 +17,7 @@ const PollResults: NextPage = () => {
     return { pollData, error }
   }
   const useVotesData = () => {
-    const { data } = useSWR(`/vote/results/${router.query.pollId}`, privateBaseFetcher)
+    const { data } = useSWR(`/vote/results/sum/${router.query.pollId}`, privateBaseFetcher)
     const votesData = data?.data ? data?.data : []
     return { votesData }
   }
@@ -26,7 +26,7 @@ const PollResults: NextPage = () => {
 
   const { pollData, error } = usePollData()
   const { votesData } = useVotesData()
-  
+
   const isLoadingPoll = !pollData && !error
 
   return (

@@ -2,8 +2,18 @@ export interface Poll {
   _id: string
   createdAt: string
   title: string
-  channel_id: number
+  client_config: ClientConfigDiscord[]
   author_user_id: number | string
+}
+
+interface ClientConfigBase {
+  provider_id: string,
+}
+
+interface ClientConfigDiscord extends ClientConfigBase {
+  channel_id: string;
+  message_id: string;
+  role_restrictions: string[];
 }
 
 export interface RenderedPoll {
