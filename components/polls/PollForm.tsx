@@ -31,24 +31,24 @@ import PollOption from './PollOption'
 import {useAtom} from "jotai";
 import {userAtom} from "../../atoms";
 
-const EMPTY_STRATEGY_NAME = 'Empty strategy (returns voting power of 1)';
+const STANDARD_STRATEGY_NAME = 'Standard (1 Vote = 1 Vote)';
 
 export interface Poll {
-  title: string
-  channel_id: string
+  title: string,
+  channel_id: string,
   poll_options: {
-    _id: string
-    poll_option_name: string
-    poll_option_emoji: string
-  }[]
-  allow_options_for_anyone: boolean
-  single_vote: boolean
-  end_time: Date | null
-  description: string
-  role_restrictions: string[]
-  author_user_id: string
-  token_strategies: string
-  block_height: string
+    _id: string,
+    poll_option_name: string,
+    poll_option_emoji: string,
+  }[],
+  allow_options_for_anyone: boolean,
+  single_vote: boolean,
+  end_time: Date | null,
+  description: string,
+  role_restrictions: string[],
+  author_user_id: string,
+  strategy_config: string,
+  block_height: string,
 }
 
 const schema = yup.object().shape({
@@ -66,7 +66,7 @@ const schema = yup.object().shape({
   end_time: yup.date().required('Required.'),
   description: yup.string().required('Required.'),
   author_user_id: yup.string().required('Required'),
-  token_strategies: yup.string().required('Required'),
+  strategy_config: yup.string().required('Required'),
   block_height: yup.string().default('0'),
 })
 
@@ -80,7 +80,7 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
 
   console.log(user);
 
-  const defaultStratId = (strategies.find((strat: {label: string, value: string}) => strat.label === EMPTY_STRATEGY_NAME ))?.value
+  const defaultStratId = (strategies.find((strat: {label: string, value: string}) => strat.label === STANDARD_STRATEGY_NAME ))?.value
 
   const {
     register,
@@ -93,7 +93,6 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
     watch,
   } = useForm<Poll>({
     resolver: yupResolver(schema),
-    // defaultValues: { token_strategies: defaultStratId },
   })
 
   const { fields, append, remove } = useFieldArray({
@@ -141,9 +140,9 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
         }
       })
 
-      const tokenStrategies = [{
-        strategy_id: data.token_strategies,
-        block_height: parseInt(data.block_height)
+      const strategyConfig = [{
+        strategy_id: data.strategy_config,
+        block_height: parseInt(isTokenVote ? data.block_height : '0'),
       }]
 
       const clientConfig = [{
@@ -155,7 +154,7 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
       const submittedData = {
         title: data.title,
         client_config: clientConfig,
-        token_strategies: tokenStrategies,
+        strategy_config: strategyConfig,
         poll_options: pollOptions,
         allow_options_for_anyone: false, // hardcoded as false for now
         single_vote: data.single_vote,
@@ -391,28 +390,28 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
 
            <FormControl>
             <FormLabel mt='1rem' htmlFor='tokenStrategies'>
-              Token Strategy
+              Voting Strategy
             </FormLabel>
             <Controller
               control={control}
-              name='token_strategies'
-              {...(!getValues('token_strategies')) ? setValue('token_strategies', defaultStratId ? defaultStratId : '') : null}
+              name='strategy_config'
+              {...(!getValues('strategy_config')) ? setValue('strategy_config', defaultStratId ? defaultStratId : '') : null}
               render={({ field: { onBlur } }) => (
                 <Select
                   id='tokenStrategies'
                   options={strategies}
-                  defaultValue={{ label: EMPTY_STRATEGY_NAME, value: defaultStratId }}
+                  defaultValue={{ label: STANDARD_STRATEGY_NAME, value: defaultStratId }}
                     // isMulti
                   isSearchable
                   onBlur={onBlur}
                   onChange={i => {
                     console.log({ i })
                     setValue(
-                      'token_strategies',
+                      'strategy_config',
                       i?.value ?? ''
                     )
-                    clearErrors('token_strategies');
-                    (i?.label === EMPTY_STRATEGY_NAME) ? setIsTokenVote(false) : setIsTokenVote(true);
+                    clearErrors('strategy_config');
+                    (i?.label === STANDARD_STRATEGY_NAME) ? setIsTokenVote(false) : setIsTokenVote(true);
                   }}
                 />
               )}
@@ -423,9 +422,9 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             <FormLabel htmlFor='title'>Block Height</FormLabel>
             <Input
               borderColor='gray.400'
+              type={isTokenVote ? 'text' : 'hidden' }
               defaultValue='0'
               isDisabled={!isTokenVote}
-              type='text'
               // placeholder='ex: 1050502021'
               id='block_height'
               {...register('block_height')}

@@ -9,7 +9,7 @@ export const channelsAtom = atom<{ value: string; label: string }[]>([])
 
 export const rolesAtom = atom<{ value: string; label: string }[]>([])
 
-export const strategiesAtom = atom<{ value: string; label: string }[]>([])
+export const strategiesAtom = atom<{ value: string; label: string, strategy_type: string }[]>([])
 
 export const userAtom = atom<{ userId: string }>({ userId: '' })
 

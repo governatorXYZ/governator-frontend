@@ -18,8 +18,8 @@ const useStrategies = () => {
     const sortedStrategies = (
       strategiesResponse?.data
     )
-      ?.map((c: { _id: string, name: string }) => {
-        return { value: c._id, label: c.name }
+      ?.map((c: { _id: string, name: string, strategy_type: string }) => {
+        return { value: c._id, label: c.name, strategy_type: c.strategy_type }
       })
       .sort((curr: { label: { toLowerCase: () => number } }, next: { label: { toLowerCase: () => number } }) =>
         curr.label.toLowerCase() < next.label.toLowerCase() ? -1 : 1
@@ -29,7 +29,7 @@ const useStrategies = () => {
 
   }, [setStrategies])
 
-  
+
   useEffect(() => {
     getStrategies()
   }, [getStrategies])
