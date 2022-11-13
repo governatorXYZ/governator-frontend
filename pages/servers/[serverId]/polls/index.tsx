@@ -41,10 +41,10 @@ const columns = [
     Header: 'Author',
     accessor: 'author',
   },
-  {
-    Header: 'Votes',
-    accessor: 'votes',
-  },
+  // {
+  //   Header: 'Votes',
+  //   accessor: 'votes',
+  // },
   {
     Header: 'Actions',
     accessor: 'actions',
@@ -58,6 +58,10 @@ const Polls: NextPage = () => {
 
   const { data, error, mutate } = useSWR('/poll/list', privateBaseFetcher)
   const pollsData = data?.data ? (data?.data as Poll[]) : []
+  pollsData.sort(function(a,b){
+    return a.createdAt > b.createdAt ? -1 : a.createdAt < b.createdAt ? 1 : 0
+  });
+
   const isLoadingPolls = !data && !error
 
   const [polls, setPolls] = useState<RenderedPoll[]>([])
@@ -86,7 +90,7 @@ const Polls: NextPage = () => {
             ? 'Loading...'
             : (channels.find(chan => chan.value === (p.client_config.find((conf) => conf.provider_id === 'discord')?.channel_id)))?.label,
         author: p.author_user_id,
-        votes: 0,
+        // votes: 0, -- needs implementing endpoint on BE
         actions: (
             <Flex w='max-content' mx='auto'>
               <DeletePoll poll={p} mutate={mutate}/>
