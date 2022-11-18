@@ -4,6 +4,13 @@ export interface Poll {
   title: string
   client_config: ClientConfigDiscord[]
   author_user_id: number | string
+  poll_options: PollOption[]
+}
+
+export interface PollOption {
+  poll_option_id: string;
+  poll_option_name: string;
+  poll_option_emoji: string;
 }
 
 interface ClientConfigBase {

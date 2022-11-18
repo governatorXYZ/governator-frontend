@@ -9,22 +9,43 @@ import {
 } from 'chart.js'
 import { findIndex } from 'lodash'
 import { Pie } from 'react-chartjs-2'
+import {Poll, PollOption} from "../../interfaces";
 ChartJS.register(ArcElement, Tooltip, Legend)
 
-type PollGraphProps = {
-  data?: {
-    _id: number
-    count: number
-  }[]
+// type PollGraphProps = {
+//   voteData?:
+//   {
+//     _id: string
+//     percent: string
+//     vote_power: string
+//   }[],
+//   pollOptions: any
+// }
+
+
+type DisplayPollResultsProps = {
+  pollData: Poll,
+  voteData: {
+    _id: string
+    percent: string
+    vote_power: string
+  }[],
 }
+
+
 interface NewLegendItem extends LegendItem {
   count: number
 }
 
-const PollGraph: React.FC<PollGraphProps> = ({ data = [] }) => {
+const PollGraph: React.FC<DisplayPollResultsProps> = ({pollData, voteData =[]}) => {
 
-  const labels = data?.map(_data => _data._id) || []
-  const count = data?.map(_data => _data.count) || []
+  const vote_ids = voteData?.map(voteOption => voteOption._id) || []
+  const labels = vote_ids.map(id => {
+    for (const option of pollData.poll_options) {
+      if (option.poll_option_id === id) return option.poll_option_name
+    }
+  })
+  const count = voteData?.map(voteOption => parseInt(voteOption.percent)) || []
   const sum = count?.reduce((acc, cur) => acc += cur, 0.0)
 
   const backgroundColors = [
@@ -44,7 +65,7 @@ const PollGraph: React.FC<PollGraphProps> = ({ data = [] }) => {
     'rgba(255, 159, 64)',
   ]
 
-  const pollData = {
+  const pollDataFormatted = {
     labels,
     datasets: [
       {
@@ -83,7 +104,7 @@ const PollGraph: React.FC<PollGraphProps> = ({ data = [] }) => {
               labelName => labelName === label
             ) // I'm using lodash here
             const qtd = data.datasets[0].data[labelIndex] as number
-            const percentage = ((qtd * 100) / sum).toFixed(2)
+            const percentage = ((qtd * 100) / sum).toFixed(1)
 
             // Second, mutate the legendItem to include the new text
             legendItem.text = `${percentage}% - ${legendItem.text}`
@@ -132,7 +153,7 @@ const PollGraph: React.FC<PollGraphProps> = ({ data = [] }) => {
     ],
   }
 
-  return <Pie data={pollData || dataBackup} options={options} />
+  return <Pie data={pollDataFormatted || dataBackup} options={options} />
 }
 
 export default PollGraph

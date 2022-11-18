@@ -132,7 +132,6 @@ const NavBar = ({ waitlistDisabled }: { waitlistDisabled: boolean }) => {
       });
     }
     checkAndCreateUser().then(() => null);
-    console.log('called')
 
     //eslint-disable-next-line react-hooks/exhaustive-deps
   },[session?.discordId])
