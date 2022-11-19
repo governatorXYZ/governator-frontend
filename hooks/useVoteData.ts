@@ -6,3 +6,9 @@ export const useVotesData = (pollId: string) => {
     const votesData = data?.data ? data?.data : []
     return { votesData }
 }
+
+export const useTotalVotes = (pollId: string) => {
+    const { data } = useSWR(`/vote/results/votes-per-user/count/${pollId}`, privateBaseFetcher)
+    const totalVotes = data?.data ? data?.data : '0'
+    return { totalVotes }
+}

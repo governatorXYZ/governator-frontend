@@ -6,7 +6,7 @@ import { privateBaseFetcher } from 'constants/axios'
 import { Poll } from 'interfaces'
 import Govcrumb from 'components/BreadCrumb'
 import DisplayPollResults from 'components/polls/DisplayPollResults'
-import {useVotesData} from "../../../../../hooks/useVoteData";
+import {useTotalVotes, useVotesData} from "../../../../../hooks/useVoteData";
 
 
 
@@ -23,6 +23,7 @@ const PollResults: NextPage = () => {
 
   const { pollData, error } = usePollData()
   const { votesData } = useVotesData(router.query.pollId as string);
+  const { totalVotes } = useTotalVotes(router.query.pollId as string);
 
   const isLoadingPoll = !pollData && !error
 
@@ -35,7 +36,7 @@ const PollResults: NextPage = () => {
             <Spinner color='gray.200' mx='auto' />
           </Flex>
         )}
-        <DisplayPollResults pollData={pollData} voteData={votesData}/>
+        <DisplayPollResults pollData={pollData} voteData={votesData} totalVotes={totalVotes}/>
       </Box>
     </Box>
   )
