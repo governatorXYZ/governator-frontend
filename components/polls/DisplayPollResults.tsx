@@ -9,9 +9,10 @@ import PollGraph from 'components/polls/PollGraph'
 type DisplayPollResultsProps = {
     pollData: Poll,
     voteData: any,
+    totalVotes: string,
 }
 
-const DisplayPollResults: React.FC<DisplayPollResultsProps> = ({pollData, voteData}) => {
+const DisplayPollResults: React.FC<DisplayPollResultsProps> = ({pollData, voteData, totalVotes}) => {
 
     // const totalVotes = voteData && voteData.aggregate && voteData.aggregate.reduce((acc: number,cur: any) => {
     //     return acc += cur.count
@@ -36,7 +37,7 @@ const DisplayPollResults: React.FC<DisplayPollResultsProps> = ({pollData, voteDa
                 justifyContent='space-evenly'
                 alignItems='center'
                 width='100%'>
-                <Card title='Total Votes:' value={voteData.votes?.length} />
+                <Card title='Total Votes:' value={totalVotes} />
                 {/* <Card title='Unique Voters:' value='85' /> */}
             </Flex>
 
