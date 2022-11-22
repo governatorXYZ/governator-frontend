@@ -1,6 +1,6 @@
 import { Flex, VStack, Text } from '@chakra-ui/react'
 
-import { Poll } from 'interfaces'
+import {Poll} from 'interfaces'
 import { BiBarChartSquare } from 'react-icons/bi'
 import Card from 'components/common/Card'
 import PollGraph from 'components/polls/PollGraph'
@@ -9,13 +9,14 @@ import PollGraph from 'components/polls/PollGraph'
 type DisplayPollResultsProps = {
     pollData: Poll,
     voteData: any,
+    totalVotes: string,
 }
-  
-const DisplayPollResults: React.FC<DisplayPollResultsProps> = ({pollData, voteData}) => {
 
-    const totalVotes = voteData && voteData.aggregate && voteData.aggregate.reduce((acc: number,cur: any) => {
-        return acc += cur.count
-    },0)
+const DisplayPollResults: React.FC<DisplayPollResultsProps> = ({pollData, voteData, totalVotes}) => {
+
+    // const totalVotes = voteData && voteData.aggregate && voteData.aggregate.reduce((acc: number,cur: any) => {
+    //     return acc += cur.count
+    // },0)
 
     return (
         <VStack spacing='16px'>
@@ -41,7 +42,14 @@ const DisplayPollResults: React.FC<DisplayPollResultsProps> = ({pollData, voteDa
             </Flex>
 
             <Flex width={450}>
-                <PollGraph data={voteData.aggregate}/>
+                <PollGraph
+                    pollData={pollData}
+                    voteData={voteData.aggregate as {
+                    _id: string
+                    percent: string
+                    vote_power: string
+                }[]}
+                />
             </Flex>
             {/* <Flex width={450}>
                 <TimeGraph />

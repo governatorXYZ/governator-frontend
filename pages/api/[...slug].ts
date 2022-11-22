@@ -7,17 +7,33 @@ export default async function handler(
   res: NextApiResponse
 ) {
 
-  const url = typeof(req.query.slug)==='string' ? req.query.slug : req.query.slug.join('/')
+  try {
 
-  const response = await axios({
-    method: req.method as 'GET' | 'DELETE',
-    url: `${process.env.GOVERNATOR_API_ENDPOINT}/${url}`,
-    headers: {
-      'X-API-KEY': process.env.GOVERNATOR_API_KEY as string
-    },
-    data: req.body
-  })
+    const url = typeof(req.query.slug)==='string' ? req.query.slug : req.query.slug.join('/')
 
-  res.status(response.status).json(response.data)
+    const response = await axios({
+      method: req.method as 'GET' | 'DELETE' | 'POST',
+      url: `${process.env.GOVERNATOR_API_ENDPOINT}/${url}`,
+      headers: {
+        'X-API-KEY': process.env.GOVERNATOR_API_KEY as string
+      },
+      data: req.body
+    })
+
+    res.status(response.status).json(response.data)
+  } catch (error) {
+    console.log({
+      //eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      status: error?.response?.status,
+      //eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      data: error?.response?.data
+    })
+    //eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    res.status(error?.response?.status).json(error?.response?.data.message)
+  }
+
 
 }

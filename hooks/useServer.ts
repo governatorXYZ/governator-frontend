@@ -6,7 +6,7 @@ import {
 import { useAtom } from 'jotai'
 import { channelsAtom, rolesAtom } from 'atoms'
 import { useState, useCallback, useEffect } from 'react'
-import { useRouter } from 'next/router'
+import { useSession } from 'next-auth/react'
 import useServers from './useServers'
 
 /**
@@ -18,21 +18,28 @@ const MVP_ALLOWED_CHANNELS = {
   "govbot-testing": "959216625180098590"
 };
 
+
 const useServer = () => {
   const [loading, setLoading] = useState(false)
   const [channels, setChannels] = useAtom(channelsAtom)
   const [roles, setRoles] = useAtom(rolesAtom)
+  const { data: session } = useSession()
 
   const { currentServer } = useServers()
-  const router = useRouter()
 
   const getChannelsAndRoles = useCallback(async () => {
+
     if (currentServer?.id) {
       try {
         setLoading(true)
+
         const channelsResponse = await privateBaseFetcher(
-          `/client/discord/${currentServer.id}/channels`
+          `/client/discord/${currentServer.id}/channels/${session?.discordId}`
         )
+
+        // const channelsResponse = {
+        //   data: channels_response
+        // };
 
         const sortedChannels = (
           channelsResponse?.data?.data as Record<number, string>[]
@@ -51,8 +58,12 @@ const useServer = () => {
         setChannels(sortedChannels)
 
         const rolesResponse = await privateBaseFetcher(
-          `/client/discord/${currentServer.id}/roles`
+          `/client/discord/${currentServer.id}/roles/${session?.discordId}`
         )
+
+        // const rolesResponse = {
+        //   data: roles_response
+        // };
 
         const sortedRoles = (
           rolesResponse?.data?.data as Record<number, string>[]

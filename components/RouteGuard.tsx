@@ -27,13 +27,13 @@ const RouteGuard: React.FC = ({ children }) => {
   }
 
   return (
-    <StyledGrid
-      placeItems='center'
-      h='calc(100vh - 60px)'
-      bg='gray.700'
-      color='gray.200'>
-      <Spinner />
-    </StyledGrid>
+      <StyledGrid
+          placeItems='center'
+          h='calc(100vh - 60px)'
+          bg='gray.700'
+          color='gray.200'>
+        <Spinner />
+      </StyledGrid>
   )
 }
 
