@@ -13,7 +13,7 @@ import { useRouter } from 'next/router'
 import Govcrumb from 'components/BreadCrumb'
 import useServers from 'hooks/useServers'
 import useSWR from 'swr'
-import { privateBaseFetcher } from 'constants/axios'
+import {privateBaseAxios, privateBaseFetcher} from 'constants/axios'
 import { Poll, RenderedPoll } from 'interfaces'
 import * as luxon from 'luxon'
 import { FaDiscord } from 'react-icons/fa'
@@ -23,6 +23,7 @@ import DataTable from 'components/Datatable'
 import React, { useEffect, useState } from 'react'
 import SearchBox from 'components/SearchBox'
 import useServer from 'hooks/useServer'
+import { useGovernatorUser } from "../../../../hooks/useGovernatorUser";
 
 const columns = [
   {
@@ -55,8 +56,11 @@ const Polls: NextPage = () => {
   const router = useRouter()
   const { loading, currentServer } = useServers()
   const { channels, loading: isLoadingChannels } = useServer()
+  const governatorUser = useGovernatorUser()
 
-  const { data, error, mutate } = useSWR('/poll/list', privateBaseFetcher)
+
+
+  const { data, error, mutate } = useSWR(`/poll/user/${ governatorUser.userId }`, privateBaseFetcher)
   const pollsData = data?.data ? (data?.data as Poll[]) : []
   pollsData.sort(function(a,b){
     return a.createdAt > b.createdAt ? -1 : a.createdAt < b.createdAt ? 1 : 0
@@ -89,7 +93,7 @@ const Polls: NextPage = () => {
         channel: isLoadingChannels
             ? 'Loading...'
             : (channels.find(chan => chan.value === (p.client_config.find((conf) => conf.provider_id === 'discord')?.channel_id)))?.label,
-        author: p.author_user_id,
+        author: governatorUser.discordUsername,
         // votes: 0, -- needs implementing endpoint on BE
         actions: (
             <Flex w='max-content' mx='auto'>

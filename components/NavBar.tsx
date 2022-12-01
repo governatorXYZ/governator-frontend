@@ -37,7 +37,7 @@ const LoginText = ({ waitlistDisabled }: { waitlistDisabled: boolean }) => {
                 as='span'
                 cursor='pointer'
                 onClick={() => {
-                  signIn('discord')
+                  signIn('discord', { callbackUrl: "/servers" })
                 }}>
               Login
             </Text>
