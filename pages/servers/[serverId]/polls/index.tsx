@@ -58,9 +58,7 @@ const Polls: NextPage = () => {
   const { channels, loading: isLoadingChannels } = useServer()
   const governatorUser = useGovernatorUser()
 
-
-
-  const { data, error, mutate } = useSWR(`/poll/user/${ governatorUser.userId }`, privateBaseFetcher)
+  const { data, error, mutate } = useSWR(governatorUser.userId ? `/poll/user/${ governatorUser.userId }` : null, privateBaseFetcher);
   const pollsData = data?.data ? (data?.data as Poll[]) : []
   pollsData.sort(function(a,b){
     return a.createdAt > b.createdAt ? -1 : a.createdAt < b.createdAt ? 1 : 0

@@ -4,7 +4,6 @@ import {useAtom} from "jotai";
 import {governatorUserAtom, strategiesAtom} from "../atoms";
 import {useCallback, useEffect} from "react";
 
-
 export const useGovernatorUser = () => {
 
     const [governatorUser, setGovernatorUser] = useAtom(governatorUserAtom);
@@ -23,14 +22,7 @@ export const useGovernatorUser = () => {
 
     useEffect(() => {
         getGovernatorUser()
-    }, [setGovernatorUser])
+    }, [getGovernatorUser])
 
     return governatorUser;
 }
-
-// export const useGovernatorUser = (pollId: string) => {
-//     const { data: session } = useSession()
-//     const discordId = session?.discordId;
-//     const governatorUserResponse = await privateBaseAxios.get(`governator/user/discord/${discordId}`)
-//     return governatorUserResponse?.data._id
-// }
