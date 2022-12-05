@@ -12,11 +12,14 @@ export const useGovernatorUser = () => {
     const getGovernatorUser = useCallback(async () => {
 
         const discordId = session?.discordId as string;
-        const userResponse = await privateBaseFetcher(
-            `/user/discord/${discordId}`
-        )
 
-        setGovernatorUser({userId: userResponse.data._id, discordId: discordId, discordUsername: session!.user!.name as string});
+        if (discordId) {
+            const userResponse = await privateBaseFetcher(
+                `/user/discord/${discordId}`
+            )
+    
+            setGovernatorUser({userId: userResponse.data._id, discordId: discordId, discordUsername: session!.user!.name as string});
+        }
 
     }, [setGovernatorUser]);
 

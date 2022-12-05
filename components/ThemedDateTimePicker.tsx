@@ -5,7 +5,6 @@ import 'react-datepicker/dist/react-datepicker.css'
 import DatePicker, { ReactDatePickerProps } from 'react-datepicker'
 import { FiCalendar, FiX } from 'react-icons/fi'
 import { useRef } from 'react'
-import moment from 'moment'
 
 const StyledDatePicker = styled(DatePicker)<{ isInvalid: boolean | undefined }>`
   background: transparent;
@@ -27,6 +26,14 @@ const ThemedDateTimePicker: React.FC<ThemedDateTimePickerProps> = ({
   onChange,
   isInvalid,
 }) => {
+  
+  const filterPassedTime = (time: Date) => {
+    const currentDate = new Date();
+    const selectedDate = new Date(time);
+
+    return currentDate.getTime() < selectedDate.getTime();
+  };
+
   const ref = useRef<DatePicker>(null)
 
   return (
@@ -36,6 +43,7 @@ const ThemedDateTimePicker: React.FC<ThemedDateTimePickerProps> = ({
         selected={selected}
         onChange={onChange}
         showTimeSelect
+        filterTime={filterPassedTime}
         dateFormat='MMMM d, yyyy h:mm aa'
         ref={ref}
         minDate={new Date()}
