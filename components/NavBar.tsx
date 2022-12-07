@@ -156,7 +156,7 @@ const NavBar = ({ waitlistDisabled }: { waitlistDisabled: boolean }) => {
                     <Link href='/servers'>
                       <a>
                         <Text as='span' fontSize='15px' fontWeight='500'>
-                          Create Poll
+                          Dashboard
                         </Text>
                       </a>
                     </Link>
