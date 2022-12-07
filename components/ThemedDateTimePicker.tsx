@@ -26,6 +26,14 @@ const ThemedDateTimePicker: React.FC<ThemedDateTimePickerProps> = ({
   onChange,
   isInvalid,
 }) => {
+  
+  const filterPassedTime = (time: Date) => {
+    const currentDate = new Date();
+    const selectedDate = new Date(time);
+
+    return currentDate.getTime() < selectedDate.getTime();
+  };
+
   const ref = useRef<DatePicker>(null)
 
   return (
@@ -35,8 +43,10 @@ const ThemedDateTimePicker: React.FC<ThemedDateTimePickerProps> = ({
         selected={selected}
         onChange={onChange}
         showTimeSelect
+        filterTime={filterPassedTime}
         dateFormat='MMMM d, yyyy h:mm aa'
         ref={ref}
+        minDate={new Date()}
       />
       {selected && (
         <Button

@@ -156,7 +156,7 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
         poll_options: pollOptions,
         allow_options_for_anyone: false, // hardcoded as false for now
         single_vote: data.single_vote,
-        end_time: data.end_time,
+        end_time: data.end_time ? data.end_time.toISOString() : '',
         description: data.description,
         author_user_id: data.author_user_id
       }
@@ -417,7 +417,12 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
           </FormControl>
 
           <FormControl isInvalid={!!errors.block_height?.message}>
-            <FormLabel htmlFor='title'>Block Height</FormLabel>
+            <FormLabel 
+              htmlFor='title'
+              style={{ visibility: isTokenVote ? 'visible': 'hidden'}}
+            >
+              Block Height
+            </FormLabel>
             <Input
               borderColor='gray.400'
               type={isTokenVote ? 'text' : 'hidden' }

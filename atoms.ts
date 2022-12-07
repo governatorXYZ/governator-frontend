@@ -13,4 +13,6 @@ export const strategiesAtom = atom<{ value: string; label: string, strategy_type
 
 export const userAtom = atom<{ userId: string }>({ userId: '' })
 
+export const governatorUserAtom = atom<{ userId: string, discordId: string, discordUsername: string }>({ userId: '', discordId: '', discordUsername: '' })
+
 export const providerAtom = atom<ethers.providers.Web3Provider>(null as unknown as ethers.providers.Web3Provider)

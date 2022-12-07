@@ -37,7 +37,7 @@ const LoginText = ({ waitlistDisabled }: { waitlistDisabled: boolean }) => {
                 as='span'
                 cursor='pointer'
                 onClick={() => {
-                  signIn('discord')
+                  signIn('discord', { callbackUrl: "/servers" })
                 }}>
               Login
             </Text>
@@ -156,7 +156,7 @@ const NavBar = ({ waitlistDisabled }: { waitlistDisabled: boolean }) => {
                     <Link href='/servers'>
                       <a>
                         <Text as='span' fontSize='15px' fontWeight='500'>
-                          Servers
+                          Dashboard
                         </Text>
                       </a>
                     </Link>
