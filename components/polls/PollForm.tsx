@@ -14,6 +14,7 @@ import {
   Textarea,
   useToast,
   VStack,
+  Tooltip,
 } from '@chakra-ui/react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { FiPlus } from 'react-icons/fi'
@@ -423,6 +424,7 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             >
               Block Height
             </FormLabel>
+            <Tooltip hasArrow label='0 = current block, negative number = offset from current block, positive number = block number' bg='orange.400'>
             <Input
               borderColor='gray.400'
               type={isTokenVote ? 'text' : 'hidden' }
@@ -432,6 +434,7 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
               id='block_height'
               {...register('block_height')}
             />
+            </Tooltip>
             <FormErrorMessage>{errors.block_height?.message}</FormErrorMessage>
           </FormControl>
 
