@@ -10,16 +10,22 @@ import {useState, useEffect} from "react";
 
 type DisplayPollResultsProps = {
     pollData: Poll,
-    voteData: any,
-    totalVotes: string,
+    voteData?: any,
+    totalVotes?: string,
 }
 
-type TimerProps = {
-    pollData: Poll,
+const deltaT = (date1: string | number, date2: string | number) => {
+    let deltaT_ms = null;
+    try {
+        deltaT_ms = new Date(date1).getTime() - new Date(date2).getTime()
+    } catch {
+        deltaT_ms = 1000;
+    }
+    return deltaT_ms;
 }
 
 const getCountdown = (pollData : Poll) => {
-    const deltaT_ms = new Date(pollData.end_time).getTime() - new Date(Date.now()).getTime()
+    const deltaT_ms = deltaT(pollData.end_time, Date.now())
     const days = Math.floor(deltaT_ms / (1000*60*60*24))
     const hours = Math.floor((deltaT_ms - (days*1000*60*60*24)) / (1000*60*60))
     const minutes = Math.floor((deltaT_ms - (hours*1000*60*60 + days*1000*60*60*24)) / (1000*60))
@@ -27,7 +33,7 @@ const getCountdown = (pollData : Poll) => {
     return {days, hours, minutes, seconds}
 }
 
-const Timer: React.FC<TimerProps> = ({pollData}) => {
+const Timer: React.FC<DisplayPollResultsProps> = ({pollData}) => {
 
     const [countDown, setCountDown] = useState(getCountdown(pollData));
     const [isActive, setIsActive] = useState(true);
@@ -35,10 +41,6 @@ const Timer: React.FC<TimerProps> = ({pollData}) => {
     const pad = (num: number) => {
         return num < 10 ? '0' + num : num;
     }
-
-    // setCountDown(getCountdown())
-
-    // const {days, hours, minutes, seconds} = getCountdown();
 
     useEffect(() => {
         let interval: any = null;
@@ -55,8 +57,8 @@ const Timer: React.FC<TimerProps> = ({pollData}) => {
     return (
         <Tooltip 
             hasArrow 
-            label={'Ends on: ' + new Date(pollData.end_time).toLocaleDateString() + ' ' + new Date(pollData.end_time).toLocaleTimeString() + '\n'} 
-            bg='white.400'
+            label={new Date(pollData.end_time).toLocaleDateString() + ' ' + new Date(pollData.end_time).toLocaleTimeString()} 
+            bg='dark-1'
         >
             <Center>
                 <Text>
@@ -73,11 +75,56 @@ const Timer: React.FC<TimerProps> = ({pollData}) => {
     )
 }
 
-const DisplayPollResults: React.FC<DisplayPollResultsProps> = ({pollData, voteData, totalVotes}) => {
+const ShieldBlock: React.FC<DisplayPollResultsProps> = ({pollData, totalVotes}) => {
 
-    // const totalVotes = voteData && voteData.aggregate && voteData.aggregate.reduce((acc: number,cur: any) => {
-    //     return acc += cur.count
-    // },0)
+    return (
+        <VStack spacing='16px'>
+            <Flex
+                color='gray.100'
+                fontSize='2xl'
+                fontWeight='600'
+                mt='3rem'
+                alignItems='center'
+                mx='auto'
+                maxW='max-content'>
+                <BiBarChartSquare fontSize='36px' />
+                <Text as='span' display='block' align='center' ml='1rem'>
+                    {pollData.title || 'Loading...'}
+                </Text>
+            </Flex>
+        <Flex
+                justifyContent='space-evenly'
+                alignItems='center'
+                width='100%'
+            >
+                <div id="parent">
+                    <Box style={{width:'100%', height:'10%', backgroundColor: 'blue', zIndex: '10', position: 'absolute'}}>
+                        <Center><Text as='b' color='white'>Result Shielded</Text></Center>
+                    </Box>
+
+                    <Box style={{width:'100%', height:'100%', zIndex: '10', position: 'absolute'}}>
+                        <Center style={{position: 'relative', top:'14%',  paddingLeft: 'auto', paddingRight: 'auto'}}>
+                            <Text as='b'>Total votes</Text>
+                        </Center>
+                        <Center style={{position: 'relative', top:'14%',  paddingLeft: 'auto', paddingRight: 'auto'}}>
+                            <Text as='b' fontSize='3xl'>{totalVotes}</Text>
+                        </Center>
+                        <Center style={{position: 'relative', top:'15%',  paddingLeft: 'auto', paddingRight: 'auto'}}>
+                            <Text as='b'>Unlocks in</Text>
+                        </Center>
+                        <Center style={{position: 'relative', top:'17%',  paddingLeft: 'auto', paddingRight: 'auto'}}>
+                            <Text as='b' fontSize='3xl'><Timer pollData={pollData} /></Text>
+                        </Center>
+                    </Box>
+                    <div id="shield">
+                    </div>
+                </div>
+            </Flex>
+        </VStack>
+    )
+}
+
+const resultBlock: React.FC<DisplayPollResultsProps> = ({pollData, voteData, totalVotes}) => {
 
     return (
         <VStack spacing='16px'>
@@ -99,30 +146,8 @@ const DisplayPollResults: React.FC<DisplayPollResultsProps> = ({pollData, voteDa
                 alignItems='center'
                 width='100%'
                 height='100px'>
-                {/* <Card title='Total Votes:' value={totalVotes} /> */}
+                <Card title='Total Votes:' value={totalVotes ?? 'NaN'} />
             </Flex>
-
-            <Flex
-                justifyContent='space-evenly'
-                alignItems='center'
-                width='100%'
-            >
-                <div id="parent">
-                    <Box style={{width:'100%', height:'100%', zIndex: '10', position: 'absolute'}}>
-                        <Center style={{position: 'relative', top:'10%',  paddingLeft: 'auto', paddingRight: 'auto'}}>Total votes</Center>
-                        <Center style={{position: 'relative', top:'15%',  paddingLeft: 'auto', paddingRight: 'auto'}}>{totalVotes}</Center>
-                        <Center style={{position: 'relative', top:'20%',  paddingLeft: 'auto', paddingRight: 'auto'}}>Result unlocks in</Center>
-                        <Center style={{position: 'relative', top:'25%',  paddingLeft: 'auto', paddingRight: 'auto'}}><Timer pollData={pollData} /></Center>
-                    </Box>
-                        {/* <Center style={{zIndex: '10', position: 'absolute', top:'30%',  paddingLeft: 'auto', paddingRight: 'auto' }}>Total votes</Center><br />
-                        <Center style={{zIndex: '10', position: 'absolute', top:'45%', paddingLeft: 'auto', paddingRight: 'auto' }}>{totalVotes}</Center><br />
-                        <Center style={{zIndex: '10', position: 'absolute', top:'60%', paddingLeft: 'auto', paddingRight: 'auto' }}> Result unlocks in </Center><br />
-                        <Center style={{zIndex: '10', position: 'absolute', top:'75%', left:'33%' }}><Timer pollData={pollData} /></Center> */}
-                    <div id="shield">
-                    </div>
-                </div>
-            </Flex>
-
             <Flex width={450}>
                 <PollGraph
                     pollData={pollData}
@@ -133,10 +158,22 @@ const DisplayPollResults: React.FC<DisplayPollResultsProps> = ({pollData, voteDa
                 }[]}
                 />
             </Flex>
-            {/* <Flex width={450}>
-                <TimeGraph />
-            </Flex> */}
         </VStack>
+    )
+}
+
+const DisplayPollResults: React.FC<DisplayPollResultsProps> = ({pollData, voteData, totalVotes}) => {
+
+    return (
+        <div>
+            {
+            deltaT(pollData.end_time, Date.now()) > 0 ? 
+
+            ShieldBlock({pollData, totalVotes}) :
+
+            resultBlock({pollData, voteData, totalVotes})        
+            }
+        </div>
     )
 
 }

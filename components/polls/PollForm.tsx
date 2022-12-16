@@ -424,7 +424,7 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             >
               Block Height
             </FormLabel>
-            <Tooltip hasArrow label='0 = current block, negative number = offset from current block, positive number = block number' bg='orange.400'>
+            <Tooltip hasArrow label='0 = current block, negative number = offset from current block, positive number = block number' bg='dark-1'>
             <Input
               borderColor='gray.400'
               type={isTokenVote ? 'text' : 'hidden' }

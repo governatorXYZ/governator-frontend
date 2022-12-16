@@ -53,34 +53,3 @@
     transform-origin :100% 100%;
     z-index: 0;
 }
-
-/* #shield {
-    box-sizing: border-box;
-    width: 90%;
-    height: 80%;
-    position: relative;
-    display: block;
-    transform: scale(var(--ggs,1));
-    width: 120px;
-    height: 110px;
-    border: 2px solid;
-    border-top-right-radius: 50%;
-    border-top-left-radius: 50%;
-    border-bottom: transparent;
-    margin-top: -12px
-}
-#shield::after {
-    content: "";
-    display: block;
-    box-sizing: border-box;
-    position: absolute;
-    width: 100%;
-    height: 80%;
-    width: 160px;
-    height: 100px;
-    border-radius: 2px;
-    border: 2px solid transparent;
-    box-shadow: 0 0 0 2px;
-    left: 0px;
-    top: 100px
-} */
