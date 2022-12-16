@@ -5,6 +5,7 @@ export interface Poll {
   client_config: ClientConfigDiscord[]
   author_user_id: number | string
   poll_options: PollOption[]
+  end_time: string
 }
 
 export interface PollOption {

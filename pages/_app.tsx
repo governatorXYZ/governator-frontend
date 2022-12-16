@@ -12,6 +12,8 @@ import '@fontsource/roboto-mono/500.css'
 import '@fontsource/roboto-mono/600.css'
 import '@fontsource/roboto-mono/700.css'
 import RouteGuard from 'components/RouteGuard'
+import 'styles/shield.css';
+
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   return (
