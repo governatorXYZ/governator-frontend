@@ -190,6 +190,8 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
 
   useEffect(() => {
     append({ poll_option_name: '' });
+    // (!getValues('strategy_config')) ? setValue('strategy_config', defaultStratId ? defaultStratId : '') : null
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -424,7 +426,7 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             >
               Block Height
             </FormLabel>
-            <Tooltip hasArrow label='0 = current block, negative number = offset from current block, positive number = block number' bg='dark-1'>
+            <Tooltip hasArrow label='0 = current block, negative number = offset from current block, positive number = block number' bg='white'>
             <Input
               borderColor='gray.400'
               type={isTokenVote ? 'text' : 'hidden' }
