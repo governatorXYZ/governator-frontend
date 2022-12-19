@@ -5,12 +5,21 @@ export interface Poll {
   client_config: ClientConfigDiscord[]
   author_user_id: number | string
   poll_options: PollOption[]
+  end_time: string
+  description: string
+  strategy_config: StrategyConfig[]
 }
 
 export interface PollOption {
   poll_option_id: string;
   poll_option_name: string;
   poll_option_emoji: string;
+}
+
+interface StrategyConfig {
+  strategy_id: string
+  strategy_type: string
+  block_height: number
 }
 
 interface ClientConfigBase {
