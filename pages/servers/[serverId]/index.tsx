@@ -12,6 +12,7 @@ import {
   Image,
   Spinner,
   Container,
+  HStack,
 } from '@chakra-ui/react'
 import Govcrumb from 'components/BreadCrumb'
 import useServers from 'hooks/useServers'
@@ -147,18 +148,19 @@ const Dashboard: NextPage = () => {
   const serverImg = `https://cdn.discordapp.com/icons/${currentServer?.id}/${currentServer?.icon}.png`
 
   return (
-    <Box bg='dark-2' minH='calc(100vh - 60px)' pt='4rem' pb='8rem'>
-      <Box bg='dark-1' maxW='2xl' mx='auto' p='2rem 3rem'>
-        <Flex justifyContent='space-between' alignItems='center'>
-          <Govcrumb currentServerName={currentServer?.name} />
-        </Flex>
-
-        <Flex justifyContent='center' alignItems='center'>
+      <Box bg='dark-2' minH='calc(100vh - 60px)' pt='4rem' pb='8rem'>
+        <Container maxW='container.xl'>
+          <Box bg='dark-1' mx='auto' p='2rem 3rem'>
+            <Flex justifyContent='space-between' alignItems='center'>
+              <Govcrumb currentServerName={currentServer?.name} />
+            </Flex>
+            <Flex
+              my='3rem'
+              justifyContent='space-between'
+              alignItems='flex-end'
+            >
           {/* Dashboard Buttons Box */}
-          <Box p={10} mt='1rem'>
-            <VStack spacing={10}>
-              {loading && <Spinner color='gray.200' />}
-              {!loading && currentServer && (
+          {!loading && currentServer && (
                 <Box>
                   <Image
                     src={serverImg}
@@ -178,34 +180,46 @@ const Dashboard: NextPage = () => {
                   </Text>
                 </Box>
               )}
+                        <Text
+                  as='span'
+                  display='block'
+                  color='gray.200'
+                  w='max-content'
+                  fontSize='2xl'
+                >
+                  Poll Listings
+                </Text>
+              <HStack spacing={4}>
+                <SearchBox
+                    setValue={setNewPolls}
+                    originalValues={originalPolls}
+                    searchKeys={['name']}
+                    placeholder='Search poll name...'
+                  />
+                {loading && <Spinner color='gray.200' />}
+                {/* Render server icons */}
+                <Grid templateColumns='1fr' gap={6}>
+                  {dashboardButtons.map((_button, idx) => {
+                    return (
+                      <Box key={`button-${idx}`} width='100%'>
+                        <NextLink href={_button.href}>
+                          <Button
+                            leftIcon={_button.icon}
+                            color='blue.600'
+                            variant='solid'
+                            minW='4xs'
+                          >
+                            {_button.title}
+                          </Button>
+                        </NextLink>
+                      </Box>
+                    )
+                  })}
 
-              {/* Render server icons */}
-              <Grid templateColumns='1fr' gap={6}>
-                {dashboardButtons.map((_button, idx) => {
-                  return (
-                    <Box key={`button-${idx}`} width='100%'>
-                      <NextLink href={_button.href}>
-                        <Button
-                          leftIcon={_button.icon}
-                          color='blue.600'
-                          variant='solid'
-                          minW='3xs'
-                        >
-                          {_button.title}
-                        </Button>
-                      </NextLink>
-                    </Box>
-                  )
-                })}
-              </Grid>
-            </VStack>
-          </Box>
+                </Grid>
+              </HStack>
         </Flex>
-      </Box>
 
-      <Box bg='dark-2' minH='calc(100vh - 60px)' pt='4rem' pb='8rem'>
-        <Container maxW='container.xl'>
-          <Box bg='dark-1' mx='auto' p='2rem 3rem'>
             {loading && (
               <Flex justifyContent='center' alignItems='center' mt='5rem'>
                 <VStack spacing={10}>
@@ -215,26 +229,7 @@ const Dashboard: NextPage = () => {
             )}
             {!loading && (
               <>
-                <Text
-                  as='span'
-                  display='block'
-                  color='gray.200'
-                  mx='auto'
-                  w='max-content'
-                  fontSize='2xl'
-                  my='2rem'
-                >
-                  Poll Listings
-                </Text>
                 <Box>
-                  <Flex mb='1rem'>
-                    <SearchBox
-                      setValue={setNewPolls}
-                      originalValues={originalPolls}
-                      searchKeys={['name']}
-                      placeholder='Search poll name...'
-                    />
-                  </Flex>
                   <DataTable
                     data={polls}
                     columns={columns}
@@ -246,7 +241,6 @@ const Dashboard: NextPage = () => {
           </Box>
         </Container>
       </Box>
-    </Box>
   )
 }
 
