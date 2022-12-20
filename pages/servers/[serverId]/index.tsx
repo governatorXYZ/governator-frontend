@@ -26,11 +26,11 @@ const Dashboard: NextPage = () => {
       icon: <AddIcon />,
       href: `${router.asPath}/polls/create`,
     },
-    {
-      title: 'Settings',
-      icon: <SettingsIcon />,
-      href: `${router.asPath}/settings`,
-    },
+    // {
+    //   title: 'Settings',
+    //   icon: <SettingsIcon />,
+    //   href: `${router.asPath}/settings`,
+    // },
   ]
 
   const serverImg = `https://cdn.discordapp.com/icons/${currentServer?.id}/${currentServer?.icon}.png`
