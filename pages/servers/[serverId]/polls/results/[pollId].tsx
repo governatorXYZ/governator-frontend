@@ -7,6 +7,7 @@ import { Poll } from 'interfaces'
 import Govcrumb from 'components/BreadCrumb'
 import DisplayPollResults from 'components/polls/DisplayPollResults'
 import {useTotalVotes, useVotesData} from "../../../../../hooks/useVoteData";
+import useServers from 'hooks/useServers'
 
 
 
@@ -17,6 +18,7 @@ const PollResults: NextPage = () => {
     const pollData = data?.data ? (data?.data as Poll) : {} as Poll
     return { pollData, error }
   }
+  const { loading, currentServer } = useServers()
 
 
   const router = useRouter()
@@ -30,7 +32,7 @@ const PollResults: NextPage = () => {
   return (
     <Box bg='dark-2' minH='calc(100vh - 90px)' pt='4rem' pb='8rem'>
       <Box bg='dark-1' maxW='2xl' mx='auto' p='2rem 3rem'>
-        <Govcrumb />
+        <Govcrumb currentServerName={currentServer?.name}/>
         {isLoadingPoll && (
           <Flex>
             <Spinner color='gray.200' mx='auto' />

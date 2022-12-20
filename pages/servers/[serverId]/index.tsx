@@ -1,7 +1,7 @@
 import type { NextPage } from 'next'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import { AddIcon, SettingsIcon } from '@chakra-ui/icons'
+import { AddIcon } from '@chakra-ui/icons'
 import {
   Box,
   Button,
@@ -11,14 +11,130 @@ import {
   Flex,
   Image,
   Spinner,
+  Container,
 } from '@chakra-ui/react'
 import Govcrumb from 'components/BreadCrumb'
 import useServers from 'hooks/useServers'
 import { FiBarChart } from 'react-icons/fi'
+import DataTable from 'components/Datatable'
+import SearchBox from 'components/SearchBox'
+import * as luxon from 'luxon'
+import DeletePoll from 'components/polls/DeletePoll'
+import { FaDiscord } from 'react-icons/fa'
+import useSWR from 'swr'
+import { privateBaseFetcher } from 'constants/axios'
+import { useGovernatorUser } from 'hooks/useGovernatorUser'
+import useServer from 'hooks/useServer'
+import { Poll, RenderedPoll } from 'interfaces'
+import { useState, useEffect } from 'react'
 
 const Dashboard: NextPage = () => {
   const router = useRouter()
   const { loading, currentServer } = useServers()
+  const { channels, loading: isLoadingChannels } = useServer()
+  const governatorUser = useGovernatorUser()
+
+  const { data, error, mutate } = useSWR(governatorUser.userId ? `/poll/user/${governatorUser.userId}` : null, privateBaseFetcher);
+  const pollsData = data?.data ? (data?.data as Poll[]) : []
+  pollsData.sort(function (a, b) {
+    return a.createdAt > b.createdAt ? -1 : a.createdAt < b.createdAt ? 1 : 0
+  });
+
+  const isLoadingPolls = !data && !error
+
+  const [polls, setPolls] = useState<RenderedPoll[]>([])
+  const [originalPolls, setOriginalPolls] = useState<RenderedPoll[]>([])
+
+  const setNewPolls = (newPolls: Record<string, any>[]) => {
+    setPolls(newPolls)
+  }
+
+  useEffect(() => {
+    if (data) {
+      setOriginalPolls(fetchPolls())
+      setPolls(fetchPolls())
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, isLoadingChannels])
+
+  const columns = [
+    {
+      Header: 'Created',
+      accessor: 'created',
+    },
+    {
+      Header: 'Name',
+      accessor: 'name',
+    },
+    {
+      Header: 'Channel',
+      accessor: 'channel',
+    },
+    {
+      Header: 'Author',
+      accessor: 'author',
+    },
+    // {
+    //   Header: 'Votes',
+    //   accessor: 'votes',
+    // },
+    {
+      Header: 'Actions',
+      accessor: 'actions',
+    },
+  ]
+
+  const fetchPolls = () => {
+    return pollsData.map(p => {
+      return {
+        id: p._id,
+        created: luxon.DateTime.fromISO(p.createdAt).toFormat('LLL dd yyyy t'),
+        name: p.title,
+        channel: isLoadingChannels
+          ? 'Loading...'
+          : (channels.find(chan => chan.value === (p.client_config.find((conf) => conf.provider_id === 'discord')?.channel_id)))?.label,
+        author: governatorUser.discordUsername,
+        // votes: 0, -- needs implementing endpoint on BE
+        actions: (
+          <Flex w='max-content' mx='auto'>
+            <DeletePoll poll={p} mutate={mutate} />
+            <Button
+              variant='ghost'
+              size='sm'
+              color='purple.500'
+              _active={{
+                color: 'white',
+                backgroundColor: 'purple.300',
+              }}
+              _hover={{
+                color: 'white',
+                backgroundColor: 'purple.500',
+              }}
+            >
+              <FaDiscord fontSize='15px' />
+            </Button>
+            <NextLink href={`${router.asPath}/results/${p._id}`}>
+              <Button
+                variant='ghost'
+                size='sm'
+                color='teal.500'
+                _active={{
+                  color: 'white',
+                  backgroundColor: 'teal.300',
+                }}
+                _hover={{
+                  color: 'white',
+                  backgroundColor: 'teal.500',
+                }}
+              >
+                <FiBarChart fontSize='15px' />
+              </Button>
+            </NextLink>
+          </Flex>
+        ),
+      }
+    })
+  }
 
   const dashboardButtons = [
     {
@@ -26,11 +142,6 @@ const Dashboard: NextPage = () => {
       icon: <AddIcon />,
       href: `${router.asPath}/polls/create`,
     },
-    // {
-    //   title: 'Settings',
-    //   icon: <SettingsIcon />,
-    //   href: `${router.asPath}/settings`,
-    // },
   ]
 
   const serverImg = `https://cdn.discordapp.com/icons/${currentServer?.id}/${currentServer?.icon}.png`
@@ -40,23 +151,6 @@ const Dashboard: NextPage = () => {
       <Box bg='dark-1' maxW='2xl' mx='auto' p='2rem 3rem'>
         <Flex justifyContent='space-between' alignItems='center'>
           <Govcrumb currentServerName={currentServer?.name} />
-          <NextLink href={`${router.asPath}/polls`}>
-            <a>
-              <Flex
-                color='blue.300'
-                _hover={{
-                  color: 'blue.100',
-                }}
-                alignItems='center'
-                cursor='pointer'
-              >
-                <Box mr='0.5rem'>
-                  <FiBarChart />
-                </Box>
-                <Text as='span'>Polls</Text>
-              </Flex>
-            </a>
-          </NextLink>
         </Flex>
 
         <Flex justifyContent='center' alignItems='center'>
@@ -107,6 +201,50 @@ const Dashboard: NextPage = () => {
             </VStack>
           </Box>
         </Flex>
+      </Box>
+
+      <Box bg='dark-2' minH='calc(100vh - 60px)' pt='4rem' pb='8rem'>
+        <Container maxW='container.xl'>
+          <Box bg='dark-1' mx='auto' p='2rem 3rem'>
+            {loading && (
+              <Flex justifyContent='center' alignItems='center' mt='5rem'>
+                <VStack spacing={10}>
+                  <Spinner color='gray.200' />
+                </VStack>
+              </Flex>
+            )}
+            {!loading && (
+              <>
+                <Text
+                  as='span'
+                  display='block'
+                  color='gray.200'
+                  mx='auto'
+                  w='max-content'
+                  fontSize='2xl'
+                  my='2rem'
+                >
+                  Poll Listings
+                </Text>
+                <Box>
+                  <Flex mb='1rem'>
+                    <SearchBox
+                      setValue={setNewPolls}
+                      originalValues={originalPolls}
+                      searchKeys={['name']}
+                      placeholder='Search poll name...'
+                    />
+                  </Flex>
+                  <DataTable
+                    data={polls}
+                    columns={columns}
+                    loading={isLoadingPolls}
+                  />
+                </Box>
+              </>
+            )}
+          </Box>
+        </Container>
       </Box>
     </Box>
   )
