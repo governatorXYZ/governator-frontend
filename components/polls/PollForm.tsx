@@ -422,14 +422,16 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
           <FormControl isInvalid={!!errors.block_height?.message}>
             <FormLabel 
               htmlFor='title'
-              style={{ visibility: isTokenVote ? 'visible': 'hidden'}}
+              // style={{ visibility: isTokenVote ? 'visible': 'hidden'}}
+              style={{ visibility: 'hidden'}}
             >
               Block Height
             </FormLabel>
             <Tooltip hasArrow label='0 = current block, negative number = offset from current block, positive number = block number' bg='white'>
             <Input
               borderColor='gray.400'
-              type={isTokenVote ? 'text' : 'hidden' }
+              type='hidden'
+              // type={isTokenVote ? 'text' : 'hidden' }
               defaultValue='0'
               isDisabled={!isTokenVote}
               // placeholder='ex: 1050502021'
