@@ -99,22 +99,7 @@ const Dashboard: NextPage = () => {
         actions: (
           <Flex w='max-content' mx='auto'>
             <DeletePoll poll={p} mutate={mutate} />
-            <Button
-              variant='ghost'
-              size='sm'
-              color='purple.500'
-              _active={{
-                color: 'white',
-                backgroundColor: 'purple.300',
-              }}
-              _hover={{
-                color: 'white',
-                backgroundColor: 'purple.500',
-              }}
-            >
-              <FaDiscord fontSize='15px' />
-            </Button>
-            <NextLink href={`${router.asPath}/results/${p._id}`}>
+            <NextLink href={`${router.asPath}/polls/results/${p._id}`}>
               <Button
                 variant='ghost'
                 size='sm'
