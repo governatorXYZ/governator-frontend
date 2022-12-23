@@ -180,15 +180,6 @@ const Dashboard: NextPage = () => {
                   </Text>
                 </Box>
               )}
-                        <Text
-                  as='span'
-                  display='block'
-                  color='gray.200'
-                  w='max-content'
-                  fontSize='2xl'
-                >
-                  Poll Listings
-                </Text>
               <HStack spacing={4}>
                 <SearchBox
                     setValue={setNewPolls}
