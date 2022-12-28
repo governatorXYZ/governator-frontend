@@ -2,7 +2,7 @@ import { discordAxios } from 'constants/axios'
 import { useAtom } from 'jotai'
 import { serversAtom } from 'atoms'
 import { useState, useCallback, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
+import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/router'
 
 /**
@@ -36,6 +36,7 @@ const useServers = () => {
       } catch (e) {
         console.log({ e })
         setLoading(false)
+        signOut()
       }
     }
   }, [servers])
