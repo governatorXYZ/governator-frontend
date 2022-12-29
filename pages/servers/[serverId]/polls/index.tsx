@@ -81,6 +81,7 @@ const Polls: NextPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, isLoadingChannels])
 
+  const serverImg = `https://cdn.discordapp.com/icons/${currentServer?.id}/${currentServer?.icon}.png`
 
   const fetchPolls = () => {
     return pollsData.map(p => {
