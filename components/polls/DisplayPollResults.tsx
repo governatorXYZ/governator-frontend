@@ -226,7 +226,11 @@ const PollResultStack: React.FC<DisplayPollResultsProps> = ({pollData, result}) 
             width='100%'
             p='5px'
         >
-            <Accordion style={{outline: 'none'}} defaultIndex={[2]} allowMultiple>
+            <Accordion
+                style={{outline: 'none'}}
+                defaultIndex={[0, 1, 2]}
+                allowMultiple
+            >
                 <AccordionItem style={{outline: 'none', borderWidth: '0px'}}>
                     <h2>
                     <AccordionButton pl='0'>
