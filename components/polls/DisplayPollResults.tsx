@@ -1,3 +1,4 @@
+// TODO: Refactor this component.
 import { 
     Flex, 
     VStack,
@@ -22,8 +23,7 @@ import PollGraph from 'components/polls/PollGraph'
 import {useState, useEffect} from "react";
 import useStrategies from 'hooks/useStrategies'
 
-// import TimeGraph from 'components/polls/TimeGraph'
-
+// Component props
 type DisplayPollResultsProps = {
     pollData: Poll,
     voteData?: any,
@@ -32,6 +32,12 @@ type DisplayPollResultsProps = {
     result?: any
 }
 
+/**
+ * returns the delta between two dates (in milleseconds)
+ * @param date1 
+ * @param date2 
+ * @returns delta in milliseconds.
+ */
 const deltaT = (date1: string | number, date2: string | number) => {
     let deltaT_ms = null;
     try {
@@ -42,6 +48,11 @@ const deltaT = (date1: string | number, date2: string | number) => {
     return deltaT_ms;
 }
 
+/**
+ * takes the pollData and builds the countdown timer.
+ * @param {Poll} pollData 
+ * @returns {Record<string, number>} count down as object
+ */
 const getCountdown = (pollData : Poll) => {
     const MS_PER_DAY = 1000*60*60*24
     const MS_PER_HOUR = 1000*60*60
@@ -55,6 +66,11 @@ const getCountdown = (pollData : Poll) => {
     return {days, hours, minutes, seconds}
 }
 
+// Timer component to display the count down in the shield.
+// Probably can display the timer generally on the form.
+// Then just display the chart, but with a different colorscheme
+// to signal to the user that the poll is locked.
+// Further discussion required.
 const Timer: React.FC<DisplayPollResultsProps> = ({pollData, onCountdownComplete}) => {
 
     const [countDown, setCountDown] = useState(getCountdown(pollData));
@@ -99,6 +115,7 @@ const Timer: React.FC<DisplayPollResultsProps> = ({pollData, onCountdownComplete
     )
 }
 
+// Component to display that a poll is currently locked.
 const ShieldBlock: React.FC<DisplayPollResultsProps> = ({pollData, totalVotes, onCountdownComplete}) => {
 
     return (
@@ -129,6 +146,7 @@ const ShieldBlock: React.FC<DisplayPollResultsProps> = ({pollData, totalVotes, o
     )
 }
 
+// Component to display the final results.
 const ResultBlock: React.FC<DisplayPollResultsProps> = ({pollData, voteData, totalVotes}) => {
 
     return (
@@ -187,6 +205,7 @@ const ResultBlock: React.FC<DisplayPollResultsProps> = ({pollData, voteData, tot
     )
 }
 
+// General layout for the results stack.
 const PollResultStack: React.FC<DisplayPollResultsProps> = ({pollData, result}) => {
 
     const { strategies } = useStrategies();
@@ -320,30 +339,31 @@ const PollResultStack: React.FC<DisplayPollResultsProps> = ({pollData, result}) 
     )
 }
 
+// Wrapper component.
 const DisplayPollResults: React.FC<DisplayPollResultsProps> = ({pollData, voteData, totalVotes}) => {
 
-    const [locked, setLocked] = useState(true)
+    const [ locked, setLocked ] = useState(true);
+    const [ countDown, setCountDown ] = useState(getCountdown(pollData))
 
     const onCountdownComplete = (toggle: boolean) => {
         setLocked(toggle)
     }
 
-    if(locked) {
-        return (
-            < PollResultStack
-                result={ShieldBlock({pollData, totalVotes, onCountdownComplete})}
-                pollData={pollData}
-            />
-        )
-    }
-    else {
-        return (
-            < PollResultStack
-                result={ResultBlock({pollData, voteData, totalVotes})}
-                pollData={pollData}
-            />
-        )
-    }
+    // on render check if the countdown is over, pre-set locked to false
+    useEffect(() => {
+        if (Object.values(countDown).reduce((acc, val) => acc + val) == 0) {
+            setLocked(false);
+        }
+    }, []);
+
+    const result = locked ? (ShieldBlock({ pollData, totalVotes, onCountdownComplete})) : (ResultBlock({ pollData, voteData, totalVotes}))
+
+    return (
+        < PollResultStack
+            result={result}
+            pollData={pollData}
+        />
+    )
 
 }
 
