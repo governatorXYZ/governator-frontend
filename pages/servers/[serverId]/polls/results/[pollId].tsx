@@ -40,7 +40,7 @@ const PollResults: NextPage = () => {
           color='gray.300'
         >
           <BreadcrumbItem>
-            <BreadcrumbLink href={`/servers/${currentServer?.id}`}>Back</BreadcrumbLink>
+            <BreadcrumbLink href={`/servers/${currentServer?.id ?? ''}`}>Back</BreadcrumbLink>
           </BreadcrumbItem>
         </Breadcrumb>
         {isLoadingPoll && (
