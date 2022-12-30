@@ -144,8 +144,12 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
         block_height: parseInt(isTokenVote ? data.block_height : '0'),
       }]
 
+      const guildId = router.asPath.match(/\d{18,20}/)
+
+
       const clientConfig = [{
         provider_id: "discord",
+        guild_id: guildId![0] ?? '000000000000',
         channel_id: data.channel_id,
         role_restrictions: data.role_restrictions || []
       }]
