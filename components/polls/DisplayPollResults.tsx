@@ -1,6 +1,6 @@
 // TODO: Refactor this component.
-import { 
-    Flex, 
+import {
+    Flex,
     VStack,
     Text,
     Tooltip,
@@ -12,58 +12,53 @@ import {
     AccordionItem,
     AccordionButton,
     AccordionPanel,
-    AccordionIcon
- } from '@chakra-ui/react'
- import { Icon } from '@chakra-ui/icon'
-
-import {Poll} from 'interfaces'
+    AccordionIcon,
+    Spinner
+} from '@chakra-ui/react'
+import { Icon } from '@chakra-ui/icon'
+import { Poll } from 'interfaces'
 import { BiBarChartSquare } from 'react-icons/bi'
 import Card from 'components/common/Card'
 import PollGraph from 'components/polls/PollGraph'
-import {useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 import useStrategies from 'hooks/useStrategies'
+import { useTimer } from 'hooks/useTimer'
+import type { Duration } from 'date-fns'
 
 // Component props
 type DisplayPollResultsProps = {
     pollData: Poll,
     voteData?: any,
     totalVotes?: string,
-    onCountdownComplete?: (toggle: boolean) => void
-    result?: any
 }
 
-/**
- * returns the delta between two dates (in milleseconds)
- * @param date1 
- * @param date2 
- * @returns delta in milliseconds.
- */
-const deltaT = (date1: string | number, date2: string | number) => {
-    let deltaT_ms = null;
-    try {
-        deltaT_ms = new Date(date1).getTime() - new Date(date2).getTime()
-    } catch {
-        deltaT_ms = 1000;
-    }
-    return deltaT_ms;
+type PollResultStack = {
+    pollData: Poll;
+    voteData: Record<string, any>;
+    totalVotes?: string;
+    strategy?: PollStrategy;
+    locked: boolean;
+    duration?: Duration;
+    endTime?: Date;
 }
 
-/**
- * takes the pollData and builds the countdown timer.
- * @param {Poll} pollData 
- * @returns {Record<string, number>} count down as object
- */
-const getCountdown = (pollData : Poll) => {
-    const MS_PER_DAY = 1000*60*60*24
-    const MS_PER_HOUR = 1000*60*60
-    const MS_PER_MINUTE = 1000*60
-    const MS_PER_SECOND = 1000
-    const deltaT_ms = deltaT(pollData.end_time, Date.now())
-    const days = Math.floor(deltaT_ms / MS_PER_DAY) ? Math.floor(deltaT_ms / MS_PER_DAY) : 0
-    const hours = Math.floor((deltaT_ms - (days*MS_PER_DAY)) / MS_PER_HOUR) ? Math.floor((deltaT_ms - (days*MS_PER_DAY)) / MS_PER_HOUR) : 0
-    const minutes = Math.floor((deltaT_ms - (hours*MS_PER_HOUR + days*MS_PER_DAY)) / MS_PER_MINUTE) ? Math.floor((deltaT_ms - (hours*MS_PER_HOUR + days*MS_PER_DAY)) / MS_PER_MINUTE) : 0
-    const seconds = Math.floor((deltaT_ms - (minutes*MS_PER_MINUTE + hours*MS_PER_HOUR + days*MS_PER_DAY)) / MS_PER_SECOND) ? Math.floor((deltaT_ms - (minutes*MS_PER_MINUTE + hours*MS_PER_HOUR + days*MS_PER_DAY)) / MS_PER_SECOND) : 0
-    return {days, hours, minutes, seconds}
+// type for PollStrategy
+type PollStrategy = {
+    name: string;
+    type: string;
+    blockHeight: string | number;
+}
+
+// poll timer props.
+type PollTimerProps = {
+    countdown: Duration;
+    endTime: Date;
+}
+
+type ShieldBlockProps = {
+    totalVotes?: string;
+    countdown?: Duration;
+    endTime?: Date;
 }
 
 // Timer component to display the count down in the shield.
@@ -71,153 +66,127 @@ const getCountdown = (pollData : Poll) => {
 // Then just display the chart, but with a different colorscheme
 // to signal to the user that the poll is locked.
 // Further discussion required.
-const Timer: React.FC<DisplayPollResultsProps> = ({pollData, onCountdownComplete}) => {
-
-    const [countDown, setCountDown] = useState(getCountdown(pollData));
-
-    const pad = (num: number) => {
-        return num < 10 ? '0' + num : num;
-    }
-
-    useEffect(() => {
-        let interval: any = null;
-        if (deltaT(pollData.end_time,  Date.now()) <= 1000) {
-            console.log('chanhged')
-            onCountdownComplete!(false);
-            return () => clearInterval(interval);
-        }
-        else {
-          interval = setInterval(() => {
-            setCountDown(getCountdown(pollData));
-          }, 1000);
-        }
-        return () => clearInterval(interval);
-      }), [countDown];
+const Timer: React.FC<PollTimerProps> = ({ countdown: { days, hours, minutes, seconds }, endTime }) => {
+    // pad function will pad the number (max of 2 characters).
+    // return '00' if num is undefined.
+    const pad = (num?: number) => (num?.toString().padStart(2, '0') ?? '00');
+    const [label, _setLabel] = useState<string>(`${endTime.toLocaleDateString()} ${endTime.toLocaleTimeString()}`);
+    const [timerDisplay, _setTimerDisplay] = useState<string>(`${pad(days)} : ${pad(hours)} : ${pad(minutes)} : ${pad(seconds)}`);
 
     return (
-        <Tooltip 
-            hasArrow 
-            label={new Date(pollData.end_time).toLocaleDateString() + ' ' + new Date(pollData.end_time).toLocaleTimeString()} 
-            bg='dark-1'
-        >
+        <Tooltip hasArrow label={label} bg='dark-1'>
             <Center>
-                <Text>
-                {
-                    pad(countDown.days) + ' : ' + 
-                    pad(countDown.hours) + ' : ' + 
-                    pad(countDown.minutes) + ' : ' + 
-                    pad(countDown.seconds) 
-                }   
-                </Text>
+                <Text>{timerDisplay}</Text>
             </Center>
-
         </Tooltip>
     )
 }
 
 // Component to display that a poll is currently locked.
-const ShieldBlock: React.FC<DisplayPollResultsProps> = ({pollData, totalVotes, onCountdownComplete}) => {
+const ShieldBlock: React.FC<ShieldBlockProps> = ({ 
+    totalVotes,
+    countdown,
+    endTime
+}) => {
 
     return (
         <Center>
-        <div id="parent">
-            <Box style={{width:'100%', height:'10%', backgroundColor: 'blue', zIndex: '10', position: 'absolute'}}>
-                <Center><Text as='b' color='white'>Result Shielded</Text></Center>
-            </Box>
-
-            <Box style={{width:'100%', height:'100%', zIndex: '10', position: 'absolute'}}>
-                <Center style={{position: 'relative', top:'14%',  paddingLeft: 'auto', paddingRight: 'auto'}}>
-                    <Text as='b'>Total votes</Text>
-                </Center>
-                <Center style={{position: 'relative', top:'14%',  paddingLeft: 'auto', paddingRight: 'auto'}}>
-                    <Text as='b' fontSize='3xl'>{totalVotes}</Text>
-                </Center>
-                <Center style={{position: 'relative', top:'15%',  paddingLeft: 'auto', paddingRight: 'auto'}}>
-                    <Text as='b'>Unlocks in</Text>
-                </Center>
-                <Center style={{position: 'relative', top:'17%',  paddingLeft: 'auto', paddingRight: 'auto'}}>
-                    <Text as='b' fontSize='3xl'><Timer pollData={pollData} onCountdownComplete={onCountdownComplete}/></Text>
-                </Center>
-            </Box>
-            <div id="shield">
+            <div id="parent">
+                <Box style={{ width: '100%', height: '10%', backgroundColor: 'blue', zIndex: '10', position: 'absolute' }}>
+                    <Center><Text as='b' color='white'>Result Shielded</Text></Center>
+                </Box>
+                <Box style={{ width: '100%', height: '100%', zIndex: '10', position: 'absolute' }}>
+                    <Center style={{ position: 'relative', top: '14%', paddingLeft: 'auto', paddingRight: 'auto' }}>
+                        <Text as='b'>Total votes</Text>
+                    </Center>
+                    <Center style={{ position: 'relative', top: '14%', paddingLeft: 'auto', paddingRight: 'auto' }}>
+                        <Text as='b' fontSize='3xl'>{totalVotes ?? (<Spinner />)}</Text>
+                    </Center>
+                    <Center style={{ position: 'relative', top: '15%', paddingLeft: 'auto', paddingRight: 'auto' }}>
+                        <Text as='b'>Unlocks in</Text>
+                    </Center>
+                    <Center style={{ position: 'relative', top: '17%', paddingLeft: 'auto', paddingRight: 'auto' }}>
+                        <Text as='b' fontSize='3xl'>
+                            { countdown && endTime ? <Timer countdown={countdown} endTime={endTime} /> : (<Spinner size="3xl" />) }
+                        </Text>
+                    </Center>
+                </Box>
+                <div id="shield">
+                </div>
             </div>
-        </div>
         </Center>
     )
 }
 
 // Component to display the final results.
-const ResultBlock: React.FC<DisplayPollResultsProps> = ({pollData, voteData, totalVotes}) => {
-
+const ResultBlock: React.FC<DisplayPollResultsProps> = ({ pollData, voteData, totalVotes }) => {
     return (
         <div>
             {
                 !voteData.aggregate || voteData.aggregate.length === 0 ?
-                <Flex
-                    borderWidth='3px'
-                    p='20px'
-                    borderRadius='5'
-                    borderColor='gray.600'
-                    color='gray.600'
-                    fontSize='2xl'
-                    fontWeight='600'
-                    mt='3rem'
-                    alignItems='center'
-                    mx='auto'
-                    width='50%'
+                    <Flex
+                        borderWidth='3px'
+                        p='20px'
+                        borderRadius='5'
+                        borderColor='gray.600'
+                        color='gray.600'
+                        fontSize='2xl'
+                        fontWeight='600'
+                        mt='3rem'
+                        alignItems='center'
+                        mx='auto'
+                        width='50%'
                     // maxW='max-content'
-                >
-                    <Box width='100%' backgroundColor='blue'>
-                    </Box>
-                    <VStack>
-                    <Box>
-                        <BiBarChartSquare fontSize='36px' />
-                    </Box>
-                    <Box>
-                        <Text align='center'>
-                            No Data
-                        </Text>
-                    </Box>
-                    </VStack>
-                    <Box width='100%' backgroundColor='yellow'>
-                    </Box>
-                </Flex> :
-                <div>
-                <Flex width={450}>
-                    <PollGraph
-                        pollData={pollData}
-                        voteData={voteData.aggregate as {
-                        _id: string
-                        percent: string
-                        vote_power: string
-                    }[]}
-                    />
-                </Flex>
-                <Box>
-                    <Card 
-                        title='Total Votes'
-                        value={totalVotes ?? '0'}
-                    ></Card>
-                </Box>
-                </div>
+                    >
+                        <Box width='100%' backgroundColor='blue'>
+                        </Box>
+                        <VStack>
+                            <Box>
+                                <BiBarChartSquare fontSize='36px' />
+                            </Box>
+                            <Box>
+                                <Text align='center'>
+                                    No Data
+                                </Text>
+                            </Box>
+                        </VStack>
+                        <Box width='100%' backgroundColor='yellow'>
+                        </Box>
+                    </Flex> :
+                    <div>
+                        <Flex>
+                            <PollGraph
+                                pollData={pollData}
+                                voteData={voteData.aggregate as {
+                                    _id: string
+                                    percent: string
+                                    vote_power: string
+                                }[]}
+                            />
+                        </Flex>
+                        <Box>
+                            <Card
+                                title='Total Votes'
+                                value={totalVotes ?? '0'}
+                            />
+                        </Box>
+                    </div>
             }
         </div>
     )
 }
 
 // General layout for the results stack.
-const PollResultStack: React.FC<DisplayPollResultsProps> = ({pollData, result}) => {
-
-    const { strategies } = useStrategies();
-
-    let strategyName = null
-    let strategyType = null
-    let strategyBlock = null
-    if (pollData.strategy_config && pollData.strategy_config.length > 0) {
-        strategyName = (strategies.find((strat: {label: string, value: string}) => strat.value === pollData.strategy_config[0].strategy_id ))?.label
-        strategyType = pollData.strategy_config[0].strategy_type
-        strategyBlock = pollData.strategy_config[0].block_height
-    }
+const PollResultStack: React.FC<PollResultStack> = ({ 
+    pollData,
+    voteData,
+    totalVotes,
+    strategy,
+    locked,
+    endTime,
+    duration
+}) => {
+    const [strategyDetails, setStrategyDetails] = useState();
 
     return (
         <VStack spacing='16px'>
@@ -234,134 +203,161 @@ const PollResultStack: React.FC<DisplayPollResultsProps> = ({pollData, result}) 
                     {pollData.title || 'Loading...'}
                 </Text>
             </Flex>
-        <Flex
+            <Flex
                 justifyContent='space-evenly'
                 alignItems='center'
                 width='100%'
-        ></Flex>
+            ></Flex>
 
-        <Stack 
-            spacing='4' 
-            width='100%'
-            p='5px'
-        >
-            <Accordion style={{outline: 'none'}} defaultIndex={[2]} allowMultiple>
-                <AccordionItem style={{outline: 'none', borderWidth: '0px'}}>
-                    <h2>
-                    <AccordionButton pl='0'>
-                        <Box as="span" flex='1' textAlign='left'>
-                        <Heading 
-                            size='xs' 
-                            textTransform='uppercase'
-                            color='gray.100'
-                        >
-                            Description
-                        </Heading>
-                        </Box>
-                        <Icon viewBox="0 0 24 24" aria-hidden>
-                            <path
-                                fill='white'
-                                d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"
-                            />
-                        </Icon>
-                    </AccordionButton>
-                    </h2>
-                    <AccordionPanel pb={4}>
-                        <Text pt='2' fontSize='sm' color='gray.100'>
-                            {pollData.description}
-                        </Text>
-                    </AccordionPanel>
-                </AccordionItem>
+            <Stack
+                spacing='4'
+                width='100%'
+                p='5px'
+            >
+                <Accordion style={{ outline: 'none' }} defaultIndex={[2]} allowMultiple>
+                    <AccordionItem style={{ outline: 'none', borderWidth: '0px' }}>
+                        <h2>
+                            <AccordionButton pl='0'>
+                                <Box as="span" flex='1' textAlign='left'>
+                                    <Heading
+                                        size='xs'
+                                        textTransform='uppercase'
+                                        color='gray.100'
+                                    >
+                                        Description
+                                    </Heading>
+                                </Box>
+                                <Icon viewBox="0 0 24 24" aria-hidden>
+                                    <path
+                                        fill='white'
+                                        d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"
+                                    />
+                                </Icon>
+                            </AccordionButton>
+                        </h2>
+                        <AccordionPanel pb={4}>
+                            <Text pt='2' fontSize='sm' color='gray.100'>
+                                {pollData.description}
+                            </Text>
+                        </AccordionPanel>
+                    </AccordionItem>
 
-                <AccordionItem style={{outline: 'none', borderWidth: '0px'}}>
-                    <h2>
-                    <AccordionButton pl='0'>
-                        <Box as="span" flex='1' textAlign='left'>
-                        <Heading 
-                            size='xs' 
-                            textTransform='uppercase'
-                            color='gray.100'
-                        >
-                            Strategy
-                        </Heading>
-                        </Box>
-                        <Icon viewBox="0 0 24 24" aria-hidden>
-                            <path
-                                fill='white'
-                                d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"
-                            />
-                        </Icon>
-                    </AccordionButton>
-                    </h2>
-                    <AccordionPanel pb={4}>
-                        <VStack align='left' paddingLeft='10px'>
-                            <Text pt='2' fontSize='sm' color='gray.100'>
-                                {`Name: ${strategyName ? strategyName : ''}`}
-                            </Text>
-                            <Text pt='2' fontSize='sm' color='gray.100'>
-                                {`Type: ${strategyType ? strategyType : ''}`}
-                            </Text>
-                            <Text pt='2' fontSize='sm' color='gray.100'>
-                                {`Block height: ${strategyBlock ? strategyBlock : ''}`}
-                            </Text>
-                        </VStack>
-                    </AccordionPanel>
-                </AccordionItem>
+                    <AccordionItem style={{ outline: 'none', borderWidth: '0px' }}>
+                        <h2>
+                            <AccordionButton pl='0'>
+                                <Box as="span" flex='1' textAlign='left'>
+                                    <Heading
+                                        size='xs'
+                                        textTransform='uppercase'
+                                        color='gray.100'
+                                    >
+                                        Strategy
+                                    </Heading>
+                                </Box>
+                                <Icon viewBox="0 0 24 24" aria-hidden>
+                                    <path
+                                        fill='white'
+                                        d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"
+                                    />
+                                </Icon>
+                            </AccordionButton>
+                        </h2>
+                        <AccordionPanel pb={4}>
+                            <VStack align='left' paddingLeft='10px'>
+                                { strategy ? (
+                                    <>
+                                        <Text pt='2' fontSize='sm' color='gray.100'>
+                                            {`Name: ${strategy.name ?? ''}`}
+                                        </Text>
+                                        <Text pt='2' fontSize='sm' color='gray.100'>
+                                            {`Type: ${strategy.type ?? ''}`}
+                                        </Text>
+                                        <Text pt='2' fontSize='sm' color='gray.100'>
+                                            {`Block height: ${strategy.blockHeight ?? ''}`}
+                                        </Text>
+                                    </>
+                                ) : (<Flex alignItems={'center'} justifyContent={'center'}><Spinner size='3xl' /></Flex>) }
+                            </VStack>
+                        </AccordionPanel>
+                    </AccordionItem>
 
-                <AccordionItem style={{outline: 'none', borderWidth: '0px'}}>
-                    <h2>
-                    <AccordionButton pl='0'>
-                        <Box as="span" flex='1' textAlign='left'>
-                        <Heading 
-                            size='xs' 
-                            textTransform='uppercase'
-                            color='gray.100'
-                        >
-                            Result
-                        </Heading>
-                        </Box>
-                        <Icon viewBox="0 0 24 24" aria-hidden>
-                            <path
-                                fill='white'
-                                d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"
-                            />
-                        </Icon>
-                    </AccordionButton>
-                    </h2>
-                    <AccordionPanel pb={4}>
-                        {result}
-                    </AccordionPanel>
-                </AccordionItem>
-            </Accordion>
-      </Stack>
-      
-    </VStack>
+                    <AccordionItem style={{ outline: 'none', borderWidth: '0px' }}>
+                        <h2>
+                            <AccordionButton pl='0'>
+                                <Box as="span" flex='1' textAlign='left'>
+                                    <Heading
+                                        size='xs'
+                                        textTransform='uppercase'
+                                        color='gray.100'
+                                    >
+                                        Result
+                                    </Heading>
+                                </Box>
+                                <Icon viewBox="0 0 24 24" aria-hidden>
+                                    <path
+                                        fill='white'
+                                        d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"
+                                    />
+                                </Icon>
+                            </AccordionButton>
+                        </h2>
+                        <AccordionPanel pb={4}>
+                           { locked ? (<ShieldBlock
+                                totalVotes={totalVotes}
+                                countdown={duration}
+                                endTime={endTime}
+                            />) : 
+                            (<ResultBlock
+                                pollData={pollData}
+                                voteData={voteData}
+                                totalVotes={totalVotes}
+                             />) }
+                        </AccordionPanel>
+                    </AccordionItem>
+                </Accordion>
+            </Stack>
+
+        </VStack>
     )
 }
 
 // Wrapper component.
-const DisplayPollResults: React.FC<DisplayPollResultsProps> = ({pollData, voteData, totalVotes}) => {
+const DisplayPollResults: React.FC<DisplayPollResultsProps> = ({ pollData, voteData, totalVotes }) => {
+    const [locked, setLocked] = useState(true);
+    const [strategy, setStrategy] = useState<PollStrategy>();
+    const { duration, isTimeUp, endTime } = useTimer(new Date(pollData.end_time));
+    const { strategies } = useStrategies();
 
-    const [ locked, setLocked ] = useState(true);
-    const [ countDown, setCountDown ] = useState(getCountdown(pollData))
-
-    const onCountdownComplete = (toggle: boolean) => {
-        setLocked(toggle)
-    }
-
-    // on render check if the countdown is over, pre-set locked to false
     useEffect(() => {
-        if (Object.values(countDown).reduce((acc, val) => acc + val) == 0) {
-            setLocked(false);
+        if (pollData.strategy_config && pollData.strategy_config.length > 0) {
+            const [firstStrategy] = pollData.strategy_config;
+            const {
+                strategy_id,
+                strategy_type: type,
+                block_height: blockHeight
+            } = firstStrategy;
+            const name = strategies.find(({ value }: { label: string, value: string }) => value === strategy_id)?.label ?? 'N/A';
+            setStrategy({
+                name,
+                type,
+                blockHeight
+            })
         }
-    }, []);
+    }, [strategies]);
 
-    const result = locked ? (ShieldBlock({ pollData, totalVotes, onCountdownComplete})) : (ResultBlock({ pollData, voteData, totalVotes}))
+    useEffect(() => {
+        setLocked(!isTimeUp);
+    }, [isTimeUp])
 
     return (
         < PollResultStack
-            result={result}
             pollData={pollData}
+            voteData={voteData}
+            totalVotes={totalVotes}
+            strategy={strategy}
+            locked={locked}
+            duration={duration}
+            endTime={endTime}
         />
     )
 
