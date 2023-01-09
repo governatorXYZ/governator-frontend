@@ -12,6 +12,7 @@ import {
   Image,
   Spinner,
   Container,
+  Heading,
   HStack,
 } from '@chakra-ui/react'
 import Govcrumb from 'components/BreadCrumb'
@@ -65,7 +66,10 @@ const Dashboard: NextPage = () => {
     },
     {
       Header: 'Name',
-      accessor: 'name',
+      accessor: (data: unknown) => data,
+      Cell: ({ value }: {
+        value: Record<string, any>
+      }) => (<NextLink href={`${router.asPath}/polls/results/${value.id}`}>{ value.name }</NextLink>)
     },
     {
       Header: 'Channel',
@@ -165,6 +169,13 @@ const Dashboard: NextPage = () => {
                   </Text>
                 </Box>
               )}
+              <Heading
+                as='h2'
+                display='block'
+                color='gray.200'
+                fontSize='2xl'
+                mt='1rem'
+              >My Polls</Heading>
               <HStack spacing={4}>
                 <SearchBox
                     setValue={setNewPolls}

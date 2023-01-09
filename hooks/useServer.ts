@@ -70,7 +70,7 @@ const useServer = () => {
         )
           ?.map(c => {
             const entries = Object.entries(c)[0]
-            return { value: entries[0], label: entries[1] }
+            return { value: entries[0], label: entries[1].includes('@everyone') ? 'everyone' : entries[1] }
           })
           .sort((curr, next) =>
             curr.label.toLowerCase() < next.label.toLowerCase() ? -1 : 1
