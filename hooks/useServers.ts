@@ -11,7 +11,8 @@ import { useRouter } from 'next/router'
  * included the server name for readability in case we have more to whitelist
  */
 const MVP_ALLOWED_GUILDS = {
-  "The DAO Bot Garage": "851552281249972254"
+  "The DAO Bot Garage": "851552281249972254",
+  "Bankless DAO": "834499078434979890"
 };
 
 const useServers = () => {
