@@ -29,6 +29,7 @@ interface ClientConfigBase {
 interface ClientConfigDiscord extends ClientConfigBase {
   channel_id: string;
   message_id: string;
+  guild_id: string;
   role_restrictions: string[];
 }
 

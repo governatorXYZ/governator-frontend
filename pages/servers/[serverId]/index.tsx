@@ -36,7 +36,20 @@ const Dashboard: NextPage = () => {
   const governatorUser = useGovernatorUser()
 
   const { data, error, mutate } = useSWR(governatorUser.userId ? `/poll/user/${governatorUser.userId}` : null, privateBaseFetcher);
-  const pollsData = data?.data ? (data?.data as Poll[]) : []
+  let pollsData = data?.data ? (data?.data as Poll[]) : []
+
+  const filteredPollsData: Poll[] = [];
+
+  if (currentServer) {
+    pollsData.forEach((poll) => {
+      if (poll.client_config.find(config => config.guild_id === currentServer.id)) {
+        filteredPollsData.push(poll)
+      }
+    });
+  }
+
+  pollsData = filteredPollsData as Poll[];
+
   pollsData.sort(function (a, b) {
     return a.createdAt > b.createdAt ? -1 : a.createdAt < b.createdAt ? 1 : 0
   });
