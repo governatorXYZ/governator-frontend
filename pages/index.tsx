@@ -12,7 +12,7 @@ import {
 } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import SVGWall from 'components/SVGWall'
-import { FaDiscord } from 'react-icons/fa'
+import { FaChartBar, FaDiscord, FaSignInAlt } from 'react-icons/fa'
 import { SiNotion } from 'react-icons/si'
 import { FiBarChart, FiGlobe, FiMessageSquare, FiTwitter } from 'react-icons/fi'
 import { AiOutlineMedium, AiOutlineTrophy } from 'react-icons/ai'
@@ -21,6 +21,8 @@ import styled from '@emotion/styled'
 import { useEffect, useState } from 'react'
 import { sample } from 'lodash'
 import Link from 'next/link'
+import { useSession, signIn } from 'next-auth/react'
+import { useRouter } from 'next/router'
 
 const StyledBox = styled(Box)`
   background-color: #29303a;
@@ -60,6 +62,22 @@ const Quote: React.FC = () => {
 
   return <Box>&quot;{sentence}&quot;</Box>
 }
+
+const HeroButton = () => {
+  const { data: session } = useSession();
+  const router = useRouter();
+  
+  return session ? (<Button
+      color='gray.700'
+      leftIcon={<FaChartBar />}
+      onClick={() => router.push('/servers')}
+  >Dashboard</Button>) :
+  (<Button
+      color='gray.700'
+      leftIcon={<FaSignInAlt />}
+      onClick={() => signIn('discord', { callbackUrl: "/servers" })}
+    >Login</Button>);
+};
 
 const Home: NextPage = waitlistDisabled => {
   return (
@@ -190,9 +208,7 @@ const Home: NextPage = waitlistDisabled => {
                           </Text>
                         </Button>
                     ) : (
-                        <Button color='gray.700' leftIcon={<SiNotion />}>
-                          Read docs on Notion
-                        </Button>
+                        <HeroButton />
                     )}
                   </Flex>
                 </motion.div>

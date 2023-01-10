@@ -42,7 +42,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
         includeScore: true,
         includeMatches: true,
         ignoreLocation: true,
-        isCaseSensitive: true,
+        isCaseSensitive: false,
         threshold: 0,
       }
       const fuse = new Fuse(originalValues, options)

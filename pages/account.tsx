@@ -4,7 +4,7 @@ import moment from 'moment';
 import useSWR from 'swr';
 import { useAtom } from 'jotai';
 import { userAtom } from 'atoms';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
   Box,
@@ -44,9 +44,12 @@ const columns = [
   }
 ]
 
+
 const Account: NextPage = () => {
 
   const [user, setUser] = useAtom(userAtom);
+  const [ isConnected, setIsConnected ] = useState(false);
+  const [ isConnecting, setIsConnecting ] = useState(false);
   // const [provider, setProvider] = useAtom(providerAtom);
 
   const { data: session } = useSession()
@@ -68,10 +71,17 @@ const Account: NextPage = () => {
       alert('Please log in with Discord first')
       return;
     }
-    const ethWallet = await Siwe.connectWallet();
-    if (!ethWallet) return;
-    await Siwe.createWalletAccount(ethWallet, user?.userId);
-    mutate?.();
+    setIsConnecting(true);
+    try {
+      const ethWallet = await Siwe.connectWallet();
+      if (!ethWallet) return;
+      setIsConnected(true);
+      setIsConnecting(false)
+      await Siwe.createWalletAccount(ethWallet, user?.userId);
+      mutate?.();
+    } catch (e: unknown) {
+      console.error("There was an error");
+    }
   };
   /* END For SIWE Connect Button */
 
@@ -95,15 +105,37 @@ const Account: NextPage = () => {
         _id: _address._id,
         verifiedDate: _address.verified ? moment(_address.updatedAt).format('LL') : 'False',
         actions: (
-          <Flex w='max-content' mx='auto'>
+          <Flex
+            key={_address._id}
+            w='max-content'
+            mx='auto'
+          >
             {!_address.verified ?
               <div>
-                <CustomButton color='purple' text='Verify' onClick={() => signInWithEthereum()}/>
-                <CustomButton color='red' text='Remove' onClick={() => removeWallet(_address._id)}/>
+                <CustomButton
+                  color='purple'
+                  text='Verify'
+                  onClick={() => signInWithEthereum()}
+                  disabled={!isConnected}
+                />
+                <CustomButton
+                  color='red'
+                  text='Remove'
+                  onClick={() => removeWallet(_address._id)}
+                />
               </div> :
               <div>
-                <CustomButton color='purple' text='Reverify' onClick={() => signInWithEthereum()}/>
-                <CustomButton color='red' text='Remove' onClick={() => removeWallet(_address._id)}/>
+                <CustomButton
+                  color='purple'
+                  text='Reverify'
+                  onClick={() => signInWithEthereum()}
+                  disabled={!isConnected}
+                />
+                <CustomButton
+                  color='red'
+                  text='Remove'
+                  onClick={() => removeWallet(_address._id)}
+                />
               </div>
             }
           </Flex>
@@ -129,7 +161,12 @@ const Account: NextPage = () => {
                 My Account
               </Text>
 
-              <Button onClick={() => connectWallet()}>Connect Wallet</Button>
+              <Button
+                onClick={() => connectWallet()}
+                isLoading={isConnecting}
+              >
+                { isConnected ? 'Connected' : 'Connect Wallet' }
+              </Button>
 
               {/* Render Poll Listings */}
               <DataTable

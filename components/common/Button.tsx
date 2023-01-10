@@ -4,6 +4,7 @@ interface I_ButtonProps {
   text: string
   color: string
   onClick: () => void;
+  disabled?: boolean;
 }
 
 const CustomButton: React.FC<I_ButtonProps> = ({ ...props }) => {
@@ -22,6 +23,7 @@ const CustomButton: React.FC<I_ButtonProps> = ({ ...props }) => {
         backgroundColor: `${props.color}.500`,
       }}
       onClick={props.onClick}
+      disabled={props.disabled}
     >{props.text}</Button>
   );
 

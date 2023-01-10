@@ -67,14 +67,17 @@ const useServer = () => {
 
         const sortedRoles = (
           rolesResponse?.data?.data as Record<number, string>[]
-        )
-          ?.map(c => {
+        )?.map(c => {
             const entries = Object.entries(c)[0]
             return { value: entries[0], label: entries[1] }
+          })
+          .filter(c => {
+            return c.label !== "@everyone"
           })
           .sort((curr, next) =>
             curr.label.toLowerCase() < next.label.toLowerCase() ? -1 : 1
           )
+        
         setRoles(sortedRoles)
 
         setLoading(false)

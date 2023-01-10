@@ -216,7 +216,10 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             <Text fontSize="m">{`Let's get the basics`}</Text>
           </VStack>
 
-          <FormControl isInvalid={!!errors.title?.message}>
+          <FormControl
+            isInvalid={!!errors.title?.message}
+            isRequired
+          >
             <FormLabel htmlFor='title'>Poll Title</FormLabel>
             <Input
               borderColor='gray.400'
@@ -228,7 +231,10 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             <FormErrorMessage>{errors.title?.message}</FormErrorMessage>
           </FormControl>
 
-          <FormControl isInvalid={!!errors.description?.message}>
+          <FormControl
+            isInvalid={!!errors.description?.message}
+            isRequired
+          >
             <FormLabel mt='1rem' htmlFor='description'>
               Description
             </FormLabel>
@@ -240,7 +246,9 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             <FormErrorMessage>{errors.description?.message}</FormErrorMessage>
           </FormControl>
 
-          <FormControl>
+          <FormControl
+            isRequired
+          >
             <FormLabel mt='1rem' htmlFor='options'>
               Poll Options
             </FormLabel>
@@ -304,7 +312,10 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             </Flex>
           </FormControl>
 
-          <FormControl isInvalid={!!errors.end_time?.message}>
+          <FormControl
+            isInvalid={!!errors.end_time?.message}
+            isRequired
+          >
             <FormLabel mt='1rem' htmlFor='endTime'>
               End time
             </FormLabel>
@@ -356,7 +367,9 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             <Text fontSize="m">Who should be permitted to vote?</Text>
           </VStack>
 
-          <FormControl>
+          <FormControl
+            isRequired
+          >
             <FormLabel mt='1rem' htmlFor='roleRestrictions'>
               Discord Role(s)
             </FormLabel>
@@ -393,7 +406,7 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             <Text fontSize="m">How should votes be tallied?</Text>
           </VStack>
 
-           <FormControl>
+           <FormControl isRequired>
             <FormLabel mt='1rem' htmlFor='tokenStrategies'>
               Voting Strategy
             </FormLabel>
@@ -459,7 +472,10 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             <Text fontSize="m">Where should we post this poll?</Text>
           </VStack>
 
-          <FormControl isInvalid={!!errors.channel_id?.message}>
+          <FormControl
+            isInvalid={!!errors.channel_id?.message}
+            isRequired
+          >
             <FormLabel mt='1rem' htmlFor='channel_id'>
               Channel
             </FormLabel>
