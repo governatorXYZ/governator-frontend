@@ -24,14 +24,11 @@ if (typeof window !== "undefined" && window.ethereum) {
 class Siwe {
 
   static async connectWallet(): Promise<string | null>  {
-
     if (!provider) {
       alert('No wallet found!')
       return null;
     }
-
     const wallets = await provider.send('eth_requestAccounts', [])
-
     return wallets[0]; // Wallet address
   }
 
@@ -129,7 +126,7 @@ class Siwe {
   static async removeWallet(walletAddress: string) {
     await privateBaseAxios.delete(`/account/ethereum/delete/${walletAddress}`)
   }
-
+  
 }
 
 export default Siwe;
