@@ -44,6 +44,7 @@ const Govcrumb: React.FC<GovcrumbProps> = ({ currentServerName }) => {
         crumbs.push({
           href: baseUrl,
           name: currentServerName || 'Loading...',
+          disabled: router.asPath === baseUrl,
         })
       } else if (i >= 3) {
         baseUrl = `${baseUrl}/${p}`
