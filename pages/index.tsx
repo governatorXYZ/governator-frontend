@@ -21,7 +21,8 @@ import styled from '@emotion/styled'
 import { useEffect, useState } from 'react'
 import { sample } from 'lodash'
 import Link from 'next/link'
-import { useSession } from 'next-auth/react'
+import { useSession, signIn } from 'next-auth/react'
+import { useRouter } from 'next/router'
 
 const StyledBox = styled(Box)`
   background-color: #29303a;
@@ -64,8 +65,18 @@ const Quote: React.FC = () => {
 
 const HeroButton = () => {
   const { data: session } = useSession();
-  return session ? (<Button color='gray.700' leftIcon={<FaChartBar />}>Dashboard</Button>) :
-  (<Button color='gray.700' leftIcon={<FaSignInAlt />}>Login</Button>);
+  const router = useRouter();
+  
+  return session ? (<Button
+      color='gray.700'
+      leftIcon={<FaChartBar />}
+      onClick={() => router.push('/servers')}
+  >Dashboard</Button>) :
+  (<Button
+      color='gray.700'
+      leftIcon={<FaSignInAlt />}
+      onClick={() => signIn('discord', { callbackUrl: "/servers" })}
+    >Login</Button>);
 };
 
 const Home: NextPage = waitlistDisabled => {

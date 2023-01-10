@@ -109,23 +109,23 @@ const PollOption: React.FC<PollOptionProps> = ({
                 <Flex
                   flexDir={{
                     base: 'column-reverse',
-                    lg: 'unset'
+                    xl: 'unset'
                   }}
                   alignItems={{
                     base: 'flex-end',
-                    lg: 'unset'
+                    xl: 'unset'
                   }}
                   pos='absolute'
                   top={{
                     base: '-50px',
-                    lg: '0px'
+                    xl: '0px'
                   }}
                   left={{
-                    base: null,
+                    base: undefined,
                   }}
                   right={{
                     base: '0px',
-                    lg: 'unset'
+                    xl: 'unset'
                   }}
                   color='black'
                   zIndex={1000}
