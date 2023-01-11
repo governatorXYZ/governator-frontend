@@ -24,6 +24,9 @@ import DataTable from 'components/Datatable';
 
 /* Types */
 import { Address } from '../interfaces';
+import { useConnectWallet } from '@web3-onboard/react';
+import { ethers } from 'ethers';
+import { Account, WalletState } from '@web3-onboard/core/dist/types';
 
 const columns = [
   {
@@ -46,13 +49,32 @@ const columns = [
 
 
 const Account: NextPage = () => {
-
   const [user, setUser] = useAtom(userAtom);
   const [ isConnected, setIsConnected ] = useState(false);
   const [ isConnecting, setIsConnecting ] = useState(false);
   // const [provider, setProvider] = useAtom(providerAtom);
 
+  const [
+    {
+      wallet,
+      connecting,
+    },
+    connect,
+    disconnect
+  ] = useConnectWallet();
+
+  const [
+    ethersProvider,
+    setEthersProvider
+  ] = useState<ethers.providers.Web3Provider | null>();
+
   const { data: session } = useSession()
+
+  useEffect(() => {
+    if (wallet?.provider) {
+      setEthersProvider(new ethers.providers.Web3Provider(wallet.provider, 'any'));
+    }
+  }, [wallet]);
 
   useEffect( () => {
         const fetchUser = async () => {
@@ -99,7 +121,10 @@ const Account: NextPage = () => {
     // user ? ['/api/orders', user] : null, fetchWithUser
     const { data, error, mutate } = useSWR((user?.userId !== '') ? `/account/ethereum/get-by-user-id/${user?.userId}` : null, privateBaseFetcher);
     const rawData = data?.data ? (data?.data) as Address[] : [] as Address[]
-    const addressesData = rawData.map((_address: Address, idx: number) => {
+    const addressesData = rawData
+      // Don't show unverified addresses.
+      .filter((address: Address) => address.verified)
+      .map((_address: Address, idx: number) => {
       return {
         idx: idx + 1,
         _id: _address._id,
@@ -116,7 +141,6 @@ const Account: NextPage = () => {
                   color='purple'
                   text='Verify'
                   onClick={() => signInWithEthereum()}
-                  disabled={!isConnected}
                 />
                 <CustomButton
                   color='red'
@@ -152,33 +176,59 @@ const Account: NextPage = () => {
   return (
     <Box>
       <Box bg='black' h='100vh' pt='30'>
-        <Flex justifyContent='center' alignItems='center'>
-
+        <Flex
+          justifyContent='center'
+          alignItems='center'
+          flexDir={'column'}
+        >
+          <Box
+            bg='gray.700'
+            p={10}
+            mb='32px'
+            w='1044px'
+          >
+            <Flex
+              justifyContent='space-between'
+            >
+              <Text
+                color='white'
+                fontSize='2xl'
+                mb='32px'
+              >My Account</Text>
+              <Button
+                disabled={connecting}
+                isLoading={connecting}
+                onClick={() => {
+                  if (wallet?.provider) {
+                    disconnect({ label: wallet.label }) 
+                  } else {
+                    connect()
+                  }
+                }}
+                colorScheme={wallet?.provider ? 'red' : 'green'}
+              >
+              { wallet?.provider ? 'Disconnect' : 'Connect'}
+            </Button>
+            </Flex>
+            {wallet?.provider && (
+              <Box color='white'>
+                <Text>Wallet used: {wallet.label}</Text>
+                <Text>Wallet address: {wallet.accounts[0].address}</Text>
+              </Box>
+            )}
+          </Box>
           {/* Account Details Box */}
           <Box bg='gray.700' p={10}>
             <VStack spacing={10}>
-              <Text color='white' fontSize='2xl'>
-                My Account
-              </Text>
-
-              <Button
-                onClick={() => connectWallet()}
-                isLoading={isConnecting}
-              >
-                { isConnected ? 'Connected' : 'Connect Wallet' }
-              </Button>
-
+              <Text color='white' fontSize='2xl'>Connected Addresses</Text>
               {/* Render Poll Listings */}
               <DataTable
                 data={addressesData}
                 columns={columns}
                 loading={isLoadingAddresses}
               />
-
             </VStack>
-
           </Box>
-
         </Flex>
       </Box>
     </Box>
