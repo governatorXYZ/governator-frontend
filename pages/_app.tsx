@@ -15,6 +15,7 @@ import RouteGuard from 'components/RouteGuard'
 import 'styles/shield.css';
 import { init, Web3OnboardProvider } from '@web3-onboard/react';
 import injectedModule from '@web3-onboard/injected-wallets';
+import { RPC_URL } from '../config/RPC';
 
 const injected = injectedModule();
 
@@ -27,7 +28,7 @@ const chains = [
     id: '0x1',
     token: 'ETH',
     label: 'Ethereum Mainnet',
-    rpcUrl: '123',
+    rpcUrl: RPC_URL,
   }
 ]
 
