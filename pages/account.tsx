@@ -32,13 +32,27 @@ import { RPC_URL } from '../config/RPC';
 /* Web 3 Onboard */
 import Onboard from '@web3-onboard/core'
 import injectedModule from '@web3-onboard/injected-wallets';
+import coinbaseModule from '@web3-onboard/coinbase';
+import walletConnectModule from '@web3-onboard/walletconnect';
+import gnosisModule from '@web3-onboard/gnosis'
 import { useConnectWallet } from '@web3-onboard/react';
 import { Account, WalletState } from '@web3-onboard/core/dist/types';
 
 const injected = injectedModule();
+const coinbase = coinbaseModule({ darkMode: true });
+const walletConnect = walletConnectModule({
+  qrcodeModalOptions: {
+    mobileLinks: ['rainbow', 'metamask', 'argent', 'trust'],
+  },
+  connectFirstChainId: true
+});
+const gnosis = gnosisModule()
 
 const wallets = [
-  injected
+  injected,
+  coinbase,
+  walletConnect,
+  gnosis
 ]
 
 const chains = [
@@ -109,20 +123,16 @@ const Account: NextPage = () => {
   const [isConnecting, setIsConnecting] = useState(false);
   const [connectedWalletLabel, setConnectedWalletLabel] = useState('');
   const [verified, setVerified] = useState(false);
+  const [wallet, setWallet] = useState<WalletState | null>(null);
   // const [provider, setProvider] = useAtom(providerAtom);
-
-  const [
-    {
-      wallet,
-      connecting,
-    }
-  ] = useConnectWallet();
 
   async function connectWallet() {
     try {
       setIsConnecting(true);
       const wallets = await onboard.connectWallet();
+      console.log(wallets);
       if (!wallets) return;
+      setWallet(wallets[0]);
       const { accounts, label } = wallets[0];
       setConnectedWalletLabel(label);
 
@@ -147,9 +157,10 @@ const Account: NextPage = () => {
     try {
       setIsConnecting(true);
       if (!connectedWalletLabel) return;
-      const wallets = await onboard.disconnectWallet({
+      const wallet = await onboard.disconnectWallet({
         label: connectedWalletLabel
       });
+      setWallet(null);
     } catch (e: unknown) {
       console.error("There was an error", e);
     } finally {
@@ -245,8 +256,8 @@ const Account: NextPage = () => {
                   onClick={() => signInWithEthereum()}
                 >{verified ? 'Reverify' : 'Verify'}</Button>
                 <Button
-                  disabled={connecting}
-                  isLoading={connecting}
+                  disabled={isConnecting}
+                  isLoading={isConnecting}
                   onClick={() => {
                     if (wallet?.provider) {
                       disconnectWallet()

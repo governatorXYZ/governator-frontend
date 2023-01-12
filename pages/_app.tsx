@@ -17,49 +17,49 @@ import { init, Web3OnboardProvider } from '@web3-onboard/react';
 import injectedModule from '@web3-onboard/injected-wallets';
 import { RPC_URL } from '../config/RPC';
 
-const injected = injectedModule();
+// const injected = injectedModule();
 
-const wallets = [
-  injected
-]
+// const wallets = [
+//   injected
+// ]
 
-const chains = [
-  {
-    id: '0x1',
-    token: 'ETH',
-    label: 'Ethereum Mainnet',
-    rpcUrl: RPC_URL,
-  }
-]
+// const chains = [
+//   {
+//     id: '0x1',
+//     token: 'ETH',
+//     label: 'Ethereum Mainnet',
+//     rpcUrl: RPC_URL,
+//   }
+// ]
 
-const appMetadata = {
-  name: 'Governator',
-  description: 'Governator',
-  icon: "/favicon.ico",
-  recommendedInjectedWallets: [
-    {
-      name: 'MetamMask',
-      url: "https://metamask.io/"
-    }
-  ]
-}
+// const appMetadata = {
+//   name: 'Governator',
+//   description: 'Governator',
+//   icon: "/favicon.ico",
+//   recommendedInjectedWallets: [
+//     {
+//       name: 'MetamMask',
+//       url: "https://metamask.io/"
+//     }
+//   ]
+// }
 
-const web3Onboard = init({
-  wallets,
-  chains,
-  appMetadata
-})
+// const web3Onboard = init({
+//   wallets,
+//   chains,
+//   appMetadata
+// })
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   return (
     <SessionProvider session={session}>
       <ChakraProvider theme={theme}>
-        <Web3OnboardProvider web3Onboard={web3Onboard}>
+        {/* <Web3OnboardProvider web3Onboard={web3Onboard}> */}
           <NavBar waitlistDisabled={pageProps.waitlistDisabled ?? false} />
         <RouteGuard>
           <Component {...pageProps} />
         </RouteGuard>
-        </Web3OnboardProvider>
+        {/* </Web3OnboardProvider> */}
       </ChakraProvider>
     </SessionProvider>
   )
