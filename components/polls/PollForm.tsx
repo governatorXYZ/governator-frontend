@@ -171,7 +171,7 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
       const res = await privateBaseAxios.post('/poll/create', submittedData)
 
       if (res.data) {
-        await router.push(router.asPath.replace('/create', ''))
+        await router.push(router.asPath.replace('polls/create', ''))
         toast({
           status: 'success',
           description: 'The poll has been created successfully.',
@@ -413,7 +413,7 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             <Controller
               control={control}
               name='strategy_config'
-              {...(!getValues('strategy_config')) ? setValue('strategy_config', defaultStratId ? defaultStratId : '') : null}
+              {...(!getValues('strategy_config')) ? setValue('strategy_config', defaultStratId ? defaultStratId : '') : {}}
               render={({ field: { onBlur } }) => (
                 <Select
                   id='tokenStrategies'
