@@ -288,7 +288,7 @@ const Account: NextPage = () => {
                   isDisabled={wallet?.provider ? false : true}
                   mr='16px'
                   onClick={() => signInWithEthereum()}
-                >{verified ? 'Reverify' : 'Verify'}</Button>
+                >{verified ? 'Verify' : 'Verify'}</Button>
                 <Button
                   disabled={connecting}
                   isLoading={connecting}
