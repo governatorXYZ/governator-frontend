@@ -6,6 +6,7 @@ import GovCrumb from 'components/BreadCrumb'
 import useServers from 'hooks/useServers'
 import { useRouter } from 'next/router'
 import { ChevronRightIcon } from '@chakra-ui/icons'
+import Head from 'next/head'
 
 const CreatePoll: NextPage = () => {
   const { currentServer } = useServers()
@@ -13,6 +14,9 @@ const CreatePoll: NextPage = () => {
 
   return (
     <Box bg='dark-2' minH='calc(100vh - 90px)' pt='4rem' pb='8rem'>
+      <Head>
+        <title>Governator | Create Poll</title>
+      </Head>
       <Box bg='dark-1' maxW='2xl' mx='auto' p='2rem 3rem'>
         {/* <GovCrumb currentServerName={currentServer?.name} /> */}
         <Breadcrumb

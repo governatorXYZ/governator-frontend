@@ -162,7 +162,7 @@ const NavBar = () => {
                           Dashboard
                         </Text>
                       </a>
-                    </Link>
+                    </Link>                    
                     <UserAvatar session={session} />
                     <a 
                       target='_blank'

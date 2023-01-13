@@ -14,6 +14,7 @@ import {
   Container,
   Heading,
   HStack,
+  Stack,
 } from '@chakra-ui/react'
 import Govcrumb from 'components/BreadCrumb'
 import useServers from 'hooks/useServers'
@@ -29,6 +30,7 @@ import { useGovernatorUser } from 'hooks/useGovernatorUser'
 import useServer from 'hooks/useServer'
 import { Poll, RenderedPoll } from 'interfaces'
 import { useState, useEffect } from 'react'
+import Head from 'next/head'
 
 const Dashboard: NextPage = () => {
   const router = useRouter()
@@ -156,6 +158,9 @@ const Dashboard: NextPage = () => {
 
   return (
       <Box bg='dark-2' minH='calc(100vh - 60px)' pt='4rem' pb='8rem'>
+        <Head>
+          <title>Goverator | Server Polls</title>
+        </Head>
         <Container maxW='container.xl'>
           <Box bg='dark-1' mx='auto' p='2rem 3rem'>
             <Flex justifyContent='space-between' alignItems='center'>
@@ -163,8 +168,18 @@ const Dashboard: NextPage = () => {
             </Flex>
             <Flex
               my='3rem'
-              justifyContent='space-between'
-              alignItems='flex-end'
+              justifyContent={{ 
+                base: 'center',
+                lg: 'space-between'
+              }}
+              alignItems={{
+                base: 'center',
+                lg: 'flex-end'
+              }}
+              flexDir={{
+                base: 'column',
+                lg: 'row',
+              }}
             >
           {/* Dashboard Buttons Box */}
           {!loading && currentServer && (
@@ -193,8 +208,16 @@ const Dashboard: NextPage = () => {
                 color='gray.200'
                 fontSize='2xl'
                 mt='1rem'
+                mb={{
+                  base: '2rem',
+                  lg: 'unset'
+                }}
               >My Polls</Heading>
-              <HStack spacing={4}>
+              <HStack
+                wrap={{
+                  base: 'wrap',
+                }}
+              >
                 <SearchBox
                     setValue={setNewPolls}
                     originalValues={originalPolls}
@@ -203,10 +226,15 @@ const Dashboard: NextPage = () => {
                   />
                 {loading && <Spinner color='gray.200' />}
                 {/* Render server icons */}
-                <Grid templateColumns='1fr' gap={6}>
+                <Grid
+                  templateColumns='1fr'
+                  gap={6}
+                >
                   {dashboardButtons.map((_button, idx) => {
                     return (
-                      <Box key={`button-${idx}`} width='100%'>
+                      <Box key={`button-${idx}`} width='100%' mt={{
+                        base: '1rem',
+                      }}>
                         <NextLink href={_button.href}>
                           <Button
                             leftIcon={_button.icon}
@@ -234,7 +262,7 @@ const Dashboard: NextPage = () => {
             )}
             {!loading && (
               <>
-                <Box>
+                <Box overflowX={'scroll'}>
                   <DataTable
                     data={polls}
                     columns={columns}

@@ -91,10 +91,17 @@ const Home: NextPage = () => {
         color='gray.100'>
         <Container maxW='container.xl'>
           <Grid
-            templateColumns='350px 1fr'
+            templateColumns={{ base: '1fr', lg: '350px 1fr'}}
             columnGap='4rem'
+            rowGap={{
+              base: '4rem',
+              lg: '0'
+            }}
             mx='auto'
-            maxW='max-content'>
+            maxW='max-content'
+            gridAutoFlow={{
+              base: 'row',
+            }}>
             <Box
               h='350px'
               w='350px'
@@ -218,7 +225,7 @@ const Home: NextPage = () => {
             </Text>
           </Flex>
           <Grid
-            templateColumns='repeat(2, 450px)'
+            templateColumns={{ base: '1fr', lg: 'repeat(2, 400px)' }}
             gap='4rem'
             maxW='max-content'
             mx='auto'
@@ -304,12 +311,20 @@ const Home: NextPage = () => {
         </Container>
         <SVGWall />
         <Flex
-          backgroundColor='black'
-          h='240px'
-          alignItems='center'
-          justifyContent='space-between'
-          p='40px'
-          px='60px'>
+              backgroundColor='black'
+              h={{
+                base: 'fit-content',
+                lg: '240px'
+              }}
+              alignItems='center'
+              justifyContent='space-between'
+              p='40px'
+              px='60px'
+              flexDir={{
+                base: 'column',
+                lg: 'row',
+              }}
+            >
           <Image
             src='./images/bankless.png'
             alt='BanklessDAO'
