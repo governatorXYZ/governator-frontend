@@ -37,7 +37,20 @@ const Dashboard: NextPage = () => {
   const governatorUser = useGovernatorUser()
 
   const { data, error, mutate } = useSWR(governatorUser.userId ? `/poll/user/${governatorUser.userId}` : null, privateBaseFetcher);
-  const pollsData = data?.data ? (data?.data as Poll[]) : []
+  let pollsData = data?.data ? (data?.data as Poll[]) : []
+
+  const filteredPollsData: Poll[] = [];
+
+  if (currentServer) {
+    pollsData.forEach((poll) => {
+      if (poll.client_config.find(config => config.guild_id === currentServer.id)) {
+        filteredPollsData.push(poll)
+      }
+    });
+  }
+
+  pollsData = filteredPollsData as Poll[];
+
   pollsData.sort(function (a, b) {
     return a.createdAt > b.createdAt ? -1 : a.createdAt < b.createdAt ? 1 : 0
   });
@@ -61,24 +74,28 @@ const Dashboard: NextPage = () => {
 
   const columns = [
     {
-      Header: 'Created',
-      accessor: 'created',
-    },
-    {
-      Header: 'Name',
+      Header: 'Title',
       accessor: (data: unknown) => data,
       Cell: ({ value }: {
         value: Record<string, any>
       }) => (<NextLink href={`${router.asPath}/polls/results/${value.id}`}>{ value.name }</NextLink>)
     },
     {
-      Header: 'Channel',
-      accessor: 'channel',
+      Header: 'Start Date',
+      accessor: 'created',
     },
     {
-      Header: 'Author',
-      accessor: 'author',
+      Header: 'End Date',
+      accessor: 'end_date',
     },
+    // {
+    //   Header: 'Channel',
+    //   accessor: 'channel',
+    // },
+    // {
+    //   Header: 'Author',
+    //   accessor: 'author',
+    // },
     // {
     //   Header: 'Votes',
     //   accessor: 'votes',
@@ -93,12 +110,13 @@ const Dashboard: NextPage = () => {
     return pollsData.map(p => {
       return {
         id: p._id,
-        created: luxon.DateTime.fromISO(p.createdAt).toFormat('LLL dd yyyy t'),
         name: p.title,
-        channel: isLoadingChannels
-          ? 'Loading...'
-          : (channels.find(chan => chan.value === (p.client_config.find((conf) => conf.provider_id === 'discord')?.channel_id)))?.label,
-        author: governatorUser.discordUsername,
+        created: luxon.DateTime.fromISO(p.createdAt).toFormat('LLL dd yyyy t'),
+        end_date: luxon.DateTime.fromISO(p.end_time).toFormat('LLL dd yyyy t'),
+        // channel: isLoadingChannels
+        //   ? 'Loading...'
+        //   : (channels.find(chan => chan.value === (p.client_config.find((conf) => conf.provider_id === 'discord')?.channel_id)))?.label,
+        // author: governatorUser.discordUsername,
         // votes: 0, -- needs implementing endpoint on BE
         actions: (
           <Flex w='max-content' mx='auto'>
@@ -181,7 +199,7 @@ const Dashboard: NextPage = () => {
                     setValue={setNewPolls}
                     originalValues={originalPolls}
                     searchKeys={['name']}
-                    placeholder='Search poll name...'
+                    placeholder='Search poll title...'
                   />
                 {loading && <Spinner color='gray.200' />}
                 {/* Render server icons */}

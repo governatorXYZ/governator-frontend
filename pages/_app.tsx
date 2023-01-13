@@ -76,10 +76,10 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
     <SessionProvider session={session}>
       <ChakraProvider theme={theme}>
         <Web3OnboardProvider web3Onboard={web3Onboard}>
-          <NavBar waitlistDisabled={pageProps.waitlistDisabled ?? false} />
-        <RouteGuard>
-          <Component {...pageProps} />
-        </RouteGuard>
+          <NavBar />
+          <RouteGuard>
+            <Component {...pageProps} />
+          </RouteGuard>
         </Web3OnboardProvider>
       </ChakraProvider>
     </SessionProvider>

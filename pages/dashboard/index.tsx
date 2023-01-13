@@ -11,13 +11,13 @@ const ServerSelect: NextPage = () => {
   return (
     <Box bg='dark-2' minH='calc(100vh - 60px)' pt='4rem' pb='8rem'>
       <Box bg='dark-1' maxW='2xl' mx='auto' p='2rem 3rem'>
-        <Govcrumb />
+        {/* <Govcrumb /> */}
         <Flex justifyContent='center' alignItems='center'>
           {/* Server Select Box */}
           <Box p={10}>
             <VStack spacing={10}>
               <Text color='white' fontSize='2xl'>
-                Select Server
+                Select Community
               </Text>
               {loading && <Spinner color='gray.200' />}
             </VStack>
@@ -40,7 +40,7 @@ const ServerSelect: NextPage = () => {
                   cursor='pointer'
                   role='group'
                 >
-                  <Link href={`/servers/${_server.id}`} passHref>
+                  <Link href={`/community/${_server.id}`} passHref>
                     <Box
                       p={1}
                       borderRadius='full'
@@ -70,7 +70,7 @@ const ServerSelect: NextPage = () => {
                   </Link>
                   <Text color='white' overflow='hidden' textOverflow='ellipsis'>
                     {`${
-                      _server.name.length > 10
+                      _server.name.length > 15
                         ? `${_server.name.slice(0, 10)}...`
                         : _server.name
                     }`}
