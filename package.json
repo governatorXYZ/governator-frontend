@@ -35,7 +35,7 @@
     "@web3-onboard/trezor": "^2.3.2",
     "@web3-onboard/walletconnect": "^2.2.2",
     "@web3-onboard/web3auth": "^2.1.4",
-    "axios": "^0.26.0",
+    "axios": "^0.26.1",
     "chakra-react-select": "^3.0.4",
     "chart.js": "^3.7.1",
     "discord-api-types": "^0.29.0",
