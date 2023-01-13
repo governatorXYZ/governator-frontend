@@ -319,7 +319,7 @@ const Home: NextPage = waitlistDisabled => {
                     mt='0.5rem'
                     maxW='40ch'
                     textAlign='center'>
-                  Automatically run the poll again and again!
+                  Improve voter turnout and authentic voting!
                 </Text>
               </Flex>
             </Grid>
@@ -338,15 +338,6 @@ const Home: NextPage = waitlistDisabled => {
                 alignSelf='center'
             />
             <Flex gap='8px'>
-              <Link href='https://www.bankless.community/'>
-                <a>
-                  <Button
-                      variant='ghost'
-                      _hover={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
-                    <FiGlobe fontSize='20px' />
-                  </Button>
-                </a>
-              </Link>
               <Link href='https://discord.com/invite/bankless'>
                 <a>
                   <Button
@@ -356,21 +347,12 @@ const Home: NextPage = waitlistDisabled => {
                   </Button>
                 </a>
               </Link>
-              <Link href='https://twitter.com/banklessdao'>
+              <Link href='https://twitter.com/governatorxyz'>
                 <a>
                   <Button
                       variant='ghost'
                       _hover={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
                     <FiTwitter fontSize='20px' />
-                  </Button>
-                </a>
-              </Link>
-              <Link href='https://banklessdao.medium.com/'>
-                <a>
-                  <Button
-                      variant='ghost'
-                      _hover={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
-                    <AiOutlineMedium fontSize='20px' />
                   </Button>
                 </a>
               </Link>
