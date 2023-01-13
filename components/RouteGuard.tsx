@@ -13,7 +13,7 @@ const RouteGuard: React.FC = ({ children }) => {
   const { status } = useSession()
   const router = useRouter()
 
-  const url = router.query.waitlist ? '/?waitlist=true' : '/'
+  const url = '/'
 
   useEffect(() => {
     if (status === 'unauthenticated') {
