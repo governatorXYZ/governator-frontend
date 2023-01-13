@@ -81,7 +81,7 @@ const Dashboard: NextPage = () => {
       }) => (<NextLink href={`${router.asPath}/polls/results/${value.id}`}>{ value.name }</NextLink>)
     },
     {
-      Header: 'Created',
+      Header: 'Start Date',
       accessor: 'created',
     },
     {
