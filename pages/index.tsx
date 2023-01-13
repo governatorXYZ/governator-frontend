@@ -70,16 +70,16 @@ const HeroButton = () => {
   return session ? (<Button
       color='gray.700'
       leftIcon={<FaChartBar />}
-      onClick={() => router.push('/servers')}
+      onClick={() => router.push('/dashboard')}
   >Dashboard</Button>) :
   (<Button
       color='gray.700'
       leftIcon={<FaSignInAlt />}
-      onClick={() => signIn('discord', { callbackUrl: "/servers" })}
+      onClick={() => signIn('discord', { callbackUrl: "/dashboard" })}
     >Login</Button>);
 };
 
-const Home: NextPage = waitlistDisabled => {
+const Home: NextPage = () => {
   return (
       <>
         <Head>
@@ -187,27 +187,7 @@ const Home: NextPage = waitlistDisabled => {
                       Add to Discord
                     </Button>
 
-                    {!waitlistDisabled ? (
-                        <Button
-                            color='gray.700'
-                            onClick={() => {
-                              window.open(
-                                  'https://airtable.com/shrWMfKtVfdBvv5dL',
-                                  '_blank'
-                              )
-                            }}>
-                          <Text as='span' cursor='pointer'>
-                            <Text
-                                as='span'
-                                role='img'
-                                display='inline-block'
-                                mr='0.75rem'>
-                              🙋‍♂️
-                            </Text>
-                            Join the waitlist
-                          </Text>
-                        </Button>
-                    ) : (
+                    {(
                         <HeroButton />
                     )}
                   </Flex>
@@ -319,7 +299,7 @@ const Home: NextPage = waitlistDisabled => {
                     mt='0.5rem'
                     maxW='40ch'
                     textAlign='center'>
-                  Automatically run the poll again and again!
+                  Improve voter turnout and authentic voting!
                 </Text>
               </Flex>
             </Grid>
@@ -338,15 +318,6 @@ const Home: NextPage = waitlistDisabled => {
                 alignSelf='center'
             />
             <Flex gap='8px'>
-              <Link href='https://www.bankless.community/'>
-                <a>
-                  <Button
-                      variant='ghost'
-                      _hover={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
-                    <FiGlobe fontSize='20px' />
-                  </Button>
-                </a>
-              </Link>
               <Link href='https://discord.com/invite/bankless'>
                 <a>
                   <Button
@@ -356,7 +327,7 @@ const Home: NextPage = waitlistDisabled => {
                   </Button>
                 </a>
               </Link>
-              <Link href='https://twitter.com/banklessdao'>
+              <Link href='https://twitter.com/governatorxyz'>
                 <a>
                   <Button
                       variant='ghost'
@@ -365,32 +336,11 @@ const Home: NextPage = waitlistDisabled => {
                   </Button>
                 </a>
               </Link>
-              <Link href='https://banklessdao.medium.com/'>
-                <a>
-                  <Button
-                      variant='ghost'
-                      _hover={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
-                    <AiOutlineMedium fontSize='20px' />
-                  </Button>
-                </a>
-              </Link>
             </Flex>
           </Flex>
         </StyledBox>
       </>
   )
-}
-
-export const getServerSideProps: GetServerSideProps = async context => {
-  const waitlistDisabled =
-      context.query.waitlist === 'true'
-          ? true
-          : process.env.NEXT_PUBLIC_WAITLIST_DISABLED === 'true'
-  return {
-    props: {
-      waitlistDisabled: waitlistDisabled,
-    }, // will be passed to the page component as props
-  }
 }
 
 export default Home

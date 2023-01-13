@@ -25,26 +25,27 @@ const Govcrumb: React.FC<GovcrumbProps> = ({ currentServerName }) => {
   const router = useRouter()
   const guildId = router.asPath.split('/')[2]
 
-  const isServerPage = router.asPath === '/servers';
+  const isServerPage = router.asPath === '/dashboard';
 
   function buildCrumbs(path: string): T_crumbs[] {
     const paths = path.split('/')
     const crumbs: T_crumbs[] = []
-    let baseUrl = '/servers'
+    let baseUrl = '/dashboard'
+    const communityUrl = '/community'
 
     paths.forEach((p, i) => {
       if (i === 1) {
         crumbs.push({
           href: baseUrl,
-          name: 'Servers',
+          name: 'Dashboard',
           disabled: isServerPage,
         })
       } else if (i === 2) {
-        baseUrl = `${baseUrl}/${guildId}`
+        baseUrl = `${communityUrl}/${guildId}`
         crumbs.push({
           href: baseUrl,
           name: currentServerName || 'Loading...',
-          disabled: router.asPath === baseUrl,
+          disabled: router.asPath === communityUrl,
         })
       } else if (i >= 3) {
         baseUrl = `${baseUrl}/${p}`

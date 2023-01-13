@@ -291,7 +291,7 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
               </Button>
             )}
           </FormControl>
-          <FormControl>
+          <FormControl style={{ visibility: 'hidden'}}>
             <Flex alignItems='center' mt='1rem'>
               <Checkbox
                   isDisabled={isTokenVote}
@@ -367,9 +367,7 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             <Text fontSize="m">Who should be permitted to vote?</Text>
           </VStack>
 
-          <FormControl
-            isRequired
-          >
+          <FormControl>
             <FormLabel mt='1rem' htmlFor='roleRestrictions'>
               Discord Role(s)
             </FormLabel>

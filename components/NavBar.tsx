@@ -13,6 +13,7 @@ import {
   MenuList,
   MenuGroup,
   MenuDivider,
+  Button,
 } from '@chakra-ui/react'
 import { AiOutlineCaretDown } from 'react-icons/ai'
 import Link from 'next/link'
@@ -22,22 +23,15 @@ import { useAtom } from 'jotai';
 import { userAtom } from 'atoms';
 import { useEffect } from 'react'
 
-const LoginText = ({ waitlistDisabled }: { waitlistDisabled: boolean }) => {
+const LoginText = () => {
   return (
       <HStack justifyContent='center' alignItems='center' color='gray.200'>
-        {!waitlistDisabled ? (
-            <Text
-                as='a'
-                href='https://airtable.com/shrWMfKtVfdBvv5dL'
-                target='_blank'>
-              Join the waitlist
-            </Text>
-        ) : (
+        {(
             <Text
                 as='span'
                 cursor='pointer'
                 onClick={() => {
-                  signIn('discord', { callbackUrl: "/servers" })
+                  signIn('discord', { callbackUrl: "/dashboard" })
                 }}>
               Login
             </Text>
@@ -83,6 +77,15 @@ const UserAvatar: React.FC<{ session: Session }> = ({ session }) => {
                 My Account
               </Link>
             </MenuItem>
+            <MenuItem>
+             <a 
+             href='https://governator.notion.site/Governator-Support-Center-2ebc542d891a4fbba9c014cef66a6d64'
+             target='_blank'
+             rel='noreferrer'
+             >
+              Help
+            </a>
+            </MenuItem>
             <MenuItem
                 onClick={() => {
                   signOut()
@@ -95,7 +98,7 @@ const UserAvatar: React.FC<{ session: Session }> = ({ session }) => {
   )
 }
 
-const NavBar = ({ waitlistDisabled }: { waitlistDisabled: boolean }) => {
+const NavBar = () => {
   const { data: session } = useSession()
   const [user, setUser] = useAtom(userAtom);
 
@@ -153,7 +156,7 @@ const NavBar = ({ waitlistDisabled }: { waitlistDisabled: boolean }) => {
             <Box>
               {session ? (
                   <HStack color='gray.200' spacing='2rem'>
-                    <Link href='/servers'>
+                    <Link href='/dashboard'>
                       <a>
                         <Text as='span' fontSize='15px' fontWeight='500'>
                           Dashboard
@@ -161,9 +164,18 @@ const NavBar = ({ waitlistDisabled }: { waitlistDisabled: boolean }) => {
                       </a>
                     </Link>
                     <UserAvatar session={session} />
+                    <a 
+                      target='_blank'
+                      rel='noreferrer'
+                      href='https://forms.gle/yWiYsAmy243rNUvm9'
+                    >
+                    <Button
+                      colorScheme='purple'
+                    >Feedback</Button>
+                    </a>
                   </HStack>
               ) : (
-                  <LoginText waitlistDisabled={waitlistDisabled} />
+                  <LoginText />
               )}
             </Box>
           </Flex>
