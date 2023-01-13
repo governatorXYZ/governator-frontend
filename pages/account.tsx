@@ -116,9 +116,6 @@ type AddressesData = {
 
 const Account: NextPage = () => {
   const [user, setUser] = useAtom(userAtom);
-  const [isConnected, setIsConnected] = useState(false);
-  const [isConnecting, setIsConnecting] = useState(false);
-  const [connectedWalletLabel, setConnectedWalletLabel] = useState('');
   const [verified, setVerified] = useState(false);
   // const [provider, setProvider] = useAtom(providerAtom);
 
@@ -134,45 +131,51 @@ const Account: NextPage = () => {
   useEffect(() => {
     if (wallet?.provider) {
       const matchingAddress = addressesData.find((addressData: any) => addressData._id.toLowerCase() === wallet?.accounts[0].address)
+      
+      if (!matchingAddress) {
+        setVerified(false);
+        return;
+      }
+
       const verified = matchingAddress?.verifiedDate !== 'False';
       setVerified(verified);
+    } else {
+      setVerified(false);
     }
-  }, [wallet])
+  }, [wallet]);
 
   async function connectWallet() {
     try {
-      setIsConnecting(true);
       const wallets = await connect();
-      console.log(wallets);
       if (!wallets) return;
       const { accounts, label } = wallets[0];
-      setConnectedWalletLabel(label);
 
       if (!accounts) return;
       const { address } = accounts[0];
 
       const matchingAddress = addressesData.find((addressData: any) => addressData._id.toLowerCase() === address)
 
+      // no address in db, so add it.
       if (!matchingAddress) {
-        await Siwe.createWalletAccount(address, user.userId);
+        await await Siwe.createWalletAccount(address, user.userId);
         setVerified(false);
         mutate?.();
-        return;
       } 
 
       // Check if it is verified.
       const verified = matchingAddress?.verifiedDate !== 'False';
+
+      // if yes, update state.
       setVerified(verified);
 
+      // if not, verify it.
       if (!verified) {
         await Siwe.signInWithEthereum(session?.discordId as unknown as string);
         mutate?.();
+        setVerified(true);
       }
-
     } catch (e: unknown) {
       console.error("There was an error", e);
-    } finally {
-      setIsConnecting(false);
     }
   }
 
@@ -184,21 +187,23 @@ const Account: NextPage = () => {
       });
     } catch (e: unknown) {
       console.error("There was an error", e);
-    } finally {
-      setIsConnecting(false);
     }
   }
 
   const { data: session } = useSession()
 
   const signInWithEthereum = async (): Promise<void> => {
+    const matchingAddress = addressesData.find((addressData: any) => addressData._id.toLowerCase() === wallet?.accounts[0].address)
+
+    if (!matchingAddress && wallet?.accounts[0].address) {
+      await await Siwe.createWalletAccount(wallet?.accounts[0].address, user.userId);
+      setVerified(false);
+      mutate?.();
+    }
+
     await Siwe.signInWithEthereum(session?.discordId as unknown as string);
     mutate?.();
 
-    const matchingAddress = addressesData.find((addressData: any) => addressData._id.toLowerCase() === wallet?.accounts[0].address)
-
-    console.log(matchingAddress);
-    
     const verified = matchingAddress?.verifiedDate !== 'False';
     setVerified(verified);
   }
