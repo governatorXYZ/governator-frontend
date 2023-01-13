@@ -79,7 +79,7 @@ const HeroButton = () => {
     >Login</Button>);
 };
 
-const Home: NextPage = waitlistDisabled => {
+const Home: NextPage = () => {
   return (
       <>
         <Head>
@@ -187,27 +187,7 @@ const Home: NextPage = waitlistDisabled => {
                       Add to Discord
                     </Button>
 
-                    {!waitlistDisabled ? (
-                        <Button
-                            color='gray.700'
-                            onClick={() => {
-                              window.open(
-                                  'https://airtable.com/shrWMfKtVfdBvv5dL',
-                                  '_blank'
-                              )
-                            }}>
-                          <Text as='span' cursor='pointer'>
-                            <Text
-                                as='span'
-                                role='img'
-                                display='inline-block'
-                                mr='0.75rem'>
-                              🙋‍♂️
-                            </Text>
-                            Join the waitlist
-                          </Text>
-                        </Button>
-                    ) : (
+                    {(
                         <HeroButton />
                     )}
                   </Flex>
@@ -361,18 +341,6 @@ const Home: NextPage = waitlistDisabled => {
         </StyledBox>
       </>
   )
-}
-
-export const getServerSideProps: GetServerSideProps = async context => {
-  const waitlistDisabled =
-      context.query.waitlist === 'true'
-          ? true
-          : process.env.NEXT_PUBLIC_WAITLIST_DISABLED === 'true'
-  return {
-    props: {
-      waitlistDisabled: waitlistDisabled,
-    }, // will be passed to the page component as props
-  }
 }
 
 export default Home

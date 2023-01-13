@@ -23,17 +23,10 @@ import { useAtom } from 'jotai';
 import { userAtom } from 'atoms';
 import { useEffect } from 'react'
 
-const LoginText = ({ waitlistDisabled }: { waitlistDisabled: boolean }) => {
+const LoginText = () => {
   return (
       <HStack justifyContent='center' alignItems='center' color='gray.200'>
-        {!waitlistDisabled ? (
-            <Text
-                as='a'
-                href='https://airtable.com/shrWMfKtVfdBvv5dL'
-                target='_blank'>
-              Join the waitlist
-            </Text>
-        ) : (
+        {(
             <Text
                 as='span'
                 cursor='pointer'
@@ -105,7 +98,7 @@ const UserAvatar: React.FC<{ session: Session }> = ({ session }) => {
   )
 }
 
-const NavBar = ({ waitlistDisabled }: { waitlistDisabled: boolean }) => {
+const NavBar = () => {
   const { data: session } = useSession()
   const [user, setUser] = useAtom(userAtom);
 
@@ -182,7 +175,7 @@ const NavBar = ({ waitlistDisabled }: { waitlistDisabled: boolean }) => {
                     </a>
                   </HStack>
               ) : (
-                  <LoginText waitlistDisabled={waitlistDisabled} />
+                  <LoginText />
               )}
             </Box>
           </Flex>
