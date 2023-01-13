@@ -367,9 +367,7 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             <Text fontSize="m">Who should be permitted to vote?</Text>
           </VStack>
 
-          <FormControl
-            isRequired
-          >
+          <FormControl>
             <FormLabel mt='1rem' htmlFor='roleRestrictions'>
               Discord Role(s)
             </FormLabel>

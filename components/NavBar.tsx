@@ -38,7 +38,7 @@ const LoginText = ({ waitlistDisabled }: { waitlistDisabled: boolean }) => {
                 as='span'
                 cursor='pointer'
                 onClick={() => {
-                  signIn('discord', { callbackUrl: "/communities" })
+                  signIn('discord', { callbackUrl: "/dashboard" })
                 }}>
               Login
             </Text>
@@ -163,7 +163,7 @@ const NavBar = ({ waitlistDisabled }: { waitlistDisabled: boolean }) => {
             <Box>
               {session ? (
                   <HStack color='gray.200' spacing='2rem'>
-                    <Link href='/communities'>
+                    <Link href='/dashboard'>
                       <a>
                         <Text as='span' fontSize='15px' fontWeight='500'>
                           Dashboard

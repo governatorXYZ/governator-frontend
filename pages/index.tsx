@@ -70,12 +70,12 @@ const HeroButton = () => {
   return session ? (<Button
       color='gray.700'
       leftIcon={<FaChartBar />}
-      onClick={() => router.push('/communities')}
+      onClick={() => router.push('/dashboard')}
   >Dashboard</Button>) :
   (<Button
       color='gray.700'
       leftIcon={<FaSignInAlt />}
-      onClick={() => signIn('discord', { callbackUrl: "/communities" })}
+      onClick={() => signIn('discord', { callbackUrl: "/dashboard" })}
     >Login</Button>);
 };
 
