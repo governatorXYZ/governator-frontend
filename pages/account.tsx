@@ -60,7 +60,7 @@ const chains = [
     id: '0x1',
     token: 'ETH',
     label: 'Ethereum Mainnet',
-    rpcUrl: RPC_URL,
+    rpcUrl: process.env.NEXT_PUBLIC_RPC_URL,
   }
 ]
 
