@@ -22,7 +22,6 @@ import {privateBaseAxios} from '../constants/axios';
 import { useAtom } from 'jotai';
 import { userAtom } from 'atoms';
 import { useEffect } from 'react'
-import { Router } from 'next/router'
 
 const LoginText = () => {
   return (
