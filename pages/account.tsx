@@ -26,69 +26,66 @@ import DataTable from 'components/Datatable';
 import { Address } from '../interfaces';
 import { ethers, Wallet } from 'ethers';
 
-/* Config */
-import { RPC_URL } from '../config/RPC';
-
 /* Web 3 Onboard */
-import Onboard from '@web3-onboard/core'
-import injectedModule from '@web3-onboard/injected-wallets';
-import coinbaseModule from '@web3-onboard/coinbase';
-import walletConnectModule from '@web3-onboard/walletconnect';
-import gnosisModule from '@web3-onboard/gnosis'
-import { useConnectWallet } from '@web3-onboard/react';
+// import Onboard from '@web3-onboard/core'
+// import injectedModule from '@web3-onboard/injected-wallets';
+// import coinbaseModule from '@web3-onboard/coinbase';
+// import walletConnectModule from '@web3-onboard/walletconnect';
+// import gnosisModule from '@web3-onboard/gnosis'
 import { Account, WalletState } from '@web3-onboard/core/dist/types';
+import { useConnectWallet } from '@web3-onboard/react';
 
-const injected = injectedModule();
-const coinbase = coinbaseModule({ darkMode: true });
-const walletConnect = walletConnectModule({
-  qrcodeModalOptions: {
-    mobileLinks: ['rainbow', 'metamask', 'argent', 'trust'],
-  },
-  connectFirstChainId: true
-});
-const gnosis = gnosisModule()
+// const injected = injectedModule();
+// const coinbase = coinbaseModule({ darkMode: true });
+// const walletConnect = walletConnectModule({
+//   qrcodeModalOptions: {
+//     mobileLinks: ['rainbow', 'metamask', 'argent', 'trust'],
+//   },
+//   connectFirstChainId: true
+// });
+// const gnosis = gnosisModule()
 
-const wallets = [
-  injected,
-  coinbase,
-  walletConnect,
-  gnosis
-]
+// const wallets = [
+//   injected,
+//   coinbase,
+//   walletConnect,
+//   gnosis
+// ]
 
-const chains = [
-  {
-    id: '0x1',
-    token: 'ETH',
-    label: 'Ethereum Mainnet',
-    rpcUrl: process.env.NEXT_PUBLIC_RPC_URL,
-  }
-]
+// const chains = [
+//   {
+//     id: '0x1',
+//     token: 'ETH',
+//     label: 'Ethereum Mainnet',
+//     rpcUrl: process.env.NEXT_PUBLIC_RPC_URL ?? '',
+//   }
+// ]
 
-const appMetadata = {
-  name: 'Governator',
-  description: 'Governator',
-  icon: "/favicon.ico",
-  recommendedInjectedWallets: [
-    {
-      name: 'MetamMask',
-      url: "https://metamask.io/"
-    }
-  ]
-}
+// const appMetadata = {
+//   name: 'Governator',
+//   description: 'Governator',
+//   icon: "/favicon.ico",
+//   recommendedInjectedWallets: [
+//     {
+//       name: 'MetamMask',
+//       url: "https://metamask.io/"
+//     }
+//   ]
+// }
 
-const onboard = Onboard({
-  wallets,
-  chains,
-  appMetadata,
-  accountCenter: {
-    desktop: {
-      enabled: false
-    },
-    mobile: {
-      enabled: false
-    }
-  }
-});
+// const onboard = Onboard({
+//   wallets,
+//   chains,
+//   appMetadata,
+//   accountCenter: {
+//     desktop: {
+//       enabled: false
+//     },
+//     mobile: {
+//       enabled: false
+//     }
+//   }
+// });
 
 const columns = [
   {
@@ -123,29 +120,55 @@ const Account: NextPage = () => {
   const [isConnecting, setIsConnecting] = useState(false);
   const [connectedWalletLabel, setConnectedWalletLabel] = useState('');
   const [verified, setVerified] = useState(false);
-  const [wallet, setWallet] = useState<WalletState | null>(null);
   // const [provider, setProvider] = useAtom(providerAtom);
+
+  const [
+    {
+      wallet,
+      connecting
+    }, 
+    connect,
+    disconnect
+  ] = useConnectWallet();
+
+  useEffect(() => {
+    if (wallet?.provider) {
+      const matchingAddress = addressesData.find((addressData: any) => addressData._id.toLowerCase() === wallet?.accounts[0].address)
+      const verified = matchingAddress?.verifiedDate !== 'False';
+      setVerified(verified);
+    }
+  }, [wallet])
 
   async function connectWallet() {
     try {
       setIsConnecting(true);
-      const wallets = await onboard.connectWallet();
+      const wallets = await connect();
       console.log(wallets);
       if (!wallets) return;
-      setWallet(wallets[0]);
       const { accounts, label } = wallets[0];
       setConnectedWalletLabel(label);
 
       if (!accounts) return;
       const { address } = accounts[0];
 
-      const verified = addressesData.find((addressData: any) => addressData._id.toLowerCase() === address).verifiedDate !== 'False';
+      const matchingAddress = addressesData.find((addressData: any) => addressData._id.toLowerCase() === address)
+
+      if (!matchingAddress) {
+        await Siwe.createWalletAccount(address, user.userId);
+        setVerified(false);
+        mutate?.();
+        return;
+      } 
+
+      // Check if it is verified.
+      const verified = matchingAddress?.verifiedDate !== 'False';
       setVerified(verified);
 
       if (!verified) {
         await Siwe.signInWithEthereum(session?.discordId as unknown as string);
         mutate?.();
       }
+
     } catch (e: unknown) {
       console.error("There was an error", e);
     } finally {
@@ -155,12 +178,10 @@ const Account: NextPage = () => {
 
   async function disconnectWallet() {
     try {
-      setIsConnecting(true);
-      if (!connectedWalletLabel) return;
-      const wallet = await onboard.disconnectWallet({
-        label: connectedWalletLabel
+      if (!wallet?.provider) return;
+      await disconnect({
+        label: wallet.label
       });
-      setWallet(null);
     } catch (e: unknown) {
       console.error("There was an error", e);
     } finally {
@@ -173,7 +194,15 @@ const Account: NextPage = () => {
   const signInWithEthereum = async (): Promise<void> => {
     await Siwe.signInWithEthereum(session?.discordId as unknown as string);
     mutate?.();
+
+    const matchingAddress = addressesData.find((addressData: any) => addressData._id.toLowerCase() === wallet?.accounts[0].address)
+
+    console.log(matchingAddress);
+    
+    const verified = matchingAddress?.verifiedDate !== 'False';
+    setVerified(verified);
   }
+
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -256,8 +285,8 @@ const Account: NextPage = () => {
                   onClick={() => signInWithEthereum()}
                 >{verified ? 'Reverify' : 'Verify'}</Button>
                 <Button
-                  disabled={isConnecting}
-                  isLoading={isConnecting}
+                  disabled={connecting}
+                  isLoading={connecting}
                   onClick={() => {
                     if (wallet?.provider) {
                       disconnectWallet()
