@@ -291,7 +291,7 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
               </Button>
             )}
           </FormControl>
-          <FormControl>
+          <FormControl style={{ visibility: 'hidden'}}>
             <Flex alignItems='center' mt='1rem'>
               <Checkbox
                   isDisabled={isTokenVote}

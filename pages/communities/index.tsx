@@ -40,7 +40,7 @@ const ServerSelect: NextPage = () => {
                   cursor='pointer'
                   role='group'
                 >
-                  <Link href={`/servers/${_server.id}`} passHref>
+                  <Link href={`/communities/${_server.id}`} passHref>
                     <Box
                       p={1}
                       borderRadius='full'
@@ -70,7 +70,7 @@ const ServerSelect: NextPage = () => {
                   </Link>
                   <Text color='white' overflow='hidden' textOverflow='ellipsis'>
                     {`${
-                      _server.name.length > 10
+                      _server.name.length > 15
                         ? `${_server.name.slice(0, 10)}...`
                         : _server.name
                     }`}
