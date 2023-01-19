@@ -17,24 +17,16 @@ import { init, Web3OnboardProvider } from '@web3-onboard/react';
 import injectedModule from '@web3-onboard/injected-wallets';
 import coinbaseModule from '@web3-onboard/coinbase';
 import walletConnectModule from '@web3-onboard/walletconnect';
-import gnosisModule from '@web3-onboard/gnosis'
 
 const injected = injectedModule();
 const coinbase = coinbaseModule({ darkMode: true });
-const walletConnect = walletConnectModule({
-  qrcodeModalOptions: {
-    mobileLinks: ['rainbow', 'metamask', 'argent', 'trust'],
-  },
-  connectFirstChainId: true
-});
-const gnosis = gnosisModule()
+const walletConnect = walletConnectModule();
 
 const wallets = [
   injected,
-  // coinbase,
-  // walletConnect,
-  // gnosis
-]
+  coinbase,
+  walletConnect
+];
 
 const chains = [
   {
