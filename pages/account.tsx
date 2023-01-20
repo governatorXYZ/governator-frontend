@@ -24,70 +24,10 @@ import DataTable from 'components/Datatable';
 
 /* Types */
 import { Address } from '../interfaces';
-import { ethers, Wallet } from 'ethers';
 
-/* Web 3 Onboard */
-// import Onboard from '@web3-onboard/core'
-import injectedModule from '@web3-onboard/injected-wallets';
-import coinbaseModule from '@web3-onboard/coinbase';
-import walletConnectModule from '@web3-onboard/walletconnect';
-import gnosisModule from '@web3-onboard/gnosis'
-import { Account, ConnectOptions, WalletState } from '@web3-onboard/core/dist/types';
+import { Account } from '@web3-onboard/core/dist/types';
 import { useConnectWallet } from '@web3-onboard/react';
 import Head from 'next/head';
-import { EIP1193Provider } from '@web3-onboard/core';
-
-const injected = injectedModule();
-const coinbase = coinbaseModule({ darkMode: true });
-const walletConnect = walletConnectModule({
-  qrcodeModalOptions: {
-    mobileLinks: ['rainbow', 'metamask', 'argent', 'trust'],
-  },
-  connectFirstChainId: true
-});
-const gnosis = gnosisModule()
-
-// const wallets = [
-//   injected,
-//   coinbase,
-//   walletConnect,
-//   gnosis
-// ]
-
-// const chains = [
-//   {
-//     id: '0x1',
-//     token: 'ETH',
-//     label: 'Ethereum Mainnet',
-//     rpcUrl: process.env.NEXT_PUBLIC_RPC_URL ?? '',
-//   }
-// ]
-
-// const appMetadata = {
-//   name: 'Governator',
-//   description: 'Governator',
-//   icon: "/favicon.ico",
-//   recommendedInjectedWallets: [
-//     {
-//       name: 'MetamMask',
-//       url: "https://metamask.io/"
-//     }
-//   ]
-// }
-
-// const onboard = Onboard({
-//   wallets,
-//   chains,
-//   appMetadata,
-//   accountCenter: {
-//     desktop: {
-//       enabled: false
-//     },
-//     mobile: {
-//       enabled: false
-//     }
-//   }
-// });
 
 const columns = [
   {

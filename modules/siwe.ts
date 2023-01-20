@@ -1,11 +1,10 @@
 import { ethers } from 'ethers';
 import { SiweMessage } from 'siwe';
 import { privateBaseAxios } from 'constants/axios';
-import keccak from 'keccak';
 
 /* TYPES */
 import { GovernatorWindow } from "../types/global";
-import { EIP1193Provider, WalletState } from '@web3-onboard/core';
+import { EIP1193Provider } from '@web3-onboard/core';
 
 declare const window: GovernatorWindow;
 
@@ -60,21 +59,6 @@ class Siwe {
     return updatedAccountXhr.data
   }
 
-  static encodeAddress (address: string): string {
-    const addr = address.toLowerCase().replace('0x', '');
-    const hash = keccak('keccak256').update(addr).digest('hex');
-    let ret = '0x';
-
-    for (let i = 0; i < addr.length; i++) {
-      if (parseInt(hash[i], 16) >= 8) {
-        ret += addr[i].toUpperCase();
-      } else {
-        ret += addr[i];
-      }
-    }
-    return ret;
-  }
-
   static async signInWithEthereum(
     discordId: string,
     provider?: EIP1193Provider,
@@ -84,7 +68,7 @@ class Siwe {
       if (!signer) { alert('Wallet not connected!'); return }
       let walletAddress = '';
       if (address) {
-        walletAddress = this.encodeAddress(address);
+        walletAddress = ethers.utils.getAddress(address);
         // walletAddress = address;
       } else {
         walletAddress = await signer.getAddress();
