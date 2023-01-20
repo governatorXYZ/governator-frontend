@@ -24,59 +24,71 @@ if (typeof window !== "undefined" && window.ethereum) {
 
 class Siwe {
 
+  /**
+   * Connects wallet and returns wallet address
+   * @todo - after adding onboard, do we still need this?
+   * @returns {Promise<string | null>} - returns wallet address or null
+   */
   static async connectWallet(): Promise<string | null>  {
-    if (!provider) {
-      alert('No wallet found!')
+    try {
+      if (!provider) { alert('No wallet found!'); return null }
+      const wallets = await provider.send('eth_requestAccounts', [])
+      return wallets[0]; // Wallet address
+    } catch (e) {
+      console.error('connectWallet: ', e);
       return null;
     }
-    const wallets = await provider.send('eth_requestAccounts', [])
-    return wallets[0]; // Wallet address
   }
 
-  static async createWalletAccount(walletAddress: string, userId: string) {
-
+  /**
+   * Checks to see if a wallet exists. Creates wallet if one does not exist.
+   * @param walletAddress 
+   * @param user_id 
+   * @returns 
+   */
+  static async createWalletAccount(
+    walletAddress: string,
+    user_id: string
+  ) {
     /* Check if eth wallet already exists in database */
-    const walletRes = await privateBaseAxios.get(`/account/ethereum/get-by-account-id/${walletAddress}`);
-    const wallet = walletRes.data;
+    const { data: wallet } = await privateBaseAxios.get(`/account/ethereum/get-by-account-id/${walletAddress}`);
 
     /* Return is already exists */
-    if (wallet) {
-      return wallet;
-    }
-
+    if (wallet) return wallet;
+  
     /* Create if wallet does not exist in database */
-    const data = {
-      _id: walletAddress
-    };
-    const newEthAccountXhr = await privateBaseAxios.post('/account/ethereum/create', data);
-    const newEthAccount = newEthAccountXhr.data
+    const { data: newEthAccount } = await privateBaseAxios.post('/account/ethereum/create', { _id: walletAddress });
 
     /* Update user_id of newEthAccount */
-    const updateData = {
-      user_id: userId
-    }
-    const updatedAccountXhr = await privateBaseAxios.patch(`/account/ethereum/update/${newEthAccount._id}`, updateData)
-    return updatedAccountXhr.data
+    const { data: updatedAccount } = await privateBaseAxios.patch(
+      `/account/ethereum/update/${newEthAccount._id}`,
+      { user_id }
+    )
+    return updatedAccount
   }
 
+  /**
+   * creates a message and signature and sends for verification.
+   * @param {string} discordId - the discord id
+   * @param {EIP1193Provider} provider optional provider, if not provided, will use provider from window.ethereum
+   * @param {string} address - optional address, if not provided, will use signer
+   * @todo - add error handling and type
+   * @returns {Promise<any>}
+   */
   static async signInWithEthereum(
     discordId: string,
     provider?: EIP1193Provider,
     address?: string
-  ) {
+  ): Promise<any> {
     try {
       if (!signer) { alert('Wallet not connected!'); return }
-      let walletAddress = '';
-      if (address) {
-        walletAddress = ethers.utils.getAddress(address);
-        // walletAddress = address;
-      } else {
-        walletAddress = await signer.getAddress();
-      }
+
+      const walletAddress = address ? ethers.utils.getAddress(address) : await signer.getAddress();
   
       /* Get nonce from server */
       const { data: nonce } = await privateBaseAxios.get(`/siwe/nonce/${walletAddress}`)
   
+      /* Create message */
       const message = this.createSiweMessage(
         walletAddress,
         `Sign in with Ethereum to the app. - link to discord_id ${discordId}`,
@@ -86,7 +98,6 @@ class Siwe {
       // generate signature. If address is provided, use provider, otherwise use signer
       const signature = await this.generateSignature(message, provider, address);
   
-      // const result = this.verifySiweMessage(message, signature);
       return await this.sendForVerification(message, signature, discordId, walletAddress);
     } catch (e) {
       console.error('signInWithEthereum: ', e);
@@ -98,53 +109,69 @@ class Siwe {
     return (provider && address) ? await provider.request({ method: 'personal_sign', params: [message, address] }) : await signer.signMessage(message);
   }
 
-  static async verifySiweMessage(
-    verification_message: string,
-    signed_message: string,
-  ) {
+  /**
+   * verifies a given message against a signature.
+   * @param {string} verification_message - the verification message.
+   * @param {string} signature - the signed message.
+   * @todo - Don't need to verify on frontend. Remove this.
+   * @todo - if kept address error handling
+   * @returns 
+   */
+  static async verifySiweMessage(verification_message: string, signature: string): Promise<string | undefined> {
     try {
       const siweMessage = new SiweMessage(verification_message);
-      const result = await siweMessage.verify({
-        signature: signed_message,
-      });
+      await siweMessage.verify({ signature });
       return siweMessage.prepareMessage();
     } catch (e) {
       console.error('verifySiweMessage: ', e);
     }
   }
 
+  /**
+   * Creates a siwe message, and returns the prepared message.
+   * @param {string} address - the address to sign
+   * @param {string} statement - the statement to sign
+   * @param {string} nonce - nonce from server
+   * @param {string} version - defaults to '1', can be overidden
+   * @returns {string} the prepared message
+   */
   static createSiweMessage(
     address: string,
     statement: string,
-    nonce: string
-  ) {
+    nonce: string,
+    version = '1',
+    chainId = 1
+  ): string {
     const message = {
       domain,
       address,
       statement,
       uri: origin,
-      version: '1',
-      chainId: 1,
+      version,
+      chainId,
       nonce,
     }
-    const siweMessage = new SiweMessage(message);
-
-    return siweMessage.prepareMessage();
+    
+    return new SiweMessage(message).prepareMessage();
   }
 
+  /**
+   * 
+   * @param {string} message - the verification message
+   * @param {string} signature - the signed message
+   * @param {string} discordId - the discord id
+   * @param {string} address  - optional address, if not provided, will use signer
+   * @returns 
+   */
   static async sendForVerification(
     message: string,
     signature: string,
     discordId: string,
     address?: string
   ) {
-    let walletAddress;
-    if (address) {
-      walletAddress = address;
-    } else {
-      walletAddress = await signer.getAddress();
-    }
-
+    if (!signer) { alert('Wallet not connected!'); return }
+    const walletAddress = (address) ?? await signer.getAddress();
+      
     const data = {
       _id: walletAddress,
       verification_message: message,
