@@ -75,34 +75,35 @@ class Siwe {
    * @todo - add error handling and type
    * @returns {Promise<any>}
    */
-  static async signInWithEthereum(
+  static signInWithEthereum(
     discordId: string,
     provider?: EIP1193Provider,
     address?: string
   ): Promise<any> {
-    try {
-      if (!signer) { alert('Wallet not connected!'); return }
+    return new Promise(async (resolve, reject) => {
+      try {
+        if (!signer) reject("Wallet not connected")
 
-      const walletAddress = address ? ethers.utils.getAddress(address) : await signer.getAddress();
-  
-      /* Get nonce from server */
-      const { data: nonce } = await privateBaseAxios.get(`/siwe/nonce/${walletAddress}`)
-  
-      /* Create message */
-      const message = this.createSiweMessage(
-        walletAddress,
-        `Sign in with Ethereum to the app. - link to discord_id ${discordId}`,
-        nonce
-      );
+        const walletAddress = address ? ethers.utils.getAddress(address) : await signer.getAddress();
+    
+        /* Get nonce from server */
+        const { data: nonce } = await privateBaseAxios.get(`/siwe/nonce/${walletAddress}`)
+    
+        /* Create message */
+        const message = this.createSiweMessage(
+          walletAddress,
+          `Sign in with Ethereum to the app. - link to discord_id ${discordId}`,
+          nonce
+        );
 
-      // generate signature. If address is provided, use provider, otherwise use signer
-      const signature = await this.generateSignature(message, provider, address);
-  
-      return await this.sendForVerification(message, signature, discordId, walletAddress);
-    } catch (e) {
-      console.error('signInWithEthereum: ', e);
-      return;
-    }
+        // generate signature. If address is provided, use provider, otherwise use signer
+        const signature = await this.generateSignature(message, provider, address);
+    
+        resolve(await this.sendForVerification(message, signature, discordId, walletAddress));
+      } catch (e) {
+        reject(e);
+      }
+    });
   }
 
   static async generateSignature (message: string, provider?: EIP1193Provider, address?: string) {

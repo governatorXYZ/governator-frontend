@@ -12,6 +12,7 @@ import {
   VStack,
   Text,
   Flex,
+  useToast,
 } from '@chakra-ui/react'
 
 /* Modules */
@@ -59,6 +60,8 @@ const Account: NextPage = () => {
   const [user, setUser] = useAtom(userAtom);
   const [verified, setVerified] = useState(false);
   // const [provider, setProvider] = useAtom(providerAtom);
+
+  const toast = useToast();
 
   const [
     {
@@ -130,22 +133,32 @@ const Account: NextPage = () => {
   const { data: session } = useSession()
 
   const signInWithEthereum = async (): Promise<void> => {
-    if (!wallet) return;
-    const { accounts, provider } = wallet;
-    const [ account ] = accounts;
-    const matchingAddress = addressesData.find((addressData: any) => addressData._id.toLowerCase() === account.address)
-
-    if (!matchingAddress && wallet?.accounts[0].address) {
-      await await Siwe.createWalletAccount(account.address, user.userId);
-      setVerified(false);
-      mutate?.();
+    try {
+      if (!wallet) return;
+      const { accounts, provider } = wallet;
+      const [ account ] = accounts;
+      const matchingAddress = addressesData.find((addressData: any) => addressData._id.toLowerCase() === account.address)
+  
+      if (!matchingAddress && wallet?.accounts[0].address) {
+        await Siwe.createWalletAccount(account.address, user.userId);
+        setVerified(false);
+        mutate?.();
+      }
+  
+      await Siwe.signInWithEthereum(session?.discordId as unknown as string, provider, account.address);
+  
+      
+      const verified = matchingAddress?.verifiedDate !== 'False';
+      setVerified(verified);
+    } catch (e) {
+      toast({
+        title: 'Error',
+        description: (e as Error).message,
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
     }
-
-    await Siwe.signInWithEthereum(session?.discordId as unknown as string, provider, account.address);
-    mutate?.();
-
-    const verified = matchingAddress?.verifiedDate !== 'False';
-    setVerified(verified);
   }
 
 
@@ -153,7 +166,16 @@ const Account: NextPage = () => {
     const fetchUser = async () => {
       if (user.userId === '') await setUser({ userId: (await privateBaseAxios.get(`/user/discord/${session?.discordId}`)).data._id });
     }
-    fetchUser().then(() => null)
+    fetchUser()
+      .then(() => null)
+      .catch((e) => toast({
+          title: 'Error',
+          description: (e as Error).message,
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        }
+      ))
   },
 
     //eslint-disable-next-line react-hooks/exhaustive-deps
@@ -330,7 +352,7 @@ const Account: NextPage = () => {
                 w='100%'
               >
                 <DataTable
-                  data={addressesData}
+                  data={addressesData.filter((address: any) => address.verifiedDate !== 'False')}
                   columns={columns}
                   loading={isLoadingAddresses}
                 />
