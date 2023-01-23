@@ -34,6 +34,7 @@ import { privateBaseAxios } from '../constants/axios';
 import { useAtom } from 'jotai';
 import { userAtom } from 'atoms';
 import { useEffect, useRef } from 'react'
+import { useRouter } from 'next/router'
 
 const LoginText = () => {
   return (
@@ -55,9 +56,19 @@ const LoginText = () => {
 const MobileDrawer: React.FC<{ session: Session | null }> = ({ session }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const btnRef = useRef(null);
+  const router = useRouter();
 
   const name = session?.user?.name
   const image = session?.user?.image
+  
+  useEffect(() => {
+    router.events.on('beforeHistoryChange', onClose)
+
+    return () => {
+      router.events.off('beforeHistoryChange', onClose)
+    }
+  }, [])
+
 
   return (
     <>
@@ -132,8 +143,9 @@ const MobileDrawer: React.FC<{ session: Session | null }> = ({ session }) => {
                         </Link>
                       </Box>
                       <chakra.a
-                        p='16px 1.5rem'
                         href='https://governator.notion.site/Governator-Support-Center-2ebc542d891a4fbba9c014cef66a6d64'
+                        onClick={() => { onClose() }}
+                        p='16px 1.5rem'
                         target='_blank'
                         rel='noreferrer'
                       >
@@ -147,10 +159,11 @@ const MobileDrawer: React.FC<{ session: Session | null }> = ({ session }) => {
                 justifyContent='flex-start'
               >
                 <chakra.a
+                  href='https://forms.gle/yWiYsAmy243rNUvm9'
+                  onClick={() => { onClose() }}
+                  rel='noreferrer'
                   display='block'
                   target='_blank'
-                  rel='noreferrer'
-                  href='https://forms.gle/yWiYsAmy243rNUvm9'
                   mr='16px'
                 >
                   <Button
