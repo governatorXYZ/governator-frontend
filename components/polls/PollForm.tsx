@@ -31,6 +31,7 @@ import useStrategies from 'hooks/useStrategies'
 import PollOption from './PollOption'
 import {useAtom} from "jotai";
 import {userAtom} from "../../atoms";
+import {BlockHeight} from '../../interfaces';
 
 const STANDARD_STRATEGY_NAME = 'Standard (1 Vote = 1 Vote)';
 
@@ -49,7 +50,7 @@ export interface Poll {
   role_restrictions: string[],
   author_user_id: string,
   strategy_config: string,
-  block_height: string,
+  block_height: BlockHeight[],
 }
 
 const schema = yup.object().shape({
@@ -68,7 +69,12 @@ const schema = yup.object().shape({
   description: yup.string().required('Required.'),
   author_user_id: yup.string().required('Required'),
   strategy_config: yup.string().required('Required'),
-  block_height: yup.string().default('0'),
+  block_height: yup.array().of(
+    yup.object().shape({
+      chain_id: yup.string().default('1'),
+      block: yup.number().default(0),
+    })
+  ),
 })
 
 const PollForm: React.FC<BoxProps> = ({ ...props }) => {
@@ -139,9 +145,20 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
         }
       })
 
+      let blockHeight = 0;
+
+      if (data && data.block_height) {
+          const mainnetBlock = data.block_height?.find(block => block.chain_id === '1')
+          if (mainnetBlock) blockHeight = parseInt(mainnetBlock.block);
+      }
+
+
       const strategyConfig = [{
         strategy_id: data.strategy_config,
-        block_height: parseInt(isTokenVote ? data.block_height : '0'),
+        block_height: [{
+          chain_id: '1',
+          block: blockHeight,
+        }],
       }]
 
       const guildId = router.asPath.match(/\d{18,20}/)
