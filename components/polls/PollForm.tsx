@@ -451,7 +451,8 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             />
           </FormControl>
 
-          <FormControl isInvalid={!!errors.block_height?.message}>
+          {/* <FormControl isInvalid={!!errors.block_height?.message}> */}
+          <FormControl>
             <FormLabel 
               htmlFor='title'
               // style={{ visibility: isTokenVote ? 'visible': 'hidden'}}
@@ -471,7 +472,7 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
               {...register('block_height')}
             />
             </Tooltip>
-            <FormErrorMessage>{errors.block_height?.message}</FormErrorMessage>
+            {/* <FormErrorMessage>{errors.block_height?.chain_id?.message}</FormErrorMessage> */}
           </FormControl>
 
 
