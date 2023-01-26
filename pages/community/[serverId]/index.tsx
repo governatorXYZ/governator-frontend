@@ -262,7 +262,7 @@ const Dashboard: NextPage = () => {
             )}
             {!loading && (
               <>
-                <Box overflowX={'scroll'}>
+                <Box overflowX={'auto'}>
                   <DataTable
                     data={polls}
                     columns={columns}
