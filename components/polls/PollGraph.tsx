@@ -12,17 +12,6 @@ import { Pie } from 'react-chartjs-2'
 import {Poll, PollOption} from "../../interfaces";
 ChartJS.register(ArcElement, Tooltip, Legend)
 
-// type PollGraphProps = {
-//   voteData?:
-//   {
-//     _id: string
-//     percent: string
-//     vote_power: string
-//   }[],
-//   pollOptions: any
-// }
-
-
 type DisplayPollResultsProps = {
   pollData: Poll,
   voteData: {
@@ -31,7 +20,6 @@ type DisplayPollResultsProps = {
     vote_power: string
   }[],
 }
-
 
 interface NewLegendItem extends LegendItem {
   count: number
@@ -90,7 +78,7 @@ const PollGraph: React.FC<DisplayPollResultsProps> = ({pollData, voteData =[]}) 
       },
       legend: {
         display: true,
-        position: "left" as LayoutPosition,
+        position: "top" as LayoutPosition,
         labels: {
           color: 'white',
           font: {

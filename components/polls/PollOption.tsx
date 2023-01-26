@@ -92,7 +92,6 @@ const PollOption: React.FC<PollOptionProps> = ({
               onBlur={onBlur}
               value={value}
               mb='6px'
-              {...(fields.length > 1 && { minW: '400px' })}
             />
             <Box mt='-3px' ml='10px' pos='relative' ref={ref}>
               <Button

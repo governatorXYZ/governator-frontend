@@ -105,6 +105,17 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
     name: 'poll_options',
   })
 
+  // on component first render add two empty poll options
+  useEffect(() => {
+    if (fields.length === 0) {
+      append([
+        { poll_option_name: '' },
+        { poll_option_name: '' }
+      ]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const emojiExists = (emoji: string) =>
     watch('poll_options').some(p => p.poll_option_emoji === emoji)
 
@@ -208,13 +219,6 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
       }
     }
   }
-
-  useEffect(() => {
-    append({ poll_option_name: '' });
-    // (!getValues('strategy_config')) ? setValue('strategy_config', defaultStratId ? defaultStratId : '') : null
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   return (
     <DarkMode>
