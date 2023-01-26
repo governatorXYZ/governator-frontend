@@ -106,7 +106,7 @@ export default function Custom404() {
             </Flex>
           </Flex>
         </Box>
-        </Flex>
+      </Flex>
     </>
   )
 }
