@@ -101,17 +101,18 @@ const Account: NextPage = () => {
 
       // no address in db, so add it.
       if (!matchingAddress) {
-        await await Siwe.createWalletAccount(address, user.userId);
-        mutate?.();
+        await Siwe.createWalletAccount(address, user.userId);
+        await mutate?.();
       } else {
         // Check if it is verified.
         const hasBeenVerified = matchingAddress && matchingAddress.verifiedDate !== 'False';
         // if yes, update state.
         setVerified(hasBeenVerified);
+
         // if not, verify it.
         if (!hasBeenVerified) {
           await Siwe.signInWithEthereum(session?.discordId as unknown as string, provider, address);
-          mutate?.();
+          await mutate?.();
         }
       }
     } catch (e: unknown) {
@@ -139,16 +140,18 @@ const Account: NextPage = () => {
       const [ account ] = accounts;
       const matchingAddress = addressesData.find((addressData: any) => addressData._id.toLowerCase() === account.address)
   
+      // no address in db, so add it.
       if (!matchingAddress && wallet?.accounts[0].address) {
         await Siwe.createWalletAccount(account.address, user.userId);
+        // if it's a new wallet, then it's not verified. So set it to false.
         setVerified(false);
-        mutate?.();
+        // mutate the data.
+        await mutate?.();
       }
   
-      await Siwe.signInWithEthereum(session?.discordId as unknown as string, provider, account.address);
-  
+      const { verified } = await Siwe.signInWithEthereum(session?.discordId as unknown as string, provider, account.address);
+      await mutate?.();
       
-      const verified = matchingAddress?.verifiedDate !== 'False';
       setVerified(verified);
     } catch (e) {
       toast({
@@ -183,8 +186,22 @@ const Account: NextPage = () => {
   )
 
   const removeWallet = async (walletAddress: string): Promise<void> => {
-    await Siwe.removeWallet(walletAddress)
-    mutate?.();
+    try {
+      await Siwe.removeWallet(walletAddress);
+      await mutate?.();
+      // if connected wallet is the one being removed, disconnect it.
+      if (wallet?.accounts[0].address === walletAddress.toLowerCase()) {
+        await disconnectWallet();
+      }
+    } catch (err) {
+      toast({
+        title: 'Error',
+        description: (err as Error).message,
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    }
   }
 
   const useAddressesData = (): any => {
@@ -352,7 +369,7 @@ const Account: NextPage = () => {
                 w='100%'
               >
                 <DataTable
-                  data={addressesData.filter((address: any) => address.verifiedDate !== 'False')}
+                  data={addressesData}
                   columns={columns}
                   loading={isLoadingAddresses}
                 />
