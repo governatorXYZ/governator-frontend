@@ -96,7 +96,7 @@ const Account: NextPage = () => {
 
       if (!accounts) return;
       const { address } = accounts[0];
-
+      
       const matchingAddress = addressesData.find((addressData: any) => addressData._id.toLowerCase() === address)
 
       // no address in db, so add it.
@@ -190,7 +190,7 @@ const Account: NextPage = () => {
       await Siwe.removeWallet(walletAddress);
       await mutate?.();
       // if connected wallet is the one being removed, disconnect it.
-      if (wallet?.accounts[0].address === walletAddress.toLowerCase()) {
+      if (wallet?.accounts[0].address.toLowerCase() === walletAddress.toLowerCase()) {
         await disconnectWallet();
       }
     } catch (err) {
