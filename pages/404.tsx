@@ -1,4 +1,5 @@
 import { Container, Grid, Box, Flex, Button, Image, Heading } from "@chakra-ui/react";
+import { Footer } from "components/common";
 import SVGWall from "components/SVGWall";
 import { motion } from "framer-motion";
 import Head from "next/head";
@@ -76,35 +77,7 @@ export default function Custom404() {
         <Box
           overflowX='hidden'
         >
-          <SVGWall />
-          <Flex
-            backgroundColor='black'
-            h='240px'
-            alignItems='center'
-            justifyContent='space-between'
-            p='40px'
-            px='60px'>
-            <Flex gap='8px'>
-              <Link href='https://discord.com/invite/bankless'>
-                <a>
-                  <Button
-                    variant='ghost'
-                    _hover={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
-                    <FaDiscord fontSize='20px' />
-                  </Button>
-                </a>
-              </Link>
-              <Link href='https://twitter.com/governatorxyz'>
-                <a>
-                  <Button
-                    variant='ghost'
-                    _hover={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
-                    <FiTwitter fontSize='20px' />
-                  </Button>
-                </a>
-              </Link>
-            </Flex>
-          </Flex>
+          <Footer />
         </Box>
       </Flex>
     </>
