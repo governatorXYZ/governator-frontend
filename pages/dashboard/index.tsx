@@ -2,6 +2,7 @@ import type { NextPage } from 'next'
 import { Box, VStack, Image, Flex, Text, Grid, Spinner } from '@chakra-ui/react'
 import Govcrumb from 'components/BreadCrumb'
 import useServers from 'hooks/useServers'
+import Head from 'next/head'
 
 import Link from 'next/link'
 
@@ -9,14 +10,37 @@ const ServerSelect: NextPage = () => {
   const { servers, loading } = useServers()
 
   return (
-    <Box bg='dark-2' minH='calc(100vh - 60px)' pt='4rem' pb='8rem'>
-      <Box bg='dark-1' maxW='2xl' mx='auto' p='2rem 3rem'>
+    <Flex
+      bg='dark-2'
+      minH='calc(100vh - 60px)'
+      pt='4rem'
+      pb='8rem'
+      justifyContent={'center'}
+    >
+      <Head>
+        <title>Governator | Servers</title>
+      </Head>
+      <Box
+        bg='dark-1'
+        flexBasis={'2xl'}
+        maxW='2xl'
+        p={{ 
+          base: '2rem 1rem',
+          sm: '2rem 3rem' 
+        }}
+        mx='32px'
+      >
         {/* <Govcrumb /> */}
         <Flex justifyContent='center' alignItems='center'>
           {/* Server Select Box */}
-          <Box p={10}>
+          <Box p={{
+            base: '2.5rem 0',
+            sm: '2.5rem'
+          }}>
             <VStack spacing={10}>
-              <Text color='white' fontSize='2xl'>
+              <Text
+                color='white'
+                fontSize='2xl'>
                 Select Community
               </Text>
               {loading && <Spinner color='gray.200' />}
@@ -81,7 +105,7 @@ const ServerSelect: NextPage = () => {
           </Grid>
         )}
       </Box>
-    </Box>
+    </Flex>
   )
 }
 

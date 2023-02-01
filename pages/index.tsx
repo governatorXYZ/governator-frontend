@@ -92,13 +92,23 @@ const Home: NextPage = () => {
         color='gray.100'>
         <Container maxW='container.xl'>
           <Grid
-            templateColumns='350px 1fr'
+            templateColumns={{ base: '1fr', lg: '350px 1fr' }}
             columnGap='4rem'
+            rowGap={{
+              base: '4rem',
+              lg: '0'
+            }}
             mx='auto'
-            maxW='max-content'>
+            maxW='max-content'
+            gridAutoFlow={{
+              base: 'row',
+            }}>
             <Box
-              h='350px'
-              w='350px'
+              w={{
+                base: 'calc(100vw - 2rem)',
+              }}
+              maxW='350px'
+              maxH='350px'
               border='1px solid'
               borderColor='transparent'
               borderRadius='10px'
@@ -150,7 +160,11 @@ const Home: NextPage = () => {
               </motion.div>
             </Box>
             <Box>
-              <Box>
+              <Box
+                w={{
+                  base: 'calc(100vw - 2rem)',
+                }}
+              >
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{
@@ -159,14 +173,18 @@ const Home: NextPage = () => {
                   }}>
                   <Text
                     as='span'
-                    fontSize='4xl'
+                    fontSize={'4xl'}
                     display='block'
                     className='roboto-mono'
                     maxW='30ch'>
                     Token Voting in Discord
                   </Text>
 
-                  <Text as='p' mt='1rem' fontSize='lg'>
+                  <Text
+                    as='p'
+                    mt='1rem'
+                    fontSize='lg'
+                  >
                     Easy to use, token-enabled, shielded polls right in your
                     server.
                   </Text>
@@ -179,7 +197,11 @@ const Home: NextPage = () => {
                   opacity: 1,
                   transition: { duration: 1, delay: 0.75 },
                 }}>
-                <Flex gap='1rem' mt='4rem'>
+                <Flex
+                  direction={{ base: 'column', md: 'row' }}
+                  gap='1rem'
+                  mt='4rem'
+                >
                   <Button
                     colorScheme='purple'
                     leftIcon={<FaDiscord />}
@@ -196,7 +218,15 @@ const Home: NextPage = () => {
         <Box mt='10rem' mb='8rem'>
           <SVGWall />
           <Grid backgroundColor='black' placeItems='center' h='100px'>
-            <Flex maxW='max-content' className='roboto-mono' pt='0.5rem'>
+            <Flex
+              direction={{
+                base: 'column',
+                md: 'row',
+              }}
+              maxW='max-content'
+              className='roboto-mono'
+              pt='0.5rem'
+            >
               <Text as='span' display='block' mt='-1px' mr='6px'>
                 Built in the forges of
               </Text>
@@ -219,7 +249,10 @@ const Home: NextPage = () => {
             </Text>
           </Flex>
           <Grid
-            templateColumns='repeat(2, 450px)'
+            templateColumns={{
+              base: '1fr',
+              md: 'repeat(2, 450px)'
+            }}
             gap='4rem'
             maxW='max-content'
             mx='auto'

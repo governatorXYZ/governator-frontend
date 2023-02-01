@@ -11,7 +11,13 @@ import {
     AccordionItem,
     AccordionButton,
     AccordionPanel,
-    AccordionIcon
+    AccordionIcon,
+    Td,
+    Tr,
+    Table,
+    List,
+    UnorderedList,
+    ListItem
  } from '@chakra-ui/react'
  import { Icon } from '@chakra-ui/icon'
 
@@ -187,6 +193,23 @@ const ResultBlock: React.FC<DisplayPollResultsProps> = ({pollData, voteData, tot
     )
 }
 
+type BlockHeight = Array<{chain_id: string, block: string}>
+const blockHeightsTable: React.FC<BlockHeight> = (blockHeight) => {
+    return (
+        <List>
+            {blockHeight.map((item: any) => {
+                return (
+                    <ListItem key={item.chain_id}>
+                        <Text paddingLeft='10px' pt='2' fontSize='sm' color='gray.100'>
+                            Chain ID: {item.chain_id}, Block: {item.block} 
+                        </Text>
+                    </ListItem>
+                )
+            })}
+        </List>        
+    )
+}
+
 const PollResultStack: React.FC<DisplayPollResultsProps> = ({pollData, result}) => {
 
     const { strategies } = useStrategies();
@@ -280,15 +303,22 @@ const PollResultStack: React.FC<DisplayPollResultsProps> = ({pollData, result}) 
                     </h2>
                     <AccordionPanel pb={4}>
                         <VStack align='left' paddingLeft='10px'>
-                            <Text pt='2' fontSize='sm' color='gray.100'>
-                                {`Name: ${strategyName ? strategyName : ''}`}
+                            <Text as='b' pt='2' fontSize='sm' color='gray.100'>
+                                Name
                             </Text>
-                            <Text pt='2' fontSize='sm' color='gray.100'>
-                                {`Type: ${strategyType ? strategyType : ''}`}
+                            <Text paddingLeft='10px' pt='2' fontSize='sm' color='gray.100'>
+                                {strategyName ? strategyName : ''}
                             </Text>
-                            <Text pt='2' fontSize='sm' color='gray.100'>
-                                {`Block height: ${strategyBlock ? strategyBlock : ''}`}
+                            <Text as='b' pt='2' fontSize='sm' color='gray.100'>
+                                Type
                             </Text>
+                            <Text paddingLeft='10px' pt='2' fontSize='sm' color='gray.100'>
+                                {strategyType ? strategyType: ''}
+                            </Text>
+                            <Text as='b' pt='2' fontSize='sm' color='gray.100' fontStyle={'bold'}>
+                                Block Height
+                            </Text>
+                            {strategyBlock ? blockHeightsTable(strategyBlock) : ''}
                         </VStack>
                     </AccordionPanel>
                 </AccordionItem>

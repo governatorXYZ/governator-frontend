@@ -16,10 +16,15 @@ export interface PollOption {
   poll_option_emoji: string;
 }
 
+export interface BlockHeight {
+  chain_id: string,
+  block: string,
+}
+
 interface StrategyConfig {
   strategy_id: string
   strategy_type: string
-  block_height: number
+  block_height: BlockHeight[]
 }
 
 interface ClientConfigBase {

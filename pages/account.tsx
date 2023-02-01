@@ -34,6 +34,7 @@ import { ethers, Wallet } from 'ethers';
 // import gnosisModule from '@web3-onboard/gnosis'
 import { Account, WalletState } from '@web3-onboard/core/dist/types';
 import { useConnectWallet } from '@web3-onboard/react';
+import Head from 'next/head';
 
 // const injected = injectedModule();
 // const coinbase = coinbaseModule({ darkMode: true });
@@ -262,6 +263,9 @@ const Account: NextPage = () => {
 
   return (
     <Box>
+      <Head>
+        <title>Governator | Account</title>
+      </Head>
       <Box bg='black' h='100vh' pt='30'>
         <Flex
           justifyContent='center'
@@ -270,25 +274,62 @@ const Account: NextPage = () => {
         >
           <Box
             bg='gray.700'
-            p={10}
+            p={{
+              base: '2.5rem 1rem',
+              md: 10
+            }} 
             mb='32px'
-            w='1044px'
+            w={{
+              base: 'calc(100vw - 64px)',
+              lg: '1044px'
+            }}
           >
             <Flex
+              flexDir={{
+                base: 'column',
+                md: 'row'
+              }}
               justifyContent='space-between'
             >
+              <Flex
+                flexDir='column'
+                mb='16px'
+              >
               <Text
                 color='white'
                 fontSize='2xl'
-                mb='32px'
-              >My Account</Text>
-              <Box>
+                textAlign={{
+                  base: 'center',
+                  md: 'unset'
+                }}
+              >My Wallet</Text>
+              <Text
+                              color='white'
+                              w='25rem'
+                              mx={{
+                                base: 'auto',
+                                md: 'unset'
+                              }}
+                              textAlign={{
+                                base: 'center',
+                                md: 'unset'
+                              }}
+              >
+              Connect your wallet in order to add & verify accounts to your Governator profile.
+              </Text>
+              </Flex>
+              <Box
+                mx={{
+                  base: 'auto',
+                  md: 'unset'
+                }}
+              >
                 <Button
                   colorScheme={'purple'}
                   isDisabled={wallet?.provider ? false : true}
                   mr='16px'
                   onClick={() => signInWithEthereum()}
-                >{verified ? 'Reverify' : 'Verify'}</Button>
+                >{verified ? 'Verify' : 'Verify'}</Button>
                 <Button
                   disabled={connecting}
                   isLoading={connecting}
@@ -313,15 +354,48 @@ const Account: NextPage = () => {
             )}
           </Box>
           {/* Account Details Box */}
-          <Box bg='gray.700' p={10}>
+          <Box
+            bg='gray.700'
+            p={{
+              base: '2.5rem 1rem',
+              md: 10
+            }}            
+            w={{
+              base: 'calc(100vw - 64px)',
+              lg: '1044px'
+            }}
+          >
             <VStack spacing={10}>
-              <Text color='white' fontSize='2xl'>Connected Addresses</Text>
+              <Box>
+              <Text
+                color='white'
+                fontSize='2xl'
+                textAlign={'center'}
+              >Verified Addresses</Text>
+              <Text
+                color='white'
+                w='25rem'
+                mx={{
+                  base: 'auto',
+                  md: 'unset'
+                }}
+                textAlign={{
+                  base: 'center',
+                  md: 'unset'
+                }}
+              >The token balances in these addresses will all be used during the voting process.</Text>
+              </Box>
               {/* Render Poll Listings */}
+              <Box
+                overflowX={'scroll'}
+                w='100%'
+              >
               <DataTable
                 data={addressesData.filter((addressData: any) => addressData.verifiedDate !== 'False')}
                 columns={columns}
                 loading={isLoadingAddresses}
               />
+              </Box>
             </VStack>
           </Box>
         </Flex>

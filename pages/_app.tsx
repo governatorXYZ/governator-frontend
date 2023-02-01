@@ -31,9 +31,9 @@ const gnosis = gnosisModule()
 
 const wallets = [
   injected,
-  coinbase,
-  walletConnect,
-  gnosis
+  // coinbase,
+  // walletConnect,
+  // gnosis
 ]
 
 const chains = [
