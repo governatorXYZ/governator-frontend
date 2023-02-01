@@ -369,7 +369,7 @@ const Account: NextPage = () => {
                 w='100%'
               >
                 <DataTable
-                  data={addressesData}
+                  data={addressesData.filter((address: any) => address.verifiedDate !== 'False')}
                   columns={columns}
                   loading={isLoadingAddresses}
                 />
