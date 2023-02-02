@@ -30,7 +30,7 @@ const StyledTable = styled(Table)`
         border-color: transparent;
       }
     }
-    tbody tr:nth-child(odd) {
+    tbody tr:nth-of-type(odd) {
       background-color: #21262e;
     }
     tbody tr td {
@@ -50,8 +50,8 @@ const DataTable: React.FC<DataTableProps> = ({ data, columns, loading }) => {
     <>
       <StyledTable {...getTableProps()} color='gray.200'>
         <Thead>
-          {headerGroups.map(headerGroup => (
-            <Tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
+          {headerGroups.map((headerGroup, i) => (
+            <Tr {...headerGroup.getHeaderGroupProps()} key={i}>
               {headerGroup.headers.map((column, index: number) => {
                 const lastColumn = index === headerGroup.headers.length - 1
 
@@ -99,10 +99,10 @@ const DataTable: React.FC<DataTableProps> = ({ data, columns, loading }) => {
         </Thead>
         <Tbody {...getTableBodyProps()}>
           {!loading &&
-            rows.map(row => {
+            rows.map((row, i) => {
               prepareRow(row)
               return (
-                <Tr {...row.getRowProps()} key={row.id}>
+                <Tr {...row.getRowProps()} key={i}>
                   {row.cells.map(cell => (
                     <Td
                       {...cell.getCellProps()}

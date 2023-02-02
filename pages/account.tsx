@@ -12,6 +12,7 @@ import {
   VStack,
   Text,
   Flex,
+  useToast,
 } from '@chakra-ui/react'
 
 /* Modules */
@@ -24,69 +25,10 @@ import DataTable from 'components/Datatable';
 
 /* Types */
 import { Address } from '../interfaces';
-import { ethers, Wallet } from 'ethers';
 
-/* Web 3 Onboard */
-// import Onboard from '@web3-onboard/core'
-// import injectedModule from '@web3-onboard/injected-wallets';
-// import coinbaseModule from '@web3-onboard/coinbase';
-// import walletConnectModule from '@web3-onboard/walletconnect';
-// import gnosisModule from '@web3-onboard/gnosis'
-import { Account, WalletState } from '@web3-onboard/core/dist/types';
+import { Account } from '@web3-onboard/core/dist/types';
 import { useConnectWallet } from '@web3-onboard/react';
 import Head from 'next/head';
-
-// const injected = injectedModule();
-// const coinbase = coinbaseModule({ darkMode: true });
-// const walletConnect = walletConnectModule({
-//   qrcodeModalOptions: {
-//     mobileLinks: ['rainbow', 'metamask', 'argent', 'trust'],
-//   },
-//   connectFirstChainId: true
-// });
-// const gnosis = gnosisModule()
-
-// const wallets = [
-//   injected,
-//   coinbase,
-//   walletConnect,
-//   gnosis
-// ]
-
-// const chains = [
-//   {
-//     id: '0x1',
-//     token: 'ETH',
-//     label: 'Ethereum Mainnet',
-//     rpcUrl: process.env.NEXT_PUBLIC_RPC_URL ?? '',
-//   }
-// ]
-
-// const appMetadata = {
-//   name: 'Governator',
-//   description: 'Governator',
-//   icon: "/favicon.ico",
-//   recommendedInjectedWallets: [
-//     {
-//       name: 'MetamMask',
-//       url: "https://metamask.io/"
-//     }
-//   ]
-// }
-
-// const onboard = Onboard({
-//   wallets,
-//   chains,
-//   appMetadata,
-//   accountCenter: {
-//     desktop: {
-//       enabled: false
-//     },
-//     mobile: {
-//       enabled: false
-//     }
-//   }
-// });
 
 const columns = [
   {
@@ -114,25 +56,26 @@ type AddressesData = {
   actions: any;
 }
 
-
 const Account: NextPage = () => {
   const [user, setUser] = useAtom(userAtom);
   const [verified, setVerified] = useState(false);
   // const [provider, setProvider] = useAtom(providerAtom);
 
+  const toast = useToast();
+
   const [
     {
       wallet,
       connecting
-    }, 
+    },
     connect,
-    disconnect
+    disconnect,
   ] = useConnectWallet();
 
   useEffect(() => {
     if (wallet?.provider) {
       const matchingAddress = addressesData.find((addressData: any) => addressData._id.toLowerCase() === wallet?.accounts[0].address)
-      
+
       if (!matchingAddress) {
         setVerified(false);
         return;
@@ -149,31 +92,28 @@ const Account: NextPage = () => {
     try {
       const wallets = await connect();
       if (!wallets) return;
-      const { accounts, label } = wallets[0];
+      const { accounts, label, provider } = wallets[0];
 
       if (!accounts) return;
       const { address } = accounts[0];
-
+      
       const matchingAddress = addressesData.find((addressData: any) => addressData._id.toLowerCase() === address)
 
       // no address in db, so add it.
       if (!matchingAddress) {
-        await await Siwe.createWalletAccount(address, user.userId);
-        setVerified(false);
-        mutate?.();
-      } 
+        await Siwe.createWalletAccount(address, user.userId);
+        await mutate?.();
+      } else {
+        // Check if it is verified.
+        const hasBeenVerified = matchingAddress && matchingAddress.verifiedDate !== 'False';
+        // if yes, update state.
+        setVerified(hasBeenVerified);
 
-      // Check if it is verified.
-      const verified = matchingAddress?.verifiedDate !== 'False';
-
-      // if yes, update state.
-      setVerified(verified);
-
-      // if not, verify it.
-      if (!verified) {
-        await Siwe.signInWithEthereum(session?.discordId as unknown as string);
-        mutate?.();
-        setVerified(true);
+        // if not, verify it.
+        if (!hasBeenVerified) {
+          await Siwe.signInWithEthereum(session?.discordId as unknown as string, provider, address);
+          await mutate?.();
+        }
       }
     } catch (e: unknown) {
       console.error("There was an error", e);
@@ -194,19 +134,34 @@ const Account: NextPage = () => {
   const { data: session } = useSession()
 
   const signInWithEthereum = async (): Promise<void> => {
-    const matchingAddress = addressesData.find((addressData: any) => addressData._id.toLowerCase() === wallet?.accounts[0].address)
-
-    if (!matchingAddress && wallet?.accounts[0].address) {
-      await await Siwe.createWalletAccount(wallet?.accounts[0].address, user.userId);
-      setVerified(false);
-      mutate?.();
+    try {
+      if (!wallet) return;
+      const { accounts, provider } = wallet;
+      const [ account ] = accounts;
+      const matchingAddress = addressesData.find((addressData: any) => addressData._id.toLowerCase() === account.address)
+  
+      // no address in db, so add it.
+      if (!matchingAddress && wallet?.accounts[0].address) {
+        await Siwe.createWalletAccount(account.address, user.userId);
+        // if it's a new wallet, then it's not verified. So set it to false.
+        setVerified(false);
+        // mutate the data.
+        await mutate?.();
+      }
+  
+      const { verified } = await Siwe.signInWithEthereum(session?.discordId as unknown as string, provider, account.address);
+      await mutate?.();
+      
+      setVerified(verified);
+    } catch (e) {
+      toast({
+        title: 'Error',
+        description: (e as Error).message,
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
     }
-
-    await Siwe.signInWithEthereum(session?.discordId as unknown as string);
-    mutate?.();
-
-    const verified = matchingAddress?.verifiedDate !== 'False';
-    setVerified(verified);
   }
 
 
@@ -214,7 +169,16 @@ const Account: NextPage = () => {
     const fetchUser = async () => {
       if (user.userId === '') await setUser({ userId: (await privateBaseAxios.get(`/user/discord/${session?.discordId}`)).data._id });
     }
-    fetchUser().then(() => null)
+    fetchUser()
+      .then(() => null)
+      .catch((e) => toast({
+          title: 'Error',
+          description: (e as Error).message,
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        }
+      ))
   },
 
     //eslint-disable-next-line react-hooks/exhaustive-deps
@@ -222,8 +186,22 @@ const Account: NextPage = () => {
   )
 
   const removeWallet = async (walletAddress: string): Promise<void> => {
-    await Siwe.removeWallet(walletAddress)
-    mutate?.();
+    try {
+      await Siwe.removeWallet(walletAddress);
+      await mutate?.();
+      // if connected wallet is the one being removed, disconnect it.
+      if (wallet?.accounts[0].address.toLowerCase() === walletAddress.toLowerCase()) {
+        await disconnectWallet();
+      }
+    } catch (err) {
+      toast({
+        title: 'Error',
+        description: (err as Error).message,
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    }
   }
 
   const useAddressesData = (): any => {
@@ -277,7 +255,7 @@ const Account: NextPage = () => {
             p={{
               base: '2.5rem 1rem',
               md: 10
-            }} 
+            }}
             mb='32px'
             w={{
               base: 'calc(100vw - 64px)',
@@ -295,28 +273,28 @@ const Account: NextPage = () => {
                 flexDir='column'
                 mb='16px'
               >
-              <Text
-                color='white'
-                fontSize='2xl'
-                textAlign={{
-                  base: 'center',
-                  md: 'unset'
-                }}
-              >My Wallet</Text>
-              <Text
-                              color='white'
-                              w='25rem'
-                              mx={{
-                                base: 'auto',
-                                md: 'unset'
-                              }}
-                              textAlign={{
-                                base: 'center',
-                                md: 'unset'
-                              }}
-              >
-              Connect your wallet in order to add & verify accounts to your Governator profile.
-              </Text>
+                <Text
+                  color='white'
+                  fontSize='2xl'
+                  textAlign={{
+                    base: 'center',
+                    md: 'unset'
+                  }}
+                >My Wallet</Text>
+                <Text
+                  color='white'
+                  w='25rem'
+                  mx={{
+                    base: 'auto',
+                    md: 'unset'
+                  }}
+                  textAlign={{
+                    base: 'center',
+                    md: 'unset'
+                  }}
+                >
+                  Connect your wallet in order to add & verify accounts to your Governator profile.
+                </Text>
               </Flex>
               <Box
                 mx={{
@@ -359,7 +337,7 @@ const Account: NextPage = () => {
             p={{
               base: '2.5rem 1rem',
               md: 10
-            }}            
+            }}
             w={{
               base: 'calc(100vw - 64px)',
               lg: '1044px'
@@ -367,34 +345,34 @@ const Account: NextPage = () => {
           >
             <VStack spacing={10}>
               <Box>
-              <Text
-                color='white'
-                fontSize='2xl'
-                textAlign={'center'}
-              >Verified Addresses</Text>
-              <Text
-                color='white'
-                w='25rem'
-                mx={{
-                  base: 'auto',
-                  md: 'unset'
-                }}
-                textAlign={{
-                  base: 'center',
-                  md: 'unset'
-                }}
-              >The token balances in these addresses will all be used during the voting process.</Text>
+                <Text
+                  color='white'
+                  fontSize='2xl'
+                  textAlign={'center'}
+                >Verified Addresses</Text>
+                <Text
+                  color='white'
+                  w='25rem'
+                  mx={{
+                    base: 'auto',
+                    md: 'unset'
+                  }}
+                  textAlign={{
+                    base: 'center',
+                    md: 'unset'
+                  }}
+                >The token balances in these addresses will all be used during the voting process.</Text>
               </Box>
               {/* Render Poll Listings */}
               <Box
                 overflowX={'scroll'}
                 w='100%'
               >
-              <DataTable
-                data={addressesData.filter((addressData: any) => addressData.verifiedDate !== 'False')}
-                columns={columns}
-                loading={isLoadingAddresses}
-              />
+                <DataTable
+                  data={addressesData.filter((address: any) => address.verifiedDate !== 'False')}
+                  columns={columns}
+                  loading={isLoadingAddresses}
+                />
               </Box>
             </VStack>
           </Box>
