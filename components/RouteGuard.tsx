@@ -15,14 +15,18 @@ const RouteGuard: React.FC = ({ children }) => {
 
   const url = '/'
 
+  // whitelist of pages that can so the routeguard ignores them.
+  const allowedPages = [ '/team' ]
+  const isAllowed = allowedPages.includes(router.route)
+
   useEffect(() => {
-    if (status === 'unauthenticated') {
+    if (status === 'unauthenticated' && !isAllowed) {
       router.push(url)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status])
 
-  if (router.asPath.split('?')[0] === '/' || status === 'authenticated') {
+  if (router.asPath.split('?')[0] === '/' || isAllowed || status === 'authenticated') {
     return <>{children}</>
   }
 

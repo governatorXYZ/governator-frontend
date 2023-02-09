@@ -1,0 +1,48 @@
+[
+    {
+      "name": "jameswmontgomery.eth",
+      "role": "Founder",
+      "image": "/images/gov-bot.jpeg",
+      "alumni": false
+     }, {
+      "name": "Tiki",
+      "role": "Lead Developer",
+      "image": "/images/gov-bot.jpeg",
+      "alumni": false
+    }, {
+      "name": "itszachnotzak",
+      "role": "Front-end Developer",
+      "image": "/images/gov-bot.jpeg",
+      "alumni": false
+    }, {
+      "name": "Sprinklesforwinners",
+      "role": "Project Manager",
+      "image": "/images/gov-bot.jpeg",
+      "alumni": false
+    }, {
+      "name": "jarisjames",
+      "role": "Ambassador",
+      "image": "/images/gov-bot.jpeg",
+      "alumni": false
+    }, {
+      "name": "ivan7538",
+      "role": null,
+      "image": "/images/gov-bot.jpeg",
+      "alumni": true      
+    }, {
+      "name": "ken",
+      "role": null,
+      "image": "/images/gov-bot.jpeg",
+      "alumni": true      
+    }, {
+      "name": "stradford",
+      "role": null,
+      "image": "/images/gov-bot.jpeg",
+      "alumni": true      
+    }, {
+      "name": "Joel",
+      "role": null,
+      "image": "/images/gov-bot.jpeg",
+      "alumni": true      
+    }
+]

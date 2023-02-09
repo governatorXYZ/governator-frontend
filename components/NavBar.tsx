@@ -39,10 +39,18 @@ import { useRouter } from 'next/router'
 const LoginText = () => {
   return (
     <HStack justifyContent='center' alignItems='center' color='gray.200'>
+      <Link
+        href='/team'
+      >
+        Team
+      </Link>  
       {(
         <Text
           as='span'
           cursor='pointer'
+          ml={{
+            base: '8px',
+          }}
           onClick={() => {
             signIn('discord', { callbackUrl: "/dashboard" })
           }}>
