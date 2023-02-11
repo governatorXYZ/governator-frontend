@@ -24,14 +24,14 @@ const TeamMember: React.FC<TeamMemberProps> = ({ member, grid = true }) => {
       justifyContent='center'
       color='whiteAlpha.800'
     >
-      <Image
+      { member.image ? (<Image
         borderRadius='full'
         alignSelf='center'
         src={member.image}
         alt={member.name}
         boxSize='150px'
         mb='16px'
-      />
+      />) : (<Box mb='16px' bg='gray.600' borderRadius='full' w='150px' h='150px'/>) }
       <Heading
         fontSize='xl'
         as='h2'
