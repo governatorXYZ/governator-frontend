@@ -1,5 +1,18 @@
 import type { NextPage } from 'next'
-import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Flex, Spinner } from '@chakra-ui/react'
+import {
+  Box,
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  Heading,
+  Flex,
+  Spinner,
+  RadioGroup,
+  Radio,
+  Button,
+  VStack
+} from '@chakra-ui/react'
+import { useState } from 'react';
 import { useRouter } from 'next/router'
 import useSWR from 'swr'
 import { privateBaseFetcher } from 'constants/axios'
@@ -10,7 +23,50 @@ import {useTotalVotes, useVotesData} from "../../../../../hooks/useVoteData";
 import useServers from 'hooks/useServers'
 import { ChevronRightIcon } from '@chakra-ui/icons'
 
+interface VotingControlsProps {
+  options: Array<Record<string, any>>;
+}
 
+function VotingControls({ options }: VotingControlsProps) {
+  const [value, setValue] = useState('')
+  return (
+    <Box
+      color='gray.100'
+      borderRadius='2px'
+      padding='1em'
+      border='1px solid'
+      borderColor='gray.100'
+      w='fit-content'
+    >
+      <Heading
+        size='md'
+        mb='16px'
+      >
+          Cast Your Vote
+      </Heading>
+      <RadioGroup
+        onChange={setValue}
+        value={value}
+      >
+        <VStack align='flex-start'>
+          {options.map((option: any, index: number) => (
+            <Radio
+              key={index}
+              value={option.poll_option_id}
+            >
+              { option.poll_option_name } { option.poll_option_emoji }
+            </Radio>
+          ))}
+        </VStack>
+      </RadioGroup>
+      <Button
+        w='100%'
+        mt='32px'
+        colorScheme='red'
+      >Vote</Button>
+    </Box>
+  )
+}
 
 const PollResults: NextPage = () => {
 
@@ -26,12 +82,13 @@ const PollResults: NextPage = () => {
   const { pollData, error } = usePollData()
   const { votesData } = useVotesData(router.query.pollId as string);
   const { totalVotes } = useTotalVotes(router.query.pollId as string);
-
+  
   const isLoadingPoll = !pollData && !error
 
   function returnToServer() {
     router.push(`/community/${currentServer?.id ?? ''}`)
   }
+
 
   // TODO: clean up comments.
   return (
@@ -56,6 +113,7 @@ const PollResults: NextPage = () => {
             <Spinner color='gray.200' mx='auto' />
           </Flex>
         )}
+        <VotingControls options={pollData.poll_options} />
         <DisplayPollResults pollData={pollData} voteData={votesData} totalVotes={totalVotes}/>
       </Box>
     </Box>
