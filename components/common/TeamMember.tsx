@@ -9,7 +9,7 @@ interface ITeamMember {
 
 interface TeamMemberProps {
   member: ITeamMember;
-  grid: boolean;
+  grid?: boolean;
 }
 
 const TeamMember: React.FC<TeamMemberProps> = ({ member, grid = true }) => {
