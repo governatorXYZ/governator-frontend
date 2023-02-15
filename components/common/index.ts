@@ -1,0 +1,3 @@
+export { default as Card } from './Card';
+export { default as CustomButton } from './Button';
+export { default as Footer } from './Footer';

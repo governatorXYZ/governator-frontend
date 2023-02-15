@@ -11,32 +11,48 @@ import { useRouter } from 'next/router'
  * included the server name for readability in case we have more to whitelist
  */
 const MVP_ALLOWED_GUILDS = {
-  "The DAO Bot Garage": "851552281249972254"
+  "The DAO Bot Garage": "851552281249972254",
+  "Bankless DAO": "834499078434979890"
 };
 
 const useServers = () => {
   const { data: session } = useSession()
   const [servers, setServers] = useAtom(serversAtom)
   const [loading, setLoading] = useState(false)
+  const [retry, setRetry] = useState(0)
 
   const router = useRouter()
   const guildId = router.asPath.length >= 3 ? router.asPath.split('/')[2] : ''
   const currentServer = servers.find(s => s.id === guildId)
 
   const getUserGuilds = useCallback(async () => {
-    if (!servers.length) {
+
+    const fetchData = async () => {
       try {
-        setLoading(true)
         const data = await discordAxios(session?.accessToken as string).get(
           '/users/@me/guilds'
         )
-        setLoading(false)
         const serversData = data.data.filter( (_guild: { id: string }) => Object.values(MVP_ALLOWED_GUILDS).includes(_guild.id))
         setServers(serversData)
+        return true
       } catch (e) {
         console.log({ e })
+        return false;
+      }
+    };
+
+    if (!servers.length) {
+      setLoading(true)
+      const succeeded = await fetchData()
+      if (!succeeded) {
+        if (retry < 4) {
+          setTimeout(fetchData, 500);
+          setRetry(retry + 1)
+        } else {
+          signOut()
+        }
+      } else {
         setLoading(false)
-        signOut()
       }
     }
   }, [servers])

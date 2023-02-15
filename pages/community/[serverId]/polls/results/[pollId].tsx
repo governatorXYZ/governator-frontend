@@ -29,6 +29,10 @@ const PollResults: NextPage = () => {
 
   const isLoadingPoll = !pollData && !error
 
+  function returnToServer() {
+    router.push(`/community/${currentServer?.id ?? ''}`)
+  }
+
   // TODO: clean up comments.
   return (
     <Box bg='dark-2' minH='calc(100vh - 90px)' pt='4rem' pb='8rem'>
@@ -40,7 +44,11 @@ const PollResults: NextPage = () => {
           color='gray.300'
         >
           <BreadcrumbItem>
-            <BreadcrumbLink href={`/servers/${currentServer?.id ?? ''}`}>Back</BreadcrumbLink>
+            <BreadcrumbLink
+              onClick={returnToServer}
+            >
+              Back
+            </BreadcrumbLink>
           </BreadcrumbItem>
         </Breadcrumb>
         {isLoadingPoll && (

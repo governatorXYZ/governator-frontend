@@ -10,7 +10,7 @@ const Card: React.FC<I_CardProps> = ({ ...props }) => {
     <Box
       background='white'
       maxW='sm'
-      width={60}
+      width={{ base: '100%', sm: 60 }}
       borderWidth='1px'
       borderRadius='lg'
       overflow='hidden'

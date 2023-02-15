@@ -31,6 +31,7 @@ import useStrategies from 'hooks/useStrategies'
 import PollOption from './PollOption'
 import {useAtom} from "jotai";
 import {userAtom} from "../../atoms";
+import {BlockHeight} from '../../interfaces';
 
 const STANDARD_STRATEGY_NAME = 'Standard (1 Vote = 1 Vote)';
 
@@ -49,7 +50,7 @@ export interface Poll {
   role_restrictions: string[],
   author_user_id: string,
   strategy_config: string,
-  block_height: string,
+  block_height: BlockHeight[],
 }
 
 const schema = yup.object().shape({
@@ -68,7 +69,12 @@ const schema = yup.object().shape({
   description: yup.string().required('Required.'),
   author_user_id: yup.string().required('Required'),
   strategy_config: yup.string().required('Required'),
-  block_height: yup.string().default('0'),
+  block_height: yup.array().of(
+    yup.object().shape({
+      chain_id: yup.string().default('1'),
+      block: yup.number().default(0),
+    })
+  ),
 })
 
 const PollForm: React.FC<BoxProps> = ({ ...props }) => {
@@ -98,6 +104,17 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
     control,
     name: 'poll_options',
   })
+
+  // on component first render add two empty poll options
+  useEffect(() => {
+    if (fields.length === 0) {
+      append([
+        { poll_option_name: '' },
+        { poll_option_name: '' }
+      ]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const emojiExists = (emoji: string) =>
     watch('poll_options').some(p => p.poll_option_emoji === emoji)
@@ -139,9 +156,20 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
         }
       })
 
+      let blockHeight = 0;
+
+      if (data && data.block_height) {
+          const mainnetBlock = data.block_height?.find(block => block.chain_id === '1')
+          if (mainnetBlock) blockHeight = parseInt(mainnetBlock.block);
+      }
+
+
       const strategyConfig = [{
         strategy_id: data.strategy_config,
-        block_height: parseInt(isTokenVote ? data.block_height : '0'),
+        block_height: [{
+          chain_id: '1',
+          block: blockHeight,
+        }],
       }]
 
       const guildId = router.asPath.match(/\d{18,20}/)
@@ -171,7 +199,7 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
       const res = await privateBaseAxios.post('/poll/create', submittedData)
 
       if (res.data) {
-        await router.push(router.asPath.replace('/create', ''))
+        await router.push(router.asPath.replace('polls/create', ''))
         toast({
           status: 'success',
           description: 'The poll has been created successfully.',
@@ -192,13 +220,6 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
     }
   }
 
-  useEffect(() => {
-    append({ poll_option_name: '' });
-    // (!getValues('strategy_config')) ? setValue('strategy_config', defaultStratId ? defaultStratId : '') : null
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
   return (
     <DarkMode>
       <Box {...props} color='gray.100'>
@@ -216,7 +237,10 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             <Text fontSize="m">{`Let's get the basics`}</Text>
           </VStack>
 
-          <FormControl isInvalid={!!errors.title?.message}>
+          <FormControl
+            isInvalid={!!errors.title?.message}
+            isRequired
+          >
             <FormLabel htmlFor='title'>Poll Title</FormLabel>
             <Input
               borderColor='gray.400'
@@ -228,7 +252,10 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             <FormErrorMessage>{errors.title?.message}</FormErrorMessage>
           </FormControl>
 
-          <FormControl isInvalid={!!errors.description?.message}>
+          <FormControl
+            isInvalid={!!errors.description?.message}
+            isRequired
+          >
             <FormLabel mt='1rem' htmlFor='description'>
               Description
             </FormLabel>
@@ -240,7 +267,9 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             <FormErrorMessage>{errors.description?.message}</FormErrorMessage>
           </FormControl>
 
-          <FormControl>
+          <FormControl
+            isRequired
+          >
             <FormLabel mt='1rem' htmlFor='options'>
               Poll Options
             </FormLabel>
@@ -283,7 +312,7 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
               </Button>
             )}
           </FormControl>
-          <FormControl>
+          <FormControl style={{ visibility: 'hidden'}}>
             <Flex alignItems='center' mt='1rem'>
               <Checkbox
                   isDisabled={isTokenVote}
@@ -304,7 +333,10 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             </Flex>
           </FormControl>
 
-          <FormControl isInvalid={!!errors.end_time?.message}>
+          <FormControl
+            isInvalid={!!errors.end_time?.message}
+            isRequired
+          >
             <FormLabel mt='1rem' htmlFor='endTime'>
               End time
             </FormLabel>
@@ -393,14 +425,14 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             <Text fontSize="m">How should votes be tallied?</Text>
           </VStack>
 
-           <FormControl>
+           <FormControl isRequired>
             <FormLabel mt='1rem' htmlFor='tokenStrategies'>
               Voting Strategy
             </FormLabel>
             <Controller
               control={control}
               name='strategy_config'
-              {...(!getValues('strategy_config')) ? setValue('strategy_config', defaultStratId ? defaultStratId : '') : null}
+              {...(!getValues('strategy_config')) ? setValue('strategy_config', defaultStratId ? defaultStratId : '') : {}}
               render={({ field: { onBlur } }) => (
                 <Select
                   id='tokenStrategies'
@@ -423,7 +455,8 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             />
           </FormControl>
 
-          <FormControl isInvalid={!!errors.block_height?.message}>
+          {/* <FormControl isInvalid={!!errors.block_height?.message}> */}
+          <FormControl>
             <FormLabel 
               htmlFor='title'
               // style={{ visibility: isTokenVote ? 'visible': 'hidden'}}
@@ -443,7 +476,7 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
               {...register('block_height')}
             />
             </Tooltip>
-            <FormErrorMessage>{errors.block_height?.message}</FormErrorMessage>
+            {/* <FormErrorMessage>{errors.block_height?.chain_id?.message}</FormErrorMessage> */}
           </FormControl>
 
 
@@ -459,7 +492,10 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             <Text fontSize="m">Where should we post this poll?</Text>
           </VStack>
 
-          <FormControl isInvalid={!!errors.channel_id?.message}>
+          <FormControl
+            isInvalid={!!errors.channel_id?.message}
+            isRequired
+          >
             <FormLabel mt='1rem' htmlFor='channel_id'>
               Channel
             </FormLabel>

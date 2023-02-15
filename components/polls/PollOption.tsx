@@ -92,7 +92,6 @@ const PollOption: React.FC<PollOptionProps> = ({
               onBlur={onBlur}
               value={value}
               mb='6px'
-              {...(fields.length > 1 && { minW: '400px' })}
             />
             <Box mt='-3px' ml='10px' pos='relative' ref={ref}>
               <Button
@@ -106,9 +105,35 @@ const PollOption: React.FC<PollOptionProps> = ({
               </Button>
 
               {showPicker && (
-                <Flex pos='absolute' top='0px' color='black'>
+                <Flex
+                  flexDir={{
+                    base: 'column-reverse',
+                    xl: 'unset'
+                  }}
+                  alignItems={{
+                    base: 'flex-end',
+                    xl: 'unset'
+                  }}
+                  pos='absolute'
+                  top={{
+                    base: '-50px',
+                    xl: '0px'
+                  }}
+                  left={{
+                    base: undefined,
+                  }}
+                  right={{
+                    base: '0px',
+                    xl: 'unset'
+                  }}
+                  color='black'
+                  zIndex={1000}
+                >
                   <Picker onEmojiClick={onEmojiClick} />
                   <Button
+                    mb={{
+                      base: '16px'
+                    }}
                     ml='8px'
                     onClick={() => {
                       setShowPicker(false)

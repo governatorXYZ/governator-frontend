@@ -12,7 +12,9 @@ import {
   Image,
   Spinner,
   Container,
+  Heading,
   HStack,
+  Stack,
 } from '@chakra-ui/react'
 import Govcrumb from 'components/BreadCrumb'
 import useServers from 'hooks/useServers'
@@ -28,6 +30,7 @@ import { useGovernatorUser } from 'hooks/useGovernatorUser'
 import useServer from 'hooks/useServer'
 import { Poll, RenderedPoll } from 'interfaces'
 import { useState, useEffect } from 'react'
+import Head from 'next/head'
 
 const Dashboard: NextPage = () => {
   const router = useRouter()
@@ -36,7 +39,20 @@ const Dashboard: NextPage = () => {
   const governatorUser = useGovernatorUser()
 
   const { data, error, mutate } = useSWR(governatorUser.userId ? `/poll/user/${governatorUser.userId}` : null, privateBaseFetcher);
-  const pollsData = data?.data ? (data?.data as Poll[]) : []
+  let pollsData = data?.data ? (data?.data as Poll[]) : []
+
+  const filteredPollsData: Poll[] = [];
+
+  if (currentServer) {
+    pollsData.forEach((poll) => {
+      if (poll.client_config.find(config => config.guild_id === currentServer.id)) {
+        filteredPollsData.push(poll)
+      }
+    });
+  }
+
+  pollsData = filteredPollsData as Poll[];
+
   pollsData.sort(function (a, b) {
     return a.createdAt > b.createdAt ? -1 : a.createdAt < b.createdAt ? 1 : 0
   });
@@ -60,21 +76,28 @@ const Dashboard: NextPage = () => {
 
   const columns = [
     {
-      Header: 'Created',
+      Header: 'Title',
+      accessor: (data: unknown) => data,
+      Cell: ({ value }: {
+        value: Record<string, any>
+      }) => (<NextLink href={`${router.asPath}/polls/results/${value.id}`}>{ value.name }</NextLink>)
+    },
+    {
+      Header: 'Start Date',
       accessor: 'created',
     },
     {
-      Header: 'Name',
-      accessor: 'name',
+      Header: 'End Date',
+      accessor: 'end_date',
     },
-    {
-      Header: 'Channel',
-      accessor: 'channel',
-    },
-    {
-      Header: 'Author',
-      accessor: 'author',
-    },
+    // {
+    //   Header: 'Channel',
+    //   accessor: 'channel',
+    // },
+    // {
+    //   Header: 'Author',
+    //   accessor: 'author',
+    // },
     // {
     //   Header: 'Votes',
     //   accessor: 'votes',
@@ -89,12 +112,13 @@ const Dashboard: NextPage = () => {
     return pollsData.map(p => {
       return {
         id: p._id,
-        created: luxon.DateTime.fromISO(p.createdAt).toFormat('LLL dd yyyy t'),
         name: p.title,
-        channel: isLoadingChannels
-          ? 'Loading...'
-          : (channels.find(chan => chan.value === (p.client_config.find((conf) => conf.provider_id === 'discord')?.channel_id)))?.label,
-        author: governatorUser.discordUsername,
+        created: luxon.DateTime.fromISO(p.createdAt).toFormat('LLL dd yyyy t'),
+        end_date: luxon.DateTime.fromISO(p.end_time).toFormat('LLL dd yyyy t'),
+        // channel: isLoadingChannels
+        //   ? 'Loading...'
+        //   : (channels.find(chan => chan.value === (p.client_config.find((conf) => conf.provider_id === 'discord')?.channel_id)))?.label,
+        // author: governatorUser.discordUsername,
         // votes: 0, -- needs implementing endpoint on BE
         actions: (
           <Flex w='max-content' mx='auto'>
@@ -134,6 +158,9 @@ const Dashboard: NextPage = () => {
 
   return (
       <Box bg='dark-2' minH='calc(100vh - 60px)' pt='4rem' pb='8rem'>
+        <Head>
+          <title>Goverator | Server Polls</title>
+        </Head>
         <Container maxW='container.xl'>
           <Box bg='dark-1' mx='auto' p='2rem 3rem'>
             <Flex justifyContent='space-between' alignItems='center'>
@@ -141,8 +168,18 @@ const Dashboard: NextPage = () => {
             </Flex>
             <Flex
               my='3rem'
-              justifyContent='space-between'
-              alignItems='flex-end'
+              justifyContent={{ 
+                base: 'center',
+                lg: 'space-between'
+              }}
+              alignItems={{
+                base: 'center',
+                lg: 'flex-end'
+              }}
+              flexDir={{
+                base: 'column',
+                lg: 'row',
+              }}
             >
           {/* Dashboard Buttons Box */}
           {!loading && currentServer && (
@@ -165,19 +202,39 @@ const Dashboard: NextPage = () => {
                   </Text>
                 </Box>
               )}
-              <HStack spacing={4}>
+              <Heading
+                as='h2'
+                display='block'
+                color='gray.200'
+                fontSize='2xl'
+                mt='1rem'
+                mb={{
+                  base: '2rem',
+                  lg: 'unset'
+                }}
+              >My Polls</Heading>
+              <HStack
+                wrap={{
+                  base: 'wrap',
+                }}
+              >
                 <SearchBox
                     setValue={setNewPolls}
                     originalValues={originalPolls}
                     searchKeys={['name']}
-                    placeholder='Search poll name...'
+                    placeholder='Search poll title...'
                   />
                 {loading && <Spinner color='gray.200' />}
                 {/* Render server icons */}
-                <Grid templateColumns='1fr' gap={6}>
+                <Grid
+                  templateColumns='1fr'
+                  gap={6}
+                >
                   {dashboardButtons.map((_button, idx) => {
                     return (
-                      <Box key={`button-${idx}`} width='100%'>
+                      <Box key={`button-${idx}`} width='100%' mt={{
+                        base: '1rem',
+                      }}>
                         <NextLink href={_button.href}>
                           <Button
                             leftIcon={_button.icon}
@@ -205,7 +262,7 @@ const Dashboard: NextPage = () => {
             )}
             {!loading && (
               <>
-                <Box>
+                <Box overflowX={'auto'}>
                   <DataTable
                     data={polls}
                     columns={columns}

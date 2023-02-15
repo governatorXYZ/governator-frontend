@@ -13,6 +13,12 @@ import {
     AccordionButton,
     AccordionPanel,
     AccordionIcon,
+    Td,
+    Tr,
+    Table,
+    List,
+    UnorderedList,
+    ListItem,
     Spinner
 } from '@chakra-ui/react'
 import { Icon } from '@chakra-ui/icon'
@@ -176,17 +182,18 @@ const ResultBlock: React.FC<DisplayPollResultsProps> = ({ pollData, voteData, to
     )
 }
 
-// General layout for the results stack.
-const PollResultStack: React.FC<PollResultStack> = ({ 
-    pollData,
-    voteData,
-    totalVotes,
-    strategy,
-    locked,
-    endTime,
-    duration
-}) => {
-    const [strategyDetails, setStrategyDetails] = useState();
+const PollResultStack: React.FC<DisplayPollResultsProps> = ({pollData, result}) => {
+
+    const { strategies } = useStrategies();
+
+    let strategyName = null
+    let strategyType = null
+    let strategyBlock = null
+    if (pollData.strategy_config && pollData.strategy_config.length > 0) {
+        strategyName = (strategies.find((strat: {label: string, value: string}) => strat.value === pollData.strategy_config[0].strategy_id ))?.label
+        strategyType = pollData.strategy_config[0].strategy_type
+        strategyBlock = pollData.strategy_config[0].block_height
+    }
 
     return (
         <VStack spacing='16px'>
