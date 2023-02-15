@@ -224,7 +224,7 @@ const Dashboard: NextPage = () => {
                     searchKeys={['name']}
                     placeholder='Search poll title...'
                   />
-                {loading && <Spinner color='gray.200' />}
+                {/* {loading && <Spinner color='gray.200' />} WTF Zach?! - itszachnotzak */}
                 {/* Render server icons */}
                 <Grid
                   templateColumns='1fr'

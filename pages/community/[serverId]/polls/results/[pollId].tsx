@@ -33,6 +33,12 @@ const PollResults: NextPage = () => {
     router.push(`/community/${currentServer?.id ?? ''}`)
   }
 
+  console.log({
+    pollData,
+    votesData,
+    totalVotes
+  });
+
   // TODO: clean up comments.
   return (
     <Box bg='dark-2' minH='calc(100vh - 90px)' pt='4rem' pb='8rem'>
@@ -56,7 +62,11 @@ const PollResults: NextPage = () => {
             <Spinner color='gray.200' mx='auto' />
           </Flex>
         )}
-        <DisplayPollResults pollData={pollData} voteData={votesData} totalVotes={totalVotes}/>
+        <DisplayPollResults
+          pollData={pollData}
+          voteData={votesData}
+          totalVotes={totalVotes}
+        />
       </Box>
     </Box>
   )
