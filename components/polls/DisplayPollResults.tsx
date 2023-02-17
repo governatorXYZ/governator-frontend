@@ -25,19 +25,20 @@ import { useState, useEffect, useMemo } from "react";
 import useStrategies from 'hooks/useStrategies'
 import { useTimer } from 'hooks/useTimer';
 import type { BlockHeight } from 'interfaces';
+import type { VoteData } from 'hooks/useVoteData';
 
 // import TimeGraph from 'components/polls/TimeGraph'
 
 type DisplayPollResultsProps = {
     pollData: Poll,
-    voteData?: any,
-    totalVotes?: string,
+    voteData: VoteData;
+    totalVotes: string,
 }
 
 type PollResultStack = {
     pollData: Poll;
-    voteData: Record<string, any>;
-    totalVotes?: string;
+    voteData: VoteData;
+    totalVotes: string;
     strategy?: PollStrategy;
     locked: boolean;
     duration?: Duration;
@@ -58,7 +59,7 @@ type PollTimerProps = {
 }
 
 type ShieldBlockProps = {
-    totalVotes?: string;
+    totalVotes: string;
     duration?: Duration;
     endTime?: Date;
 }

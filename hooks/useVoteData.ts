@@ -1,14 +1,22 @@
 import useSWR from "swr";
-import {privateBaseFetcher} from "../constants/axios";
+import { pollFetcher } from "../constants/axios";
 
-export const useVotesData = (pollId: string) => {
-    const { data } = useSWR(`/vote/results/sum/${pollId}`, privateBaseFetcher)
-    const votesData = data?.data ? data?.data : []
-    return { votesData }
+export type VoteData = {
+    aggregate: Array<unknown>;
+    votes: Array<unknown>;
+};
+
+export type UseVoteData = {
+    data: VoteData;
+    error: Error;
+}
+
+export const useVotesData = (pollId: string): UseVoteData => {
+    const { data, error } = useSWR(`/vote/results/sum/${pollId}`, pollFetcher);
+    return { data, error }
 }
 
 export const useTotalVotes = (pollId: string) => {
-    const { data } = useSWR(`/vote/results/votes-per-user/count/${pollId}`, privateBaseFetcher)
-    const totalVotes = data?.data ? data?.data : '0'
-    return { totalVotes }
+    const { data, error } = useSWR(`/vote/results/votes-per-user/count/${pollId}`, pollFetcher)
+    return { data, error }
 }

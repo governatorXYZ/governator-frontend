@@ -17,3 +17,6 @@ export const discordFetcher = (url: string, accessToken: string) =>
   discordAxios(accessToken).get(url)
 
 export const privateBaseFetcher = (url: string) => privateBaseAxios.get(url)
+
+
+export const pollFetcher = async (url: string) => await privateBaseAxios.get(url).then(res => res.data);
