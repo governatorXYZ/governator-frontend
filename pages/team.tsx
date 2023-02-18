@@ -19,6 +19,7 @@ import { FiTwitter } from 'react-icons/fi'
 import styled from '@emotion/styled'
 import team from '../assets/data/team.json'
 import Link from 'next/link'
+import Footer from 'components/common/Footer';
 
 const StyledBox = styled(Flex)`
   background-color: #29303a;
@@ -34,6 +35,7 @@ const Team: NextPage = () => {
       <StyledBox
         direction='column'
         justify={'space-between'}
+        color='gray.100'
       >
         <Container maxW='4xl' textAlign='center' color='whiteAlpha.800' py='4em'>
           <Heading>Team</Heading>
@@ -44,14 +46,18 @@ const Team: NextPage = () => {
               md: 'repeat(3, minmax(min-content, max-content))',
               lg: 'repeat(3, 300px)'
             }}
-            gap='2em'
+            gap={{
+              base: '2em',
+              md: '3em',
+              lg: '4em'
+            }}
             alignContent={'center'}
             justifyContent={'center'}
             flexGrow={2}
             my='64px'
           >
-            {team.filter((member) => !member.alumni).map((member, index) => (
-              <TeamMember member={member} />
+            {team.filter((member) => !member.alumni).map((member) => (
+              <TeamMember key={member.name} member={member} />
             ))}
           </Grid>
           <Heading>Alumni</Heading>
@@ -72,8 +78,8 @@ const Team: NextPage = () => {
             flexGrow={2}
             mt='32px'
           >
-            {team.filter((member) => member.alumni).map((member, index) => (
-              <TeamMember member={member} />
+            {team.filter((member) => member.alumni).map((member) => (
+              <TeamMember key={member.name} member={member} />
             ))}
           </Grid>
         </Container>
@@ -81,48 +87,7 @@ const Team: NextPage = () => {
           overflowX={'hidden'}
           flexShrink='0'
         >
-          <SVGWall />
-          <Flex
-            backgroundColor='black'
-            h={{
-              base: 'fit-content',
-              lg: '240px'
-            }}
-            alignItems='center'
-            justifyContent='space-between'
-            p='40px'
-            px='60px'
-            flexDir={{
-              base: 'column',
-              lg: 'row',
-            }}
-          >
-            <Image
-              src='./images/bankless.png'
-              alt='BanklessDAO'
-              alignSelf='center'
-            />
-            <Flex gap='8px'>
-              <Link href='https://discord.com/invite/bankless'>
-                <a>
-                  <Button
-                    variant='ghost'
-                    _hover={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
-                    <FaDiscord fontSize='20px' />
-                  </Button>
-                </a>
-              </Link>
-              <Link href='https://twitter.com/governatorxyz'>
-                <a>
-                  <Button
-                    variant='ghost'
-                    _hover={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
-                    <FiTwitter fontSize='20px' />
-                  </Button>
-                </a>
-              </Link>
-            </Flex>
-          </Flex>
+          <Footer />
         </Box>
       </StyledBox>
     </>
