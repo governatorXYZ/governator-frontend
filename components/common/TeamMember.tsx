@@ -18,16 +18,45 @@ const TeamMember: React.FC<TeamMemberProps> = ({ member, grid = true }) => {
 
   const MemberImage = () => {
     if (!member.image) return (
-      <Box mb='16px' bg='gray.600' borderRadius='full' w='150px' h='150px' overflow={'hidden'} position='relative'>
+      <Box mb='16px' bg='gray.100' borderRadius='full' w='150px' h='150px' overflow={'hidden'} position='relative'>
         <Box position='absolute'
           w='100%'
           h='100%'
           top='25%'
           right='25%'
-          bg='gray.500'
+          bg='gray.100'
           borderRadius={'60px 75px 40px 0'}
-          
-        />
+          border='2px solid black'
+          filter='blur(6px)'
+        >
+          <Box
+            transform='rotate(-15deg)'
+            bg='black'
+            width='4px'
+            height='8px'
+            position='absolute'
+            top='30%'
+            left='55%'
+          />
+          <Box
+            transform='rotate(-15deg)'
+            bg='black'
+            width='4px'
+            height='8px'
+            position='absolute'
+            top='30%'
+            left='75%'
+          />
+          <Box
+            transform='rotate(10deg)'
+            bg='black'
+            width='55px'
+            height='2px'
+            position='absolute'
+            top='55%'
+            left='47%'
+          />
+        </Box>
       </Box>
     );
 
