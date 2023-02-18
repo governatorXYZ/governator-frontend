@@ -2,8 +2,6 @@ import { useEffect, useState, useMemo } from "react";
 import type { Duration } from "date-fns";
 import { intervalToDuration, isBefore } from "date-fns";
 
-const pad = (num?: number) => (num?.toString().padStart(2, '0') ?? '00');
-
 export type Timer = {
   duration?: Duration;
   isTimeUp?: boolean;

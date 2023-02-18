@@ -41,7 +41,7 @@ const Loader = () => (
 const PollResults: NextPage = () => { 
   const router = useRouter()
   const toast = useToast();
-  const { loading, currentServer } = useServers()
+  const { currentServer } = useServers()
   const id: string = router.query.pollId as string;
 
   const {

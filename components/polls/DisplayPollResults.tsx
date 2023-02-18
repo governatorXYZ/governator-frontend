@@ -70,7 +70,7 @@ const Timer: React.FC<PollTimerProps> = ({ duration, endTime }) => {
 
 
     const pad = (num?: number) => (num?.toString().padStart(2, '0') ?? '00');
-    const [label, _setLabel] = useState<string>(`${endTime.toLocaleDateString()} ${endTime.toLocaleTimeString()}`);
+    const [label] = useState<string>(`${endTime.toLocaleDateString()} ${endTime.toLocaleTimeString()}`);
     
     const timerDisplay = useMemo(
         () => `${pad(duration.days)} : ${pad(duration.hours)} : ${pad(duration.minutes)} : ${pad(duration.seconds)}`,
