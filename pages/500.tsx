@@ -9,7 +9,7 @@ import { FaDiscord } from "react-icons/fa";
 import { FiTwitter } from "react-icons/fi";
 
 
-export default function Custom404() {
+export default function Custom500() {
   const router = useRouter();
   return (
     <>
@@ -38,7 +38,7 @@ export default function Custom404() {
               <Heading
                 fontSize='6rem'
                 textAlign={'center'}
-              >404</Heading>
+              >500</Heading>
             </Box>
             <Box
               h='auto'
@@ -62,7 +62,7 @@ export default function Custom404() {
               color='whiteAlpha.900'
               textAlign={'center'}
             >
-                <Heading mb='2rem'>Moloch Chippi Is Angry That There Is No Page!</Heading>
+                <Heading mb='2rem'>Moloch Chippi Is Angry That There Was A Server Error</Heading>
                 <Button
                   colorScheme={'red'}
                   fontSize='2rem'

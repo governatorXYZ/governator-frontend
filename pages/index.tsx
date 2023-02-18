@@ -27,7 +27,7 @@ import { sample } from 'lodash'
 import Link from 'next/link'
 import { useSession, signIn } from 'next-auth/react'
 import { useRouter } from 'next/router'
-import Footer from 'components/common/Footer';
+import { Footer } from 'components/common'
 
 const StyledBox = styled(Box)`
   background-color: #29303a;
@@ -336,9 +336,7 @@ const Home: NextPage = () => {
             </Flex>
           </Grid>
         </Container>
-        <Box>
-          <Footer />
-        </Box>
+        <Footer />
       </StyledBox>
     </>
   )
