@@ -1,21 +1,19 @@
 import type { NextPage } from 'next'
-import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Flex, Spinner, toast } from '@chakra-ui/react'
+import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Flex, Spinner, useToast } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import useSWR from 'swr'
-import { pollFetcher, privateBaseFetcher } from 'constants/axios'
-import { Poll } from 'interfaces'
-import Govcrumb from 'components/BreadCrumb'
+import { pollFetcher } from 'constants/axios'
 import DisplayPollResults from 'components/polls/DisplayPollResults'
 import {useTotalVotes, useVotesData} from "../../../../../hooks/useVoteData";
 import useServers from 'hooks/useServers'
 import { ChevronRightIcon } from '@chakra-ui/icons'
-import { useToast } from '@chakra-ui/react'
-import { useTimer } from 'hooks/useTimer';
 interface BackButtonProps {
   returnToServer: () => void
 }
 
-const BackButton = ({ returnToServer }: BackButtonProps) => (        <Breadcrumb
+const BackButton = ({
+  returnToServer
+}: BackButtonProps) => (<Breadcrumb
   spacing='8px'
   separator={<ChevronRightIcon color='gray.500' />}
   color='gray.300'

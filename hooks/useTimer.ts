@@ -1,32 +1,37 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import type { Duration } from "date-fns";
 import { intervalToDuration, isBefore } from "date-fns";
 
 const pad = (num?: number) => (num?.toString().padStart(2, '0') ?? '00');
 
-export const useTimer = (deadline: Date) => {
+export type Timer = {
+  duration?: Duration;
+  isTimeUp?: boolean;
+  endTime?: Date;
+  now?: Date;
+}
+
+export const useTimer = (deadline: Date | string): Timer => {
   const [now, setNow] = useState(new Date());
-  const [duration, setDuration] = useState<Duration>();
   const [isTimeUp, setIsTimeUp] = useState<boolean>();
-  const [endTime, setEndTime] = useState<Date>();
-  const [time, setTime] = useState<string>();
+  
+  const endTime = useMemo(
+    () => typeof deadline === 'string' ? new Date(deadline) : deadline,
+    [deadline]
+  );
+
+  const duration = useMemo(
+    () => intervalToDuration({ start: now, end: endTime }), 
+    [now, endTime]
+  );
 
   useEffect(() => {
-    setEndTime(deadline);
-    if (isBefore(now, deadline)) {
+    if (isBefore(now, endTime)) {
       setIsTimeUp(false);
-      setDuration(intervalToDuration({
-        start: now,
-        end: deadline
-      }))
     } else {
       setIsTimeUp(true);
-      setDuration({ years: 0, months: 0, weeks: 0, days: 0, hours: 0, minutes: 0, seconds: 0 })
     }
-    if (duration) {
-      setTime(`${pad(duration.days)} : ${pad(duration.hours)} : ${pad(duration.minutes)} : ${pad(duration.seconds)}`)
-    }
-  }, [])
+  }, [endTime, now]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -38,13 +43,11 @@ export const useTimer = (deadline: Date) => {
     }
   }, [setNow]);
 
-
   if (isTimeUp) {
-    return { time, duration, isTimeUp, endTime };
+    return { duration, isTimeUp, endTime };
   }
 
   return {
-    time,
     duration,
     isTimeUp,
     endTime,

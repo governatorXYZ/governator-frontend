@@ -24,21 +24,23 @@ import PollGraph from 'components/polls/PollGraph';
 import { useState, useEffect, useMemo } from "react";
 import useStrategies from 'hooks/useStrategies'
 import { useTimer } from 'hooks/useTimer';
+import type { Timer } from 'hooks/useTimer';
 import type { BlockHeight } from 'interfaces';
 import type { VoteData } from 'hooks/useVoteData';
 
 // import TimeGraph from 'components/polls/TimeGraph'
 
-type DisplayPollResultsProps = {
-    pollData: Poll,
-    voteData: VoteData;
-    totalVotes: string,
-}
-
-type PollResultStack = {
+type PollData = {
     pollData: Poll;
     voteData: VoteData;
     totalVotes: string;
+}
+
+type DisplayPollResultsProps = PollData;
+
+type ResultBlockProps = PollData;
+
+type PollResultStack = PollData & {
     strategy?: PollStrategy;
     locked: boolean;
     duration?: Duration;
@@ -64,20 +66,26 @@ type ShieldBlockProps = {
     endTime?: Date;
 }
 
-const Timer: React.FC<PollTimerProps> = ({ duration: { days, hours, minutes, seconds }, endTime }) => {
+const Timer: React.FC<PollTimerProps> = ({ duration, endTime }) => {
+
 
     const pad = (num?: number) => (num?.toString().padStart(2, '0') ?? '00');
     const [label, _setLabel] = useState<string>(`${endTime.toLocaleDateString()} ${endTime.toLocaleTimeString()}`);
-    const [timerDisplay, _setTimerDisplay] = useState<string>(`${pad(days)} : ${pad(hours)} : ${pad(minutes)} : ${pad(seconds)}`);
+    
+    const timerDisplay = useMemo(
+        () => `${pad(duration.days)} : ${pad(duration.hours)} : ${pad(duration.minutes)} : ${pad(duration.seconds)}`,
+        [duration]
+    );
 
     return (
         <Tooltip 
-            hasArrow label={label} bg='dark-1'
+            label={label}
+            bg='dark-1'
+            hasArrow
         >
             <Center>
                 <Text>{ timerDisplay }</Text>
             </Center>
-
         </Tooltip>
     )
 }
@@ -117,7 +125,7 @@ const ShieldBlock: React.FC<ShieldBlockProps> = ({
     )
 }
 
-const ResultBlock: React.FC<DisplayPollResultsProps> = ({pollData, voteData, totalVotes}) => {
+const ResultBlock: React.FC<ResultBlockProps> = ({pollData, voteData, totalVotes}) => {
 
     return (
         <div>
@@ -200,9 +208,6 @@ const PollResultStack: React.FC<PollResultStack> = ({
     duration,
     endTime
 }) => {
-
-    const [strategyDetails, setStrategyDetails] = useState();
-
     return (
         <VStack spacing='16px'>
             <Flex
@@ -294,7 +299,7 @@ const PollResultStack: React.FC<PollResultStack> = ({
                                         <Text pt='2' fontSize='sm' color='gray.100'>Block height</Text>
                                         <BlockHeightsTable blockHeight={strategy.blockHeight} />
                                     </>
-                                ) : (<Flex alignItems={'center'} justifyContent={'center'}><Spinner size='3xl' /></Flex>) }
+                                ) : (<Flex alignItems={'center'} justifyContent={'center'}><Spinner color='white' size='3xl' /></Flex>) }
                             </VStack>
                         </AccordionPanel>
                     </AccordionItem>
@@ -324,12 +329,11 @@ const PollResultStack: React.FC<PollResultStack> = ({
                                 totalVotes={totalVotes}
                                 duration={duration}
                                 endTime={endTime}
-                            />) : 
-                            (<ResultBlock
+                            />) : (<ResultBlock
                                 pollData={pollData}
                                 voteData={voteData}
                                 totalVotes={totalVotes}
-                             />) }
+                             />)}
                         </AccordionPanel>
                     </AccordionItem>
                 </Accordion>
@@ -339,10 +343,13 @@ const PollResultStack: React.FC<PollResultStack> = ({
     )
 }
 
-const DisplayPollResults: React.FC<DisplayPollResultsProps> = ({pollData, voteData, totalVotes}) => {
-    const [locked, setLocked] = useState<boolean>(false);
+const DisplayPollResults: React.FC<DisplayPollResultsProps> = ({
+    pollData,
+    voteData,
+    totalVotes
+}) => {
     const [strategy, setStrategy] = useState<PollStrategy>();
-    const { duration, isTimeUp, endTime } = useTimer(new Date(pollData.end_time));
+    const { duration, isTimeUp, endTime } = useTimer(pollData.end_time)
     const { strategies } = useStrategies();
     
     useEffect(() => {
@@ -351,13 +358,13 @@ const DisplayPollResults: React.FC<DisplayPollResultsProps> = ({pollData, voteDa
             const { strategy_id, strategy_type: type, block_height: blockHeight } = firstStrategy;
 
             const name = strategies.find(({ value }: { label: string, value: string }) => value === strategy_id)?.label ?? 'N/A';
-            setStrategy({ name, type, blockHeight });
+            setStrategy({
+                name,
+                type,
+                blockHeight
+            });
         }
-    }, [strategies]);
-
-    useEffect(() => {
-        setLocked(!isTimeUp);
-    }, [isTimeUp])
+    }, [strategies, pollData.strategy_config]);
 
     return (
         <PollResultStack
@@ -365,7 +372,7 @@ const DisplayPollResults: React.FC<DisplayPollResultsProps> = ({pollData, voteDa
             voteData={voteData}
             totalVotes={totalVotes}
             strategy={strategy}
-            locked={locked}
+            locked={!isTimeUp}
             duration={duration}
             endTime={endTime}
         />
