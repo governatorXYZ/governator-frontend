@@ -1,0 +1,53 @@
+[
+    {
+      "name": "Governator",
+      "role": "Bot of Governating",
+      "image": "/images/gov-bot.jpeg",
+      "alumni": false
+    }, {
+      "name": "jameswmontgomery.eth",
+      "role": "Founder",
+      "image": "https://i.seadn.io/gae/3egSedh4lAlCZylxM0eJDEWsr9DRrNfF4dDHbFCx5_yAZLKKv_RnlLOgFsXaNSyWbmKdocwIirPjDOuvHjGfRabUOK4MQmabYZc57sg?auto=format&w=1000",
+      "alumni": false
+    }, {
+      "name": "Tiki",
+      "role": "Founder",
+      "image": "https://i.seadn.io/gae/Sen6LLELwYgCSgP9ZjjGr4AtEgRzIvNpBPlqH_BAYHgwXJmbiC0WNMLrQoNHQrhVHNN1FNaQ6OjNcEHousNPVfY9Q9C9feBmyDR0sg?auto=format&w=1000",
+      "alumni": false
+    }, {
+      "name": "itszachnotzak",
+      "role": "Front-end Developer",
+      "image": "https://i.seadn.io/gae/uMeztUgKetVFLZOn9zgd2LywfP67_87EG6f6i7Q3aa32MgAMCwpCxyalwL9FW3oYtDKaAmJoxgwKhk6RhL5GkyhBK0J6xYbG7qJB?auto=format&w=1000",
+      "alumni": false
+    }, {
+      "name": "Sprinklesforwinners",
+      "role": "Project Manager",
+      "image": "https://i.seadn.io/gae/D7h6Si1U5CBnlOso_w-gy7exW-4ICp7f2x1s9NOJc7etTLLP9u-ylIGNVSMae-Ki2zWukYt6Ek4cWZPyloz_Gb19rjAGPiqgcs3K?auto=format&w=1000",
+      "alumni": false
+    }, {
+      "name": "jarisjames",
+      "role": "Ambassador",
+      "image": "https://i.seadn.io/gae/muqhJQkELwMOMBs8bUaNn8w8BC_mjEDYtgL3HrfJJJqsp5mhM0ddNBXw4cyelRZkx_RUPtlkr-XkgfCVuymy5wTGpAOlL-Mbq0za?auto=format&w=1000",
+      "alumni": false
+    }, {
+      "name": "ivan7538",
+      "role": null,
+      "image": null,
+      "alumni": true      
+    }, {
+      "name": "ken",
+      "role": null,
+      "image": null,
+      "alumni": true      
+    }, {
+      "name": "stradford",
+      "role": null,
+      "image": null,
+      "alumni": true      
+    }, {
+      "name": "Joel",
+      "role": null,
+      "image": null,
+      "alumni": true      
+    }
+]

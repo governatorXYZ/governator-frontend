@@ -43,6 +43,9 @@ const LoginText = () => {
         <Text
           as='span'
           cursor='pointer'
+          ml={{
+            base: '8px',
+          }}
           onClick={() => {
             signIn('discord', { callbackUrl: "/dashboard" })
           }}>
