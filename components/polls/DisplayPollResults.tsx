@@ -125,68 +125,81 @@ const ShieldBlock: React.FC<ShieldBlockProps> = ({
     )
 }
 
+const Loader = () => (
+    <Flex
+      justify='center'
+      align='center'
+      h='100%'
+      p='2rem'
+    >
+      <Spinner color='white' size='xl' />
+    </Flex>
+  );
+
 const ResultBlock: React.FC<ResultBlockProps> = ({pollData, voteData, totalVotes}) => {
 
+    // if undefined loading...
+    if (!voteData) return (<Loader />)
+
+    // if aggregate is empty, no data.
+    if (voteData.aggregate.length === 0) return (
+        <Flex
+            borderWidth='3px'
+            p='20px'
+            borderRadius='5'
+            borderColor='gray.600'
+            color='gray.600'
+            fontSize='2xl'
+            fontWeight='600'
+            mt='3rem'
+            alignItems='center'
+            mx='auto'
+            width='50%'
+        >
+            <Box width='100%' backgroundColor='blue'>
+            </Box>
+            <VStack>
+            <Box>
+                <BiBarChartSquare fontSize='36px' />
+            </Box>
+            <Box>
+                <Text align='center'>
+                    No Data
+                </Text>
+            </Box>
+            </VStack>
+            <Box width='100%' backgroundColor='yellow'>
+            </Box>
+        </Flex>
+    );
+    
+    // otherwise render the chart.
     return (
-        <div>
-            {
-                !voteData.aggregate || voteData.aggregate.length === 0 ?
-                <Flex
-                    borderWidth='3px'
-                    p='20px'
-                    borderRadius='5'
-                    borderColor='gray.600'
-                    color='gray.600'
-                    fontSize='2xl'
-                    fontWeight='600'
-                    mt='3rem'
-                    alignItems='center'
-                    mx='auto'
-                    width='50%'
-                    // maxW='max-content'
-                >
-                    <Box width='100%' backgroundColor='blue'>
-                    </Box>
-                    <VStack>
-                    <Box>
-                        <BiBarChartSquare fontSize='36px' />
-                    </Box>
-                    <Box>
-                        <Text align='center'>
-                            No Data
-                        </Text>
-                    </Box>
-                    </VStack>
-                    <Box width='100%' backgroundColor='yellow'>
-                    </Box>
-                </Flex> :
-                <div>
-                <Flex width={450}>
-                    <PollGraph
-                        pollData={pollData}
-                        voteData={voteData.aggregate as {
-                        _id: string
-                        percent: string
-                        vote_power: string
-                    }[]}
-                    />
-                </Flex>
-                <Box>
-                    <Card 
-                        title='Total Votes'
-                        value={totalVotes ?? '0'}
-                    ></Card>
-                </Box>
-                </div>
-            }
-        </div>
-    )
+        <>
+            <Flex width={450}>
+                <PollGraph
+                    pollData={pollData}
+                    voteData={voteData.aggregate as {
+                    _id: string
+                    percent: string
+                    vote_power: string
+                }[]}
+                />
+            </Flex>
+            <Box>
+                <Card 
+                    title='Total Votes'
+                    value={totalVotes ?? '0'}
+                ></Card>
+            </Box>
+        </>
+    );
 }
 
-const BlockHeightsTable: React.FC<{ blockHeight: Array<BlockHeight> }> = ({ blockHeight }) => {
+const BlockHeightsTable: React.FC<{ blockHeight: Array<BlockHeight> | number }> = ({ blockHeight }) => {
     return (
         <List>
-            {blockHeight.map((item: any) => {
+            {Array.isArray(blockHeight) ? (blockHeight.map((item: any) => {
                 return (
                     <ListItem key={item.chain_id}>
                         <Text paddingLeft='10px' pt='2' fontSize='sm' color='gray.100'>
@@ -194,7 +207,13 @@ const BlockHeightsTable: React.FC<{ blockHeight: Array<BlockHeight> }> = ({ bloc
                         </Text>
                     </ListItem>
                 )
-            })}
+            })) : (
+                <ListItem>
+                    <Text paddingLeft='10px' pt='2' fontSize='sm' color='gray.100'>
+                        Block: {blockHeight}
+                    </Text>
+                </ListItem>
+            )}
         </List>        
     )
 }
