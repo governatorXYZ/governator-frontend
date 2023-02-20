@@ -23,11 +23,13 @@ const links: LinkList = [
   //   name: 'Contact',
   //   href: 'contact',
   // },
-  // {
-  //   name: 'Team',
-  //   href: 'team'
-  // }
+  {
+    name: 'Team',
+    href: 'team'
+  }
 ];
+
+
 
 const Footer: React.FC = () => {
   return (
