@@ -7,6 +7,7 @@ import DisplayPollResults from 'components/polls/DisplayPollResults'
 import {useTotalVotes, useVotesData} from "../../../../../hooks/useVoteData";
 import useServers from 'hooks/useServers'
 import { ChevronRightIcon } from '@chakra-ui/icons'
+
 interface BackButtonProps {
   returnToServer: () => void
 }
@@ -49,8 +50,16 @@ const PollResults: NextPage = () => {
     error: pollError
   } = useSWR(`/poll/${id}`, pollFetcher);
 
-  const { data: voteData, error: voteDataError } = useVotesData(id);
-  const { data: totalVotes, error: totalVotesError } = useTotalVotes(id);
+  const {
+    data: voteData,
+    mutate: mutateVoteData,
+    error: voteDataError
+  } = useVotesData(id);
+  const {
+    data: totalVotes,
+    mutate: mutateTotalVotes,
+    error: totalVotesError
+  } = useTotalVotes(id);
 
   function returnToServer() {
     router.push(`/community/${currentServer?.id ?? ''}`)
@@ -98,6 +107,8 @@ const PollResults: NextPage = () => {
                 pollData={pollData}
                 voteData={voteData}
                 totalVotes={totalVotes}
+                mutateVoteData={mutateVoteData}
+                mutateTotalVotes={mutateTotalVotes}
               />)
         }
       </Box>

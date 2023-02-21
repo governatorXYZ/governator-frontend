@@ -14,6 +14,7 @@ import {
     Text,
     List,
     Box,
+    useToast,
  } from '@chakra-ui/react'
  import { Icon } from '@chakra-ui/icon'
 
@@ -27,6 +28,7 @@ import { useTimer } from 'hooks/useTimer';
 import type { Timer } from 'hooks/useTimer';
 import type { BlockHeight } from 'interfaces';
 import type { VoteData } from 'hooks/useVoteData';
+import { KeyedMutator } from 'swr';
 
 // import TimeGraph from 'components/polls/TimeGraph'
 
@@ -36,7 +38,10 @@ type PollData = {
     totalVotes: string;
 }
 
-type DisplayPollResultsProps = PollData;
+type DisplayPollResultsProps = PollData & {
+    mutateVoteData: KeyedMutator<VoteData>;
+    mutateTotalVotes: KeyedMutator<string>;
+}
 
 type ResultBlockProps = PollData;
 
@@ -136,10 +141,13 @@ const Loader = () => (
     </Flex>
   );
 
-const ResultBlock: React.FC<ResultBlockProps> = ({pollData, voteData, totalVotes}) => {
-
+const ResultBlock: React.FC<ResultBlockProps> = ({
+    pollData,
+    voteData,
+    totalVotes
+}) => {
     // if undefined loading...
-    if (!voteData) return (<Loader />)
+    if (voteData === undefined || totalVotes === undefined) return (<Loader />)
 
     // if aggregate is empty, no data.
     if (voteData.aggregate.length === 0) return (
@@ -344,15 +352,17 @@ const PollResultStack: React.FC<PollResultStack> = ({
                             </AccordionButton>
                         </h2>
                         <AccordionPanel pb={4}>
-                           { locked ? (<ShieldBlock
-                                totalVotes={totalVotes}
-                                duration={duration}
-                                endTime={endTime}
-                            />) : (<ResultBlock
-                                pollData={pollData}
-                                voteData={voteData}
-                                totalVotes={totalVotes}
-                             />)}
+                            { 
+                                locked ? (<ShieldBlock
+                                    totalVotes={totalVotes}
+                                    duration={duration}
+                                    endTime={endTime}
+                                />) : (<ResultBlock
+                                    pollData={pollData}
+                                    voteData={voteData}
+                                    totalVotes={totalVotes}
+                                />)
+                            }
                         </AccordionPanel>
                     </AccordionItem>
                 </Accordion>
@@ -365,11 +375,29 @@ const PollResultStack: React.FC<PollResultStack> = ({
 const DisplayPollResults: React.FC<DisplayPollResultsProps> = ({
     pollData,
     voteData,
-    totalVotes
+    totalVotes,
+    mutateTotalVotes,
+    mutateVoteData
 }) => {
     const [strategy, setStrategy] = useState<PollStrategy>();
     const { duration, isTimeUp, endTime } = useTimer(pollData.end_time)
     const { strategies } = useStrategies();
+    const toast = useToast();
+
+    const mutateData = async () => {
+        try {
+            await mutateTotalVotes();
+            await mutateVoteData();
+        } catch (e) {
+            toast({
+                title: 'Error',
+                description: 'An error occurred while fetching data. Please try again later.',
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+            });
+        }
+    }
     
     useEffect(() => {
         if (pollData.strategy_config && pollData.strategy_config.length > 0) {
@@ -384,6 +412,10 @@ const DisplayPollResults: React.FC<DisplayPollResultsProps> = ({
             });
         }
     }, [strategies, pollData.strategy_config]);
+
+    if (isTimeUp) {
+        mutateData();
+    }
 
     return (
         <PollResultStack

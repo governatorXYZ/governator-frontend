@@ -11,7 +11,6 @@ export type Timer = {
 
 export const useTimer = (deadline: Date | string): Timer => {
   const [now, setNow] = useState(new Date());
-  const [isTimeUp, setIsTimeUp] = useState<boolean>();
   
   const endTime = useMemo(
     () => typeof deadline === 'string' ? new Date(deadline) : deadline,
@@ -23,23 +22,23 @@ export const useTimer = (deadline: Date | string): Timer => {
     [now, endTime]
   );
 
-  useEffect(() => {
-    if (isBefore(now, endTime)) {
-      setIsTimeUp(false);
-    } else {
-      setIsTimeUp(true);
-    }
-  }, [endTime, now]);
+  const isTimeUp = useMemo(
+    () => !isBefore(now, endTime),
+    [now, endTime]
+  );
 
+  // Update the timer every second, if the time is not up.
   useEffect(() => {
-    const interval = setInterval(() => {
-      setNow(new Date());
-    }, 1000);
+    if (!isTimeUp) {
+      const interval = setInterval(() => {
+        setNow(new Date());
+      }, 1000);
 
-    return () => {
-      clearInterval(interval);
+      return () => {
+        clearInterval(interval);
+      }
     }
-  }, [setNow]);
+  }, [setNow, isTimeUp]);
 
   if (isTimeUp) {
     return { duration, isTimeUp, endTime };
