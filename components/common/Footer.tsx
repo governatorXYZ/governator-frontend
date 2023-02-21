@@ -11,10 +11,10 @@ type LinkListItem = {
 };
 
 const links: LinkList = [
-  // {
-  //   name: 'Privacy',
-  //   href: 'privacy',
-  // },
+  {
+    name: 'Privacy',
+    href: 'privacy',
+  },
   // {
   //   name: 'Terms',
   //   href: 'terms',
@@ -28,6 +28,8 @@ const links: LinkList = [
     href: 'team'
   }
 ];
+
+
 
 const Footer: React.FC = () => {
   return (
