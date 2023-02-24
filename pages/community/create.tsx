@@ -6,18 +6,29 @@ import {
   FormLabel,
   Heading,
   Button,
+  HStack,
   Input,
   Flex,
   Box,
 } from '@chakra-ui/react'
 import { StyledBox } from 'components/common'
 import Head from 'next/head'
-import { CommunityAdministratorBase, CommunityClientConfigBase, CommunityCreateDto } from 'governator-sdk';
+import {
+  CommunityAdministratorBase,
+  CommunityClientConfigBase,
+  CommunityCreateDto
+} from 'governator-sdk';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useForm } from 'react-hook-form';
+import {
+  useFieldArray,
+  Controller,
+  useForm,
+} from 'react-hook-form';
 import * as yup from 'yup';
 import { useSession } from 'next-auth/react';
 import { privateBaseAxios } from 'constants/axios';
+import React from 'react';
+import { FiMinus, FiPlus } from 'react-icons/fi';
 
 const schema = yup.object({
   name: yup.string().required('Community name is required.'),
@@ -32,6 +43,7 @@ const CreateCommunity: NextPage = () => {
   const {
     register,
     handleSubmit,
+    control,
     setValue,
     formState: {
       errors,
@@ -39,10 +51,26 @@ const CreateCommunity: NextPage = () => {
     },
   } = useForm<CommunityCreateDto>({
     resolver: yupResolver(schema),
-  })
+    defaultValues: {
+      administrators: [
+        {
+          provider_id: (session?.user?.name ?? '') as string,
+        }
+      ],
+    }
+  });
+
+  const {
+    fields,
+    append,
+    remove
+  } = useFieldArray({
+    control,
+    name: 'administrators'
+  });
 
   if (session && session.user && session.user.name) {
-    setValue('administrators', [{ provider_id: session.user.name }])
+    // setValue('administrators', [{ provider_id: session.user.name }])
     setValue('client_config', [{ provider_id: 'discord'}]);
   }
 
@@ -96,10 +124,43 @@ const CreateCommunity: NextPage = () => {
                 isInvalid={!!errors.administrators}
                 mb='2em'
               >
+                <HStack
+                  align={'center'}
+                  mb='1em'
+                >
                 <FormLabel>Administrators</FormLabel>
-                <Input
-                  {...register('administrators')}
-                />
+                <Button
+                    onClick={() => {
+                      append({ provider_id: '' })
+                    }}
+                    variant='outline'
+                    colorScheme={'green'}
+                    size='sm'
+                    fontSize='13px'
+                    leftIcon={<FiPlus />}
+                    fontWeight='400'
+                    mr='8px'
+                    disabled={fields.length > 8}
+                  >
+                    Add Administrator
+                  </Button>
+                <Button
+                  onClick={() => {
+                    remove(fields.length - 1);
+                  }}
+                  variant='outline'
+                  colorScheme={'red'}
+                  size='sm'
+                  fontSize='13px'
+                  leftIcon={<FiMinus />}
+                  fontWeight='400'
+                  mr='8px'
+                  disabled={fields.length <= 1}
+                >
+                  Remove Administrator
+                </Button>
+                </HStack>
+                { fields.map((field, index) => (<Input key={field.id} defaultValue={field.provider_id} />)) }
                 <FormErrorMessage>{
                   errors.administrators && "Must provide at least one administrator."
                 }</FormErrorMessage>
