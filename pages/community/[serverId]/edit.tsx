@@ -7,6 +7,9 @@ import { StyledBox } from 'components/common'
 import Head from 'next/head'
 
 const EditCommunity: NextPage = () => {
+  const { data: session } = useSession();
+  const { channels, loading: isLoadingChannels } = useServer();
+
   return (
       <Box bg='dark-2' minH='calc(100vh - 60px)' pt='4rem' pb='8rem'>
         <Head>

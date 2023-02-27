@@ -17,7 +17,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 
 const ServerSelect: NextPage = () => {
-  const { servers, loading } = useServers()
+  const { servers, loading } = useServers();
   const router = useRouter();
 
   const createCommunity = () => {

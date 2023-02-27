@@ -5,40 +5,78 @@ import {
   Container,
   FormLabel,
   Heading,
+  Select,
   Button,
+  chakra,
   HStack,
   Input,
+  Image,
+  Text,
   Flex,
   Box,
+  useToast,
 } from '@chakra-ui/react'
-import { StyledBox } from 'components/common'
 import Head from 'next/head'
 import {
   CommunityAdministratorBase,
   CommunityClientConfigBase,
-  CommunityCreateDto
 } from 'governator-sdk';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
   useFieldArray,
-  Controller,
   useForm,
 } from 'react-hook-form';
 import * as yup from 'yup';
 import { useSession } from 'next-auth/react';
-import { privateBaseAxios } from 'constants/axios';
-import React from 'react';
+import { discordAxios, privateBaseAxios, privateBaseFetcher } from 'constants/axios';
+import React, { useCallback, useState, useEffect } from 'react';
 import { FiMinus, FiPlus } from 'react-icons/fi';
+
 
 const schema = yup.object({
   name: yup.string().required('Community name is required.'),
-  administrators: yup.array<CommunityAdministratorBase>().required('At least one administrator is required.'),
-  client_config: yup.mixed<CommunityClientConfigBase>().required('Client config is required.')
+  administrators: yup
+    .array<CommunityAdministratorBase>()
+    .required('At least one administrator is required.'),
+  client_config: yup
+    .mixed<CommunityClientConfigBase>()
+    .required('Client config is required.'),
+  server: yup.mixed(),
+  channel: yup.mixed(),
 }).required();
 
 const CreateCommunity: NextPage = () => {
-
   const { data: session } = useSession();
+  const [servers, setServers] = useState();
+  const toast = useToast();
+
+  useEffect(() => {
+    discordAxios(session?.accessToken as string).get(
+      '/users/@me/guilds'
+    ).then((res) => {
+      setServers(res.data);
+    });
+  }, [session?.accessToken]);
+
+  const onChangeFetchChannels = useCallback(async (event) => {
+    try {
+      const res = await privateBaseFetcher(
+        `/client/discord/${event.target.value}/channels/${session?.discordId}`
+      );
+      console.log(res.data);
+      return res.data;
+    } catch(e) {
+      toast(
+        {
+          title: 'Error',
+          description: 'Unable to fetch channels.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        }
+      )
+    }
+  }, [session?.accessToken, session?.discordId]);
 
   const {
     register,
@@ -49,7 +87,7 @@ const CreateCommunity: NextPage = () => {
       errors,
       isSubmitting
     },
-  } = useForm<CommunityCreateDto>({
+  } = useForm<any>({
     resolver: yupResolver(schema),
     defaultValues: {
       administrators: [
@@ -120,6 +158,45 @@ const CreateCommunity: NextPage = () => {
                 />
                 <FormErrorMessage>{errors.name?.message}</FormErrorMessage>
               </FormControl>
+              { servers && <FormControl
+                mb='2em'
+              >
+                <FormLabel>Server</FormLabel>
+                <Select
+                  {...register('server', {
+                    onChange: onChangeFetchChannels
+                  })}
+                  isDisabled={servers.length === 0}
+                >
+                  <chakra.option
+                      color='black'
+                      value={undefined}
+                  >
+                      ---
+                  </chakra.option>
+                  {servers.map((server) => (
+                    <chakra.option
+                      key={server.id}
+                      color='black'
+                      value={server.id}
+                    >
+                      { server.name }
+                    </chakra.option>
+                  ))}
+                </Select>
+              </FormControl>}
+              {/* <FormControl
+                mb='2em'
+              >
+                <FormLabel>Channels</FormLabel>
+                <Select
+                  {...register('channel')}
+                >
+                  {channels.map((channel, index) => (
+                    <chakra.option key={index}>Option</chakra.option>
+                  ))}
+                </Select>
+              </FormControl> */}
               <FormControl
                 isInvalid={!!errors.administrators}
                 mb='2em'
@@ -128,39 +205,39 @@ const CreateCommunity: NextPage = () => {
                   align={'center'}
                   mb='1em'
                 >
-                <FormLabel>Administrators</FormLabel>
-                <Button
+                  <FormLabel>Administrators</FormLabel>
+                  <Button
+                      onClick={() => {
+                        append({ provider_id: '' })
+                      }}
+                      variant='outline'
+                      colorScheme={'green'}
+                      size='sm'
+                      fontSize='13px'
+                      leftIcon={<FiPlus />}
+                      fontWeight='400'
+                      mr='8px'
+                      disabled={fields.length > 8}
+                    >
+                      Add Administrator
+                    </Button>
+                  <Button
                     onClick={() => {
-                      append({ provider_id: '' })
+                      remove(fields.length - 1);
                     }}
                     variant='outline'
-                    colorScheme={'green'}
+                    colorScheme={'red'}
                     size='sm'
                     fontSize='13px'
-                    leftIcon={<FiPlus />}
+                    leftIcon={<FiMinus />}
                     fontWeight='400'
                     mr='8px'
-                    disabled={fields.length > 8}
+                    disabled={fields.length <= 1}
                   >
-                    Add Administrator
+                    Remove Administrator
                   </Button>
-                <Button
-                  onClick={() => {
-                    remove(fields.length - 1);
-                  }}
-                  variant='outline'
-                  colorScheme={'red'}
-                  size='sm'
-                  fontSize='13px'
-                  leftIcon={<FiMinus />}
-                  fontWeight='400'
-                  mr='8px'
-                  disabled={fields.length <= 1}
-                >
-                  Remove Administrator
-                </Button>
                 </HStack>
-                { fields.map((field, index) => (<Input key={field.id} defaultValue={field.provider_id} />)) }
+                { fields.map((field) => (<Input key={field.id} defaultValue={field.provider_id} />)) }
                 <FormErrorMessage>{
                   errors.administrators && "Must provide at least one administrator."
                 }</FormErrorMessage>

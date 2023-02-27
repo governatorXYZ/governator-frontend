@@ -15,7 +15,7 @@ const MVP_ALLOWED_GUILDS = {
   "Bankless DAO": "834499078434979890"
 };
 
-const useServers = () => {
+const useServers = (mvp = true) => {
   const { data: session } = useSession()
   const [servers, setServers] = useAtom(serversAtom)
   const [loading, setLoading] = useState(false)
@@ -32,7 +32,8 @@ const useServers = () => {
         const data = await discordAxios(session?.accessToken as string).get(
           '/users/@me/guilds'
         )
-        const serversData = data.data.filter( (_guild: { id: string }) => Object.values(MVP_ALLOWED_GUILDS).includes(_guild.id))
+        console.log(mvp);
+        const serversData = mvp ? data.data.filter( (_guild: { id: string }) => Object.values(MVP_ALLOWED_GUILDS).includes(_guild.id)) : data.data
         setServers(serversData)
         return true
       } catch (e) {

@@ -16,7 +16,7 @@ const RouteGuard: React.FC = ({ children }) => {
   const url = '/'
 
   // whitelist of pages that can so the routeguard ignores them.
-  const allowedPages = [ '/team', '/privacy', '/400', '/500' ];
+  const allowedPages = [ '/team', '/privacy', '/400', '/500', '/community/create' ];
   const isAllowed = allowedPages.includes(router.route)
 
   useEffect(() => {
