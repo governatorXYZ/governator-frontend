@@ -15,9 +15,9 @@ export const useVotesData = (pollId: string) => {
 }
 
 export const useTotalVotes = (pollId: string) => {
-    const { data } = useSWR<AxiosResponse<{
-        data: string;
-    }>>(`/vote/results/votes-per-user/count/${pollId}`, privateBaseFetcher)
-    const totalVotes = data?.data ? data?.data : '0'
+    const { data } = useSWR<AxiosResponse<number>>(`/vote/results/votes-per-user/count/${pollId}`, privateBaseFetcher)
+
+
+    const totalVotes = data?.data ? data?.data.toString() : '0'
     return { totalVotes }
 }
