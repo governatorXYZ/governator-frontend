@@ -25,6 +25,12 @@ const theme = extendTheme({
       '.roboto-mono': {
         fontFamily: 'Roboto Mono, sans-serif',
       },
+      html: {
+        background: "var(--chakra-colors-gray-700)"
+      },
+      body: {
+        background: "var(--chakra-colors-gray-700)"
+      }
     },
   },
 })
