@@ -15,6 +15,8 @@ import {
   Flex,
   Box,
   useToast,
+  Spinner,
+  Link,
 } from '@chakra-ui/react'
 import Head from 'next/head'
 import {
@@ -41,13 +43,15 @@ const schema = yup.object({
   client_config: yup
     .mixed<CommunityClientConfigBase>()
     .required('Client config is required.'),
-  server: yup.mixed(),
+  server: yup.mixed().required('Server is required.'),
   channel: yup.mixed(),
 }).required();
 
 const CreateCommunity: NextPage = () => {
   const { data: session } = useSession();
-  const [servers, setServers] = useState();
+  const [servers, setServers] = useState<Array<any>>();
+  const [noBot, setNoBot] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const toast = useToast();
 
   useEffect(() => {
@@ -58,25 +62,43 @@ const CreateCommunity: NextPage = () => {
     });
   }, [session?.accessToken]);
 
-  const onChangeFetchChannels = useCallback(async (event) => {
+  const onChangeFetchChannels = async (event: any) => {
     try {
+      setNoBot(false);
+      setLoading(true);
+      const ADMIN_PERM = 2147483647;
+
+      if (event.target.value === '---') {
+        setError('server', {
+          type: 'required',
+          message: 'Server is required',
+        });
+        return;
+      }
+      
+      const server = servers?.find((server) => server.id === event.target.value);    
+      if (server.permissions !== ADMIN_PERM) {
+        setError('server', {
+          type: 'validate',
+          message: 'User is not an administrator of this server',
+        });
+        return;
+      }
+      
       const res = await privateBaseFetcher(
         `/client/discord/${event.target.value}/channels/${session?.discordId}`
       );
-      console.log(res.data);
       return res.data;
     } catch(e) {
-      toast(
-        {
-          title: 'Error',
-          description: 'Unable to fetch channels.',
-          status: 'error',
-          duration: 5000,
-          isClosable: true,
-        }
-      )
+      setNoBot(true);
+      setError('server', {
+        type: 'validate',
+        message: '',
+      });
+    } finally {
+      setLoading(false);
     }
-  }, [session?.accessToken, session?.discordId]);
+  };
 
   const {
     register,
@@ -87,6 +109,7 @@ const CreateCommunity: NextPage = () => {
       errors,
       isSubmitting
     },
+    setError
   } = useForm<any>({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -158,11 +181,13 @@ const CreateCommunity: NextPage = () => {
                 />
                 <FormErrorMessage>{errors.name?.message}</FormErrorMessage>
               </FormControl>
-              { servers && <FormControl
+              <FormControl
+                isInvalid={!!errors.server}
                 mb='2em'
+                color='white'
               >
                 <FormLabel>Server</FormLabel>
-                <Select
+                { servers ? (<Select
                   {...register('server', {
                     onChange: onChangeFetchChannels
                   })}
@@ -183,8 +208,10 @@ const CreateCommunity: NextPage = () => {
                       { server.name }
                     </chakra.option>
                   ))}
-                </Select>
-              </FormControl>}
+                </Select>) : (<Spinner size='md' color='white' />)}
+                <FormErrorMessage>{errors.server?.message}</FormErrorMessage>
+                { noBot && (<FormErrorMessage><Text>Bot does not appear to be installed on your server. Click <Link color='blue.500' href='#'>here</Link> to add Governator to your server.</Text></FormErrorMessage>)}
+              </FormControl>
               {/* <FormControl
                 mb='2em'
               >
