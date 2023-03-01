@@ -56,7 +56,11 @@ const PollResults: NextPage = () => {
             <Spinner color='gray.200' mx='auto' />
           </Flex>
         )}
-        <DisplayPollResults pollData={pollData} voteData={votesData} totalVotes={totalVotes}/>
+        <DisplayPollResults
+          pollData={pollData}
+          voteData={votesData}
+          totalVotes={totalVotes}
+        />
       </Box>
     </Box>
   )

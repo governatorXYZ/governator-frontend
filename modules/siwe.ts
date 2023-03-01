@@ -5,6 +5,8 @@ import { privateBaseAxios } from 'constants/axios';
 /* TYPES */
 import { GovernatorWindow } from "../types/global";
 import { EIP1193Provider } from '@web3-onboard/core';
+import type { SiweVerifyDto } from 'governator-sdk';
+import { AxiosResponse } from 'axios';
 
 declare const window: GovernatorWindow;
 
@@ -173,7 +175,7 @@ class Siwe {
     if (!signer) { alert('Wallet not connected!'); return }
     const walletAddress = (address) ?? await signer.getAddress();
       
-    const data = {
+    const data: SiweVerifyDto = {
       _id: walletAddress,
       verification_message: message,
       signed_message: signature,
@@ -183,7 +185,7 @@ class Siwe {
       }
     }
 
-    const updatedEthAccount = await privateBaseAxios.post('/siwe/verify', data)
+    const updatedEthAccount: AxiosResponse<SiweVerifyDto> = await privateBaseAxios.post<SiweVerifyDto>('/siwe/verify', data)
     return updatedEthAccount.data
   }
 
