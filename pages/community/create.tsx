@@ -20,6 +20,7 @@ import {
 } from '@chakra-ui/react'
 import Head from 'next/head'
 import {
+  CommunityCreateDto,
   CommunityAdministratorBase,
   CommunityClientConfigBase,
 } from 'governator-sdk';
@@ -43,9 +44,19 @@ const schema = yup.object({
   client_config: yup
     .mixed<CommunityClientConfigBase>()
     .required('Client config is required.'),
-  server: yup.mixed().required('Server is required.'),
-  channel: yup.mixed(),
 }).required();
+
+interface CommunityForm {
+  name: string;
+  administrators: Array<{
+    provider_id: string;
+    guild_id?: string;
+  }>;
+  client_config: Array<{
+    provider_id: string;
+    guild_id?: string;
+  }>;
+}
 
 const CreateCommunity: NextPage = () => {
   const { data: session } = useSession();
@@ -69,7 +80,7 @@ const CreateCommunity: NextPage = () => {
       const ADMIN_PERM = 2147483647;
 
       if (event.target.value === '---') {
-        setError('server', {
+        setError('client_config.0.guild_id', {
           type: 'required',
           message: 'Server is required',
         });
@@ -77,21 +88,22 @@ const CreateCommunity: NextPage = () => {
       }
       
       const server = servers?.find((server) => server.id === event.target.value);    
+
       if (server.permissions !== ADMIN_PERM) {
-        setError('server', {
+        setError('client_config.0.guild_id', {
           type: 'validate',
           message: 'User is not an administrator of this server',
         });
         return;
       }
-      
+
       const res = await privateBaseFetcher(
         `/client/discord/${event.target.value}/channels/${session?.discordId}`
       );
       return res.data;
     } catch(e) {
       setNoBot(true);
-      setError('server', {
+      setError('client_config.0.guild_id', {
         type: 'validate',
         message: '',
       });
@@ -101,21 +113,26 @@ const CreateCommunity: NextPage = () => {
   };
 
   const {
-    register,
     handleSubmit,
+    formState: {
+      isSubmitting,
+      errors
+    },
+    register,
     control,
     setValue,
-    formState: {
-      errors,
-      isSubmitting
-    },
-    setError
-  } = useForm<any>({
+    setError,
+  } = useForm<CommunityForm>({
     resolver: yupResolver(schema),
     defaultValues: {
+      client_config: [
+        {
+          provider_id: 'discord',
+        }
+      ],
       administrators: [
         {
-          provider_id: (session?.user?.name ?? '') as string,
+          provider_id: 'discord',
         }
       ],
     }
@@ -130,14 +147,10 @@ const CreateCommunity: NextPage = () => {
     name: 'administrators'
   });
 
-  if (session && session.user && session.user.name) {
-    // setValue('administrators', [{ provider_id: session.user.name }])
-    setValue('client_config', [{ provider_id: 'discord'}]);
-  }
-
   const onSubmit = handleSubmit(async (data) => {
+    console.log(data);
     try {
-      console.log(data);
+      console.log('data: ', data)
       const res = await privateBaseAxios.post('/community/create', data);
       console.log(res);
     } catch (e) {
@@ -182,14 +195,17 @@ const CreateCommunity: NextPage = () => {
                 <FormErrorMessage>{errors.name?.message}</FormErrorMessage>
               </FormControl>
               <FormControl
-                isInvalid={!!errors.server}
+                isInvalid={!!errors.client_config}
                 mb='2em'
                 color='white'
               >
                 <FormLabel>Server</FormLabel>
+                
                 { servers ? (<Select
-                  {...register('server', {
-                    onChange: onChangeFetchChannels
+                  {...register('client_config.0.guild_id', {
+                    onChange: (e) => {
+                      onChangeFetchChannels(e);
+                    }
                   })}
                   isDisabled={servers.length === 0}
                 >
@@ -209,7 +225,14 @@ const CreateCommunity: NextPage = () => {
                     </chakra.option>
                   ))}
                 </Select>) : (<Spinner size='md' color='white' />)}
-                <FormErrorMessage>{errors.server?.message}</FormErrorMessage>
+                { loading && (<Text mt='1em' fontSize='.5em'>Checking Server... <Spinner color='white' /></Text>)}
+                {errors.client_config
+                  && errors.client_config.map(
+                    (config, index) => (
+                      <FormErrorMessage key={index}>
+                        { config.guild_id?.message }
+                      </FormErrorMessage>
+                    ))}
                 { noBot && (<FormErrorMessage><Text>Bot does not appear to be installed on your server. Click <Link color='blue.500' href='#'>here</Link> to add Governator to your server.</Text></FormErrorMessage>)}
               </FormControl>
               {/* <FormControl
@@ -235,7 +258,7 @@ const CreateCommunity: NextPage = () => {
                   <FormLabel>Administrators</FormLabel>
                   <Button
                       onClick={() => {
-                        append({ provider_id: '' })
+                        append({ provider_id: 'discord' })
                       }}
                       variant='outline'
                       colorScheme={'green'}
@@ -264,7 +287,11 @@ const CreateCommunity: NextPage = () => {
                     Remove Administrator
                   </Button>
                 </HStack>
-                { fields.map((field) => (<Input key={field.id} defaultValue={field.provider_id} />)) }
+                { fields.map((field) => (<Input
+                  key={field.id}
+                  mb='1em'
+                  _last={{ mb: '0em'}}
+                />)) }
                 <FormErrorMessage>{
                   errors.administrators && "Must provide at least one administrator."
                 }</FormErrorMessage>
