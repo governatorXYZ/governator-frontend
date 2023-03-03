@@ -39,18 +39,24 @@ import { FiMinus, FiPlus } from 'react-icons/fi';
 const schema = yup.object({
   name: yup.string().required('Community name is required.'),
   administrators: yup
-    .array<CommunityAdministratorBase>()
+    .array<{
+      user_allowlist: Array<number>;
+      provider_id: string;
+    }>()
     .required('At least one administrator is required.'),
   client_config: yup
-    .mixed<CommunityClientConfigBase>()
+    .array<{
+      provider_id: string;
+      guild_id?: string;
+    }>()
     .required('Client config is required.'),
 }).required();
 
 interface CommunityForm {
   name: string;
   administrators: Array<{
+    user_allowlist: Array<number>;
     provider_id: string;
-    guild_id?: string;
   }>;
   client_config: Array<{
     provider_id: string;
@@ -115,12 +121,12 @@ const CreateCommunity: NextPage = () => {
   const {
     handleSubmit,
     formState: {
+      isValid,
       isSubmitting,
       errors
     },
     register,
     control,
-    setValue,
     setError,
   } = useForm<CommunityForm>({
     resolver: yupResolver(schema),
@@ -132,6 +138,7 @@ const CreateCommunity: NextPage = () => {
       ],
       administrators: [
         {
+          user_allowlist: [session?.discordId as number], // start with user who created the community.
           provider_id: 'discord',
         }
       ],
@@ -148,11 +155,8 @@ const CreateCommunity: NextPage = () => {
   });
 
   const onSubmit = handleSubmit(async (data) => {
-    console.log(data);
     try {
-      console.log('data: ', data)
       const res = await privateBaseAxios.post('/community/create', data);
-      console.log(res);
     } catch (e) {
       console.error(e);
     }
@@ -287,10 +291,11 @@ const CreateCommunity: NextPage = () => {
                     Remove Administrator
                   </Button>
                 </HStack>
-                { fields.map((field) => (<Input
+                { fields.map((field,index) => (<Input
                   key={field.id}
                   mb='1em'
                   _last={{ mb: '0em'}}
+                  {...register(`administrators.0.user_allowlist.${index}` as const)}
                 />)) }
                 <FormErrorMessage>{
                   errors.administrators && "Must provide at least one administrator."
@@ -299,7 +304,8 @@ const CreateCommunity: NextPage = () => {
               <Button
                 colorScheme='green'
                 onClick={onSubmit}
-                isLoading={isSubmitting}
+                isLoading={isSubmitting || loading}
+                isDisabled={!isValid || loading}
                 alignSelf='flex-end'
               >
                 Create Community
