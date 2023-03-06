@@ -64,6 +64,13 @@ interface CommunityForm {
   }>;
 }
 
+/**
+ * TODO(z):
+ * - name defaults to discord name.
+ * - admin defaults to current user.
+ * - investigate adding token stratgies.
+ * - add url to add install bot link.
+ */
 const CreateCommunity: NextPage = () => {
   const { data: session } = useSession();
   const [servers, setServers] = useState<Array<any>>();
