@@ -97,10 +97,13 @@ const CreateCommunity: NextPage = () => {
           type: 'required',
           message: 'Server is required',
         });
+        setValue('name', '');
         return;
       }
       
       const server = servers?.find((server) => server.id === event.target.value);    
+
+      setValue('name', server.name);
 
       if (server.permissions !== ADMIN_PERM) {
         setError('client_config.0.guild_id', {
@@ -109,17 +112,12 @@ const CreateCommunity: NextPage = () => {
         });
         return;
       }
-
       const res = await privateBaseFetcher(
         `/client/discord/${event.target.value}/channels/${session?.discordId}`
       );
       return res.data;
     } catch(e) {
       setNoBot(true);
-      setError('client_config.0.guild_id', {
-        type: 'validate',
-        message: '',
-      });
     } finally {
       setLoading(false);
     }
@@ -135,6 +133,8 @@ const CreateCommunity: NextPage = () => {
     register,
     control,
     setError,
+    setValue,
+    getValues
   } = useForm<CommunityForm>({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -145,7 +145,7 @@ const CreateCommunity: NextPage = () => {
       ],
       administrators: [
         {
-          user_allowlist: [session?.discordId as number], // start with user who created the community.
+          user_allowlist: [], // start with user who created the community.
           provider_id: 'discord',
         }
       ],
@@ -168,6 +168,10 @@ const CreateCommunity: NextPage = () => {
       console.error(e);
     }
   });
+
+  if (session && session.discordId) {
+    setValue('administrators.0.user_allowlist', [session.discordId as number]);
+  }
   
   return (
       <Box bg='dark-2' minH='calc(100vh - 60px)'>
@@ -196,21 +200,11 @@ const CreateCommunity: NextPage = () => {
                 mb='1em'
               >Create A Community</Heading>
               <FormControl
-                isInvalid={!!errors.name}
-                mb='2em'
-              >
-                <FormLabel>Name</FormLabel>
-                <Input
-                  {...register('name')}
-                />
-                <FormErrorMessage>{errors.name?.message}</FormErrorMessage>
-              </FormControl>
-              <FormControl
                 isInvalid={!!errors.client_config}
                 mb='2em'
                 color='white'
               >
-                <FormLabel>Server</FormLabel>
+                <FormLabel>Select Your Communities Server</FormLabel>
                 
                 { servers ? (<Select
                   {...register('client_config.0.guild_id', {
@@ -246,19 +240,17 @@ const CreateCommunity: NextPage = () => {
                     ))}
                 { noBot && (<FormErrorMessage><Text>Bot does not appear to be installed on your server. Click <Link color='blue.500' href='#'>here</Link> to add Governator to your server.</Text></FormErrorMessage>)}
               </FormControl>
-              {/* <FormControl
+              { getValues().client_config[0].guild_id && (<FormControl
+                isInvalid={!!errors.name}
                 mb='2em'
               >
-                <FormLabel>Channels</FormLabel>
-                <Select
-                  {...register('channel')}
-                >
-                  {channels.map((channel, index) => (
-                    <chakra.option key={index}>Option</chakra.option>
-                  ))}
-                </Select>
-              </FormControl> */}
-              <FormControl
+                <FormLabel>Community Name</FormLabel>
+                <Input
+                  {...register('name')}
+                />
+                <FormErrorMessage>{errors.name?.message}</FormErrorMessage>
+              </FormControl>) }
+              {/* <FormControl
                 isInvalid={!!errors.administrators}
                 mb='2em'
               >
@@ -307,7 +299,7 @@ const CreateCommunity: NextPage = () => {
                 <FormErrorMessage>{
                   errors.administrators && "Must provide at least one administrator."
                 }</FormErrorMessage>
-              </FormControl>
+              </FormControl> */}
               <Button
                 colorScheme='green'
                 onClick={onSubmit}
