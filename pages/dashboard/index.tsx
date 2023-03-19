@@ -2,14 +2,12 @@ import type { NextPage } from 'next'
 import {
   Spinner,
   VStack,
-  Button,
   Image,
   Flex,
   Text,
   Grid,
   Box,
 } from '@chakra-ui/react'
-import Govcrumb from 'components/BreadCrumb'
 import useServers from 'hooks/useServers'
 import { useRouter } from 'next/router';
 import Head from 'next/head'
@@ -18,11 +16,6 @@ import Link from 'next/link'
 
 const ServerSelect: NextPage = () => {
   const { servers, loading } = useServers();
-  const router = useRouter();
-
-  const createCommunity = () => {
-    router.push('/community/create');
-  } 
 
   return (
     <Flex
@@ -45,10 +38,7 @@ const ServerSelect: NextPage = () => {
         }}
         mx='32px'
       >
-        {/* <Govcrumb /> */}
         <Flex justifyContent='center' alignItems='center'>
-          <Button colorScheme='green' onClick={createCommunity}>Create Community</Button>
-          {/* Server Select Box */}
           <Box p={{
             base: '2.5rem 0',
             sm: '2.5rem'
