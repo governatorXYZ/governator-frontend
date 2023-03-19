@@ -1,12 +1,13 @@
-import type { NextPage } from 'next'
 import { Box, VStack, Image, Flex, Text, Grid, Spinner } from '@chakra-ui/react'
-import Govcrumb from 'components/BreadCrumb'
 import useServers from 'hooks/useServers'
 import Head from 'next/head'
 
 import Link from 'next/link'
+import { NextPageWithLayout } from 'pages/_app'
+import { ReactElement } from 'react'
+import Layout from 'components/community/Layout'
 
-const ServerSelect: NextPage = () => {
+const ServerSelect: NextPageWithLayout = () => {
   const { servers, loading } = useServers()
 
   return (
@@ -108,5 +109,13 @@ const ServerSelect: NextPage = () => {
     </Flex>
   )
 }
+
+ServerSelect.getLayout = function getLayout(page: ReactElement) {
+  return (
+    <Layout>
+      {page}
+    </Layout>)
+}
+
 
 export default ServerSelect

@@ -3,18 +3,17 @@ import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { AddIcon } from '@chakra-ui/icons'
 import {
-  Box,
+  Container,
+  Spinner,
+  Heading,
   Button,
   VStack,
+  HStack,
+  Image,
   Grid,
   Text,
   Flex,
-  Image,
-  Spinner,
-  Container,
-  Heading,
-  HStack,
-  Stack,
+  Box,
 } from '@chakra-ui/react'
 import Govcrumb from 'components/BreadCrumb'
 import useServers from 'hooks/useServers'
@@ -23,16 +22,17 @@ import DataTable from 'components/Datatable'
 import SearchBox from 'components/SearchBox'
 import * as luxon from 'luxon'
 import DeletePoll from 'components/polls/DeletePoll'
-import { FaDiscord } from 'react-icons/fa'
 import useSWR from 'swr'
 import { privateBaseFetcher } from 'constants/axios'
 import { useGovernatorUser } from 'hooks/useGovernatorUser'
 import useServer from 'hooks/useServer'
 import { Poll, RenderedPoll } from 'interfaces'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, ReactNode, ReactElement } from 'react'
 import Head from 'next/head'
+import Layout from 'components/community/Layout'
+import { NextPageWithLayout } from 'pages/_app'
 
-const Dashboard: NextPage = () => {
+const Dashboard: NextPageWithLayout = () => {
   const router = useRouter()
   const { loading, currentServer } = useServers()
   const { channels, loading: isLoadingChannels } = useServer()
@@ -275,6 +275,13 @@ const Dashboard: NextPage = () => {
         </Container>
       </Box>
   )
+}
+
+Dashboard.getLayout = function getLayout(page: ReactElement) {
+  return (
+    <Layout>
+      {page}
+    </Layout>)
 }
 
 export default Dashboard
