@@ -1,4 +1,4 @@
-import { useSession } from 'next-auth/react'
+import { useSession, signOut } from 'next-auth/react'
 import {
   Box,
   Flex,
@@ -24,7 +24,7 @@ const Layout = ({ children }: LayoutProps) => {
       <Flex bg='#2A303A' justify='stretch'>
         <Sidenav />
         <Box flexGrow={2}>
-          <Header />
+          <Header user={session?.user} onSignOut={signOut} />
           <Content>
             {children}
           </Content>

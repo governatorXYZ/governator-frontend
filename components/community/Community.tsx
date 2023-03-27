@@ -5,15 +5,17 @@ import {
   Link as ChakraLink,
   Heading,
 } from '@chakra-ui/react'
+import { Router } from 'next/router';
 
 interface CommunityProps {
   icon: string;
   id: string;
   name: string;
+  active: boolean;
   onClick?: () => void;
 }
 
-const Community = ({ id, icon, name, onClick }: CommunityProps) => {
+const Community = ({ id, icon, name, active, onClick }: CommunityProps) => {
 
   const img = `https://cdn.discordapp.com/icons/${id}/${icon}.png`
 
@@ -23,6 +25,18 @@ const Community = ({ id, icon, name, onClick }: CommunityProps) => {
       onClick={onClick}
       marginBottom='10px'
       p='5px'
+      bg={active ? '#303F56' : 'transparent'}
+      borderTopLeftRadius={active ? '5px' : 'base'}
+      borderBottomLeftRadius={active ? '5px' : 'base'}
+      borderRight={active ? '2px solid' : 'none'}
+      borderRightColor={'#D9D9D9'}
+      _hover={{
+        bg: '#303F56',
+        borderTopLeftRadius: '5px',
+        borderBottomLeftRadius: '5px',
+        borderRight: '2px solid',
+        borderRightColor: '#D9D9D9'
+      }}
     >
     <Image
       src={img}

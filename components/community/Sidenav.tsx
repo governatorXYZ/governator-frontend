@@ -1,40 +1,11 @@
-import { useSession, signIn, signOut } from 'next-auth/react'
 import {
-  Drawer,
-  DrawerBody,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerCloseButton,
   Icon,
   Box,
-  chakra,
-  HStack,
-  VStack,
   Flex,
-  Text,
-  Link as ChakraLink,
   Image,
-  Container,
-  IconButton,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  MenuGroup,
-  MenuDivider,
   Button,
-  useDisclosure,
   Heading,
 } from '@chakra-ui/react'
-import { HamburgerIcon } from '@chakra-ui/icons'
-import { AiOutlineCaretDown } from 'react-icons/ai'
-import Link from 'next/link'
-import { Session } from 'next-auth/core/types'
-import { useAtom } from 'jotai';
-import { userAtom } from 'atoms';
-import { useEffect, useRef } from 'react'
 import { useRouter } from 'next/router'
 import { useCommunities } from 'contexts/CommunitiesContext'
 import { IoMdAddCircleOutline } from 'react-icons/io';
@@ -47,9 +18,18 @@ interface SidenavProps {
 const Sidenav = ({ children }: SidenavProps) => {
   const { communities } = useCommunities();
 
-  console.log(communities);
+  const router = useRouter();
 
-  const list = communities.length > 0 ? communities.map((community, i) => (<Community key={community.id} name={community.name} id={community.id} icon={community.icon} />)) : <Box>No communities</Box>
+  const list = communities.length > 0 ? communities.map(
+    (community, i) => (
+      <Community
+        key={community.id}
+        name={community.name}
+        id={community.id}
+        icon={community.icon}
+        onClick={() => router.push(`/community/${community.id}`)}
+        active={router.asPath.includes(community.id)}
+      />)) : <Box>No communities</Box>
   
   return (
     <Flex
@@ -60,6 +40,7 @@ const Sidenav = ({ children }: SidenavProps) => {
       py='20px'
       color='#fff'
       fontFamily={'Manrope'}
+      flexShrink={0}
     >
       <Flex
         align='center'
@@ -91,7 +72,11 @@ const Sidenav = ({ children }: SidenavProps) => {
           leftIcon={<Icon w={8} h={8} color={"#7F9AC7"} as={IoMdAddCircleOutline}/>}
           bg='#2C3748'
           color='#7F9AC7'
-          
+          w='100%'
+          justifyContent='flex-start'
+          h='50px'
+          flexShrink={0}
+          my='0'
         >
           Add a server
         </Button>
