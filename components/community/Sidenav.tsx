@@ -33,14 +33,15 @@ const Sidenav = ({ children }: SidenavProps) => {
   
   return (
     <Flex
+      fontFamily={'Manrope'}
       direction='column'
+      position='fixed'
+      flexShrink={0}
       bg='#2A303A'
+      color='#fff'
       w='277px'
       px='25px'
       py='20px'
-      color='#fff'
-      fontFamily={'Manrope'}
-      flexShrink={0}
     >
       <Flex
         align='center'

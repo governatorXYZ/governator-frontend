@@ -82,10 +82,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppPropsWith
     <SessionProvider session={session}>
       <ChakraProvider theme={theme}>
         <Web3OnboardProvider web3Onboard={web3Onboard}>
-          <NavBar />
-          <RouteGuard>
-            {layout}
-          </RouteGuard>
+          {layout}
         </Web3OnboardProvider>
       </ChakraProvider>
     </SessionProvider>

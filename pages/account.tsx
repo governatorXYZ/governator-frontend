@@ -4,7 +4,7 @@ import moment from 'moment';
 import useSWR from 'swr';
 import { useAtom } from 'jotai';
 import { userAtom } from 'atoms';
-import { useEffect, useState } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 
 import {
   Box,
@@ -29,6 +29,9 @@ import { Address } from '../interfaces';
 import { Account } from '@web3-onboard/core/dist/types';
 import { useConnectWallet } from '@web3-onboard/react';
 import Head from 'next/head';
+import { NextPageWithLayout } from './_app';
+import { AccountApi } from 'governator-sdk';
+import DefaultLayout from 'components/DefaultLayout';
 
 const columns = [
   {
@@ -56,7 +59,7 @@ type AddressesData = {
   actions: any;
 }
 
-const Account: NextPage = () => {
+const Account: NextPageWithLayout = () => {
   const [user, setUser] = useAtom(userAtom);
   const [verified, setVerified] = useState(false);
   // const [provider, setProvider] = useAtom(providerAtom);
@@ -381,5 +384,7 @@ const Account: NextPage = () => {
     </Box>
   )
 }
+
+Account.getLayout = (page: ReactElement) => <DefaultLayout>{page}</DefaultLayout>;
 
 export default Account;

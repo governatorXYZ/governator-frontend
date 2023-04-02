@@ -8,6 +8,7 @@ import { CommunitiesProvider } from 'contexts/CommunitiesContext'
 import Sidenav from './Sidenav'
 import Header from './Header'
 import Content from './Content'
+import RouteGuard from 'components/RouteGuard'
 
 interface LayoutProps {
   children: JSX.Element
@@ -21,15 +22,17 @@ const Layout = ({ children }: LayoutProps) => {
   
   return (
     <CommunitiesProvider>
-      <Flex bg='#2A303A' justify='stretch'>
-        <Sidenav />
-        <Box flexGrow={2}>
-          <Header user={session?.user} onSignOut={signOut} />
-          <Content>
-            {children}
-          </Content>
-        </Box>
-      </Flex>
+      <RouteGuard>
+        <Flex bg='#2A303A' justify='stretch'>
+          <Sidenav />
+          <Box flexGrow={2} ml='277px'>
+            <Header user={session?.user} onSignOut={signOut} />
+            <Content>
+              {children}
+            </Content>
+          </Box>
+        </Flex>
+      </RouteGuard>
     </CommunitiesProvider>
   )
 }

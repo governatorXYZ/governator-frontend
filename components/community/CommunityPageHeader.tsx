@@ -1,5 +1,3 @@
-
-
 import {
   Heading,
   Button,
@@ -23,7 +21,7 @@ const CommunityPageHeader = ({ icon, name }: CommunityPageHeaderProps) => {
   return (
     <HStack justify={'space-between'} pt='25px' px='32px'>
       <Flex>
-        <Image
+        { icon && <Image
           alt={`icon of ${name} discord server`}
           borderRadius='full'
           bg='#D9D9D9'
@@ -31,13 +29,13 @@ const CommunityPageHeader = ({ icon, name }: CommunityPageHeaderProps) => {
           w='50px'
           h='50px'
           mr='16px'
-        />
+        /> }
         <Heading
           color='white'
         >{ name }</Heading>
       </Flex>
       <Flex>
-        <Flex
+      { icon && <Flex
           bg='linear-gradient(to left, #FE35FB, #00FFFF 100%)'
           borderRadius='full'
           justify={'center'}
@@ -53,8 +51,8 @@ const CommunityPageHeader = ({ icon, name }: CommunityPageHeaderProps) => {
             borderRadius={'full'}
           >
             Create Poll
-          </Button>
-        </Flex>
+          </Button> 
+        </Flex> }
       </Flex>
     </HStack>
   );
