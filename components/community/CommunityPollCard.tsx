@@ -15,7 +15,7 @@ interface CommunityPollCardProps {
   endDate?: string;
   author?: string;
   title: string;
-  channel?: ClientConfigBase;
+  channel?: any;
 }
 
 const CommunityPollCard = ({
@@ -26,7 +26,9 @@ const CommunityPollCard = ({
   title,
 }: CommunityPollCardProps) => {
 
-  const router = useRouter();
+  // const router = useRouter();
+
+  // const img = `https://cdn.discordapp.com/avatars/${channel.guild_id as string}/${author}.png`
 
   return (
     <Flex

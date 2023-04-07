@@ -23,7 +23,7 @@ const Layout = ({ children }: LayoutProps) => {
   return (
     <CommunitiesProvider>
       <RouteGuard>
-        <Flex bg='#2A303A' justify='stretch'>
+        <Flex bg='#2A303A' justify='stretch' fontFamily={'Manrope'}>
           <Sidenav />
           <Box flexGrow={2} ml='277px'>
             <Header user={session?.user} onSignOut={signOut} />

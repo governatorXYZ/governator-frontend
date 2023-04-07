@@ -58,6 +58,7 @@ const Footer: React.FC = () => {
         <Flex
           direction='column'
           align='flex-end'
+          bgGradient='grad.1'
         >
           <Flex>
             <Link href='https://discord.com/invite/bankless'>

@@ -27,7 +27,7 @@ const CommunityPollLists = ({
       author={poll.author_user_id}
       endDate={poll.end_time}
       title={poll.title}
-      key={poll.title}
+      key={poll._id}
     />
   ));
 
@@ -38,7 +38,7 @@ const CommunityPollLists = ({
       author={poll.author_user_id}
       endDate={poll.end_time}
       title={poll.title}
-      key={poll.title}
+      key={poll._id}
     />
   ));
 

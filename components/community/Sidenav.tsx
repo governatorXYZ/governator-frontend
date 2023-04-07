@@ -21,7 +21,7 @@ const Sidenav = ({ children }: SidenavProps) => {
   const router = useRouter();
 
   const list = communities.length > 0 ? communities.map(
-    (community, i) => (
+    (community) => (
       <Community
         key={community.id}
         name={community.name}
@@ -33,7 +33,6 @@ const Sidenav = ({ children }: SidenavProps) => {
   
   return (
     <Flex
-      fontFamily={'Manrope'}
       direction='column'
       position='fixed'
       flexShrink={0}

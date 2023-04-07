@@ -4,6 +4,27 @@ const theme = extendTheme({
   colors: {
     'dark-1': '#29303A',
     'dark-2': '#20262D',
+    primary: {
+      10: '#303F56',
+      60: '#566988',
+      90: '#7F9AC7',
+      100: '#B8C6DD'
+    },
+    secondary: {
+      30: '#2C3748',
+      33: '#2B3441',
+      40: '#2A303A'
+    },
+    mauve: {
+      20: '#C884D0'
+    },
+    green: {
+      60: '#21B66F'
+    },
+    fuchsia: {
+      60: '#FE35FB'
+    },
+    teal: '#00FFFF'
   },
   fonts: {
     body: 'Noto Sans, sans-serif',

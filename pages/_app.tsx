@@ -11,7 +11,8 @@ import '@fontsource/roboto-mono/400.css'
 import '@fontsource/roboto-mono/500.css'
 import '@fontsource/roboto-mono/600.css'
 import '@fontsource/roboto-mono/700.css'
-import RouteGuard from 'components/RouteGuard'
+import '@fontsource/manrope'
+
 import 'styles/shield.css';
 import { init, Web3OnboardProvider } from '@web3-onboard/react';
 import injectedModule from '@web3-onboard/injected-wallets';

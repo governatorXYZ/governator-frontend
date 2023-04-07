@@ -4,6 +4,8 @@ import useServers from "hooks/useServers";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { PollResponseDto } from 'governator-sdk';
 import { useToast } from "@chakra-ui/react";
+import { useSession } from 'next-auth/react'
+
 
 interface ContextValue {
   user: {
@@ -20,7 +22,7 @@ interface ContextValue {
   communities: Array<any>;
   livePolls: Array<PollResponseDto>;
   closedPolls: Array<PollResponseDto>;
-  getAllPolls: () => Promise<void>;
+  getAllPolls: (user: string) => Promise<void>;
 }
 
 const CommunitiesContext = createContext<ContextValue | undefined>(undefined);
@@ -34,6 +36,8 @@ export function CommunitiesProvider({ children }: { children: React.ReactNode })
   const currentDate = useMemo(() => new Date(), []);
 
   const toast = useToast();
+
+  const { data: session } = useSession();
 
   const getAllPolls = useCallback(async () => {
     try {
@@ -71,7 +75,9 @@ export function CommunitiesProvider({ children }: { children: React.ReactNode })
   };
 
   return (
-    <CommunitiesContext.Provider value={value}>
+    <CommunitiesContext.Provider
+      value={value}
+    >
       {children}
     </CommunitiesContext.Provider>
   );

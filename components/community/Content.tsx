@@ -14,7 +14,10 @@ const Content = ({ children }: LayoutProps) => {
   return (
     <Flex direction='column'>
       {/* bg with skewed radial gradiant */}
-      <Box h='150px' borderTopLeftRadius={'32px'} bg='linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%), linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%), linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%), linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%), linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%), linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%), linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%), linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%), linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%), linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%), linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%), linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%), linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%), linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%)' />
+      <Box
+        h='150px'
+        borderTopLeftRadius={'32px'}
+        bgGradient='linear(90deg, mauve.20, teal)'/>
       {children}
     </Flex>
   );
