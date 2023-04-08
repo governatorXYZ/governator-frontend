@@ -1,4 +1,3 @@
-import { useSession, signIn, signOut } from 'next-auth/react'
 import {
   Drawer,
   DrawerBody,
@@ -29,12 +28,28 @@ import {
 import { HamburgerIcon } from '@chakra-ui/icons'
 import { AiOutlineCaretDown } from 'react-icons/ai'
 import Link from 'next/link'
-import { Session } from 'next-auth/core/types'
-import { privateBaseAxios } from '../constants/axios';
+import { privateBaseAxios, privateBaseFetcher, governatorApiAxios } from '../constants/axios';
 import { useAtom } from 'jotai';
 import { userAtom } from 'atoms';
 import { useEffect, useRef } from 'react'
 import { useRouter } from 'next/router'
+import { useSession } from 'hooks/useSession'
+
+const signIn = async () => {
+  const loginResponse = await governatorApiAxios.get(
+    `/auth/login`
+  )
+
+  console.log(loginResponse.data)
+}
+
+const signOut = async () => {
+  const loginResponse = await governatorApiAxios.get(
+    `/auth/logout`
+  )
+
+  console.log(loginResponse.data)
+}
 
 const LoginText = () => {
   return (
@@ -47,7 +62,7 @@ const LoginText = () => {
             base: '8px',
           }}
           onClick={() => {
-            signIn('discord', { callbackUrl: "/dashboard" })
+            signIn()
           }}>
           Login
         </Text>
@@ -56,13 +71,19 @@ const LoginText = () => {
   )
 }
 
-const MobileDrawer: React.FC<{ session: Session | null }> = ({ session }) => {
+const MobileDrawer: React.FC<{ session: any }> = ({ session }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const btnRef = useRef(null);
   const router = useRouter();
 
-  const name = session?.user?.name
-  const image = session?.user?.image
+  const name = session?.discord_username
+  const image = session?.avatar
+
+  console.log(session)
+  console.log(name)
+  console.log(image)
+
+
   
   useEffect(() => {
     router.events.on('beforeHistoryChange', onClose)
@@ -188,9 +209,9 @@ const MobileDrawer: React.FC<{ session: Session | null }> = ({ session }) => {
   )
 }
 
-const UserAvatar: React.FC<{ session: Session }> = ({ session }) => {
-  const name = session?.user?.name
-  const image = session?.user?.image
+const UserAvatar: React.FC<{ session: any }> = ({ session }) => {
+  const name = session?.discord_username
+  const image = session?.avatar
 
   return (
     <Menu>
@@ -263,13 +284,13 @@ const UserAvatar: React.FC<{ session: Session }> = ({ session }) => {
 }
 
 const NavBar = () => {
-  const { data: session } = useSession()
+  const { session } = useSession()
   const [user, setUser] = useAtom(userAtom);
 
   useEffect(() => {
 
     async function checkAndCreateUser() {
-      const discordId = session?.discordId;
+      const discordId = session?._id;
       if (!discordId) {
         return
       }

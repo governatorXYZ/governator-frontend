@@ -17,3 +17,12 @@ export const discordFetcher = (url: string, accessToken: string) =>
   discordAxios(accessToken).get(url)
 
 export const privateBaseFetcher = (url: string) => privateBaseAxios.get(url)
+
+export const governatorApiAxios =
+  axios.create({
+    baseURL: 'http://localhost:4500/api',
+    // headers: {
+    //   'Content-Type': 'application/x-www-form-urlencoded',
+    //   Authorization: `Bearer ${accessToken}`,
+    // },
+  })

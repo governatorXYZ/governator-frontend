@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { useSession } from 'next-auth/react'
+import { useSession } from 'hooks/useSession'
 import { Grid, Spinner } from '@chakra-ui/react'
 import styled from '@emotion/styled'
 
@@ -10,7 +10,7 @@ const StyledGrid = styled(Grid)`
 `
 
 const RouteGuard: React.FC = ({ children }) => {
-  const { status } = useSession()
+  const { session } = useSession()
   const router = useRouter()
 
   const url = '/'
@@ -20,13 +20,13 @@ const RouteGuard: React.FC = ({ children }) => {
   const isAllowed = allowedPages.includes(router.route)
 
   useEffect(() => {
-    if (status === 'unauthenticated' && !isAllowed) {
+    if (session.status === 401 && !isAllowed) {
       router.push(url)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status])
+  }, [session])
 
-  if (router.asPath.split('?')[0] === '/' || isAllowed || status === 'authenticated') {
+  if (router.asPath.split('?')[0] === '/' || isAllowed || session.status === 200) {
     return <>{children}</>
   }
 

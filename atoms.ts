@@ -15,4 +15,6 @@ export const userAtom = atom<{ userId: string }>({ userId: '' })
 
 export const governatorUserAtom = atom<{ userId: string, discordId: string, discordUsername: string }>({ userId: '', discordId: '', discordUsername: '' })
 
+export const sessionAtom = atom<{ session: any }>({ session: {} })
+
 export const providerAtom = atom<ethers.providers.Web3Provider>(null as unknown as ethers.providers.Web3Provider)

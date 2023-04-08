@@ -2,7 +2,7 @@ import { discordAxios } from 'constants/axios'
 import { useAtom } from 'jotai'
 import { serversAtom } from 'atoms'
 import { useState, useCallback, useEffect } from 'react'
-import { useSession, signOut } from 'next-auth/react'
+import { useSession } from 'hooks/useSession'
 import { useRouter } from 'next/router'
 
 /**
@@ -16,7 +16,7 @@ const MVP_ALLOWED_GUILDS = {
 };
 
 const useServers = () => {
-  const { data: session } = useSession()
+  const { session } = useSession()
   const [servers, setServers] = useAtom(serversAtom)
   const [loading, setLoading] = useState(false)
   const [retry, setRetry] = useState(0)
@@ -48,9 +48,10 @@ const useServers = () => {
         if (retry < 4) {
           setTimeout(fetchData, 500);
           setRetry(retry + 1)
-        } else {
-          signOut()
-        }
+        } 
+        // else {
+        //   ((signOut()))
+        // }
       } else {
         setLoading(false)
       }

@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import { useSession } from 'next-auth/react'
+import { useSession } from 'hooks/useSession'
 import moment from 'moment';
 import useSWR from 'swr';
 import { useAtom } from 'jotai';
@@ -131,7 +131,7 @@ const Account: NextPage = () => {
     }
   }
 
-  const { data: session } = useSession()
+  const { session } = useSession()
 
   const signInWithEthereum = async (): Promise<void> => {
     try {

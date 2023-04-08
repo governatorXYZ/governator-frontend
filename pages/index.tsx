@@ -23,7 +23,8 @@ import { MdLoop } from 'react-icons/md'
 
 import { useEffect, useState } from 'react'
 import { sample } from 'lodash'
-import { useSession, signIn } from 'next-auth/react'
+// import { useSession, signIn } from 'next-auth/react'
+import { useSession } from 'hooks/useSession'
 import { useRouter } from 'next/router'
 import { Footer, StyledBox } from 'components/common'
 
@@ -52,7 +53,7 @@ const Quote: React.FC = () => {
 }
 
 const HeroButton = () => {
-  const { data: session } = useSession()
+  const { session } = useSession()
   const router = useRouter()
 
   return session ? (
@@ -66,7 +67,7 @@ const HeroButton = () => {
     <Button
       color='gray.700'
       leftIcon={<FaSignInAlt />}
-      onClick={() => signIn('discord', { callbackUrl: '/dashboard' })}>
+      onClick={() => ''}>
       Login
     </Button>
   )

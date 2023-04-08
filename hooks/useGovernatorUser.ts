@@ -1,31 +1,32 @@
 import {privateBaseAxios, privateBaseFetcher} from "../constants/axios";
-import {useSession} from "next-auth/react";
 import {useAtom} from "jotai";
 import {governatorUserAtom, strategiesAtom} from "../atoms";
 import {useCallback, useEffect} from "react";
 
 export const useGovernatorUser = () => {
 
-    const [governatorUser, setGovernatorUser] = useAtom(governatorUserAtom);
-    const {data: session} = useSession();
+    // const [governatorUser, setGovernatorUser] = useAtom(governatorUserAtom);
+    // const {data: session} = useSession();
 
-    const getGovernatorUser = useCallback(async () => {
+    // const getGovernatorUser = useCallback(async () => {
 
-        const discordId = session?.discordId as string;
+    //     const discordId = session?.discordId as string;
 
-        if (discordId) {
-            const userResponse = await privateBaseFetcher(
-                `/user/discord/${discordId}`
-            )
+    //     if (discordId) {
+    //         const userResponse = await privateBaseFetcher(
+    //             `/user/discord/${discordId}`
+    //         )
     
-            setGovernatorUser({userId: userResponse.data._id, discordId: discordId, discordUsername: session!.user!.name as string});
-        }
+    //         setGovernatorUser({userId: userResponse.data._id, discordId: discordId, discordUsername: session!.user!.name as string});
+    //     }
 
-    }, [setGovernatorUser]);
+    // }, [setGovernatorUser]);
 
-    useEffect(() => {
-        getGovernatorUser()
-    }, [getGovernatorUser])
+    // useEffect(() => {
+    //     getGovernatorUser()
+    // }, [getGovernatorUser])
 
-    return governatorUser;
+    // return governatorUser;
+
+    return {}
 }
