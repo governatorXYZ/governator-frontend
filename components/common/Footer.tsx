@@ -47,7 +47,7 @@ const Footer: React.FC = () => {
         px='60px'
         flexDir={{
           base: 'column',
-          lg: 'row',
+          md: 'row',
         }}
       >
         <Image
@@ -57,7 +57,10 @@ const Footer: React.FC = () => {
         />
         <Flex
           direction='column'
-          align='flex-end'
+          align={{
+            base: 'center',
+            md: 'flex-end',
+          }}
         >
           <Flex>
             <Link href='https://discord.com/invite/bankless'>
