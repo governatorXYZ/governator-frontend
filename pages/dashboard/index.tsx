@@ -64,7 +64,7 @@ const ServerSelect: NextPage = () => {
                   cursor='pointer'
                   role='group'
                 >
-                  <Link href={`/community/${_server.id}`} passHref>
+                  <Link href={`/community/${_server.id}`} passHref legacyBehavior>
                     <Box
                       p={1}
                       borderRadius='full'
@@ -100,13 +100,13 @@ const ServerSelect: NextPage = () => {
                     }`}
                   </Text>
                 </VStack>
-              )
+              );
             })}
           </Grid>
         )}
       </Box>
     </Flex>
-  )
+  );
 }
 
 export default ServerSelect

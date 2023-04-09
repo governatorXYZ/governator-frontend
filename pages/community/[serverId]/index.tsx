@@ -80,7 +80,7 @@ const Dashboard: NextPage = () => {
       accessor: (data: unknown) => data,
       Cell: ({ value }: {
         value: Record<string, any>
-      }) => (<NextLink href={`${router.asPath}/polls/results/${value.id}`}>{ value.name }</NextLink>)
+      }) => (<NextLink href={`${router.asPath}/polls/results/${value.id}`} legacyBehavior>{ value.name }</NextLink>)
     },
     {
       Header: 'Start Date',
@@ -123,7 +123,7 @@ const Dashboard: NextPage = () => {
         actions: (
           <Flex w='max-content' mx='auto'>
             <DeletePoll poll={p} mutate={mutate} />
-            <NextLink href={`${router.asPath}/polls/results/${p._id}`}>
+            <NextLink href={`${router.asPath}/polls/results/${p._id}`} legacyBehavior>
               <Button
                 variant='ghost'
                 size='sm'
@@ -142,8 +142,8 @@ const Dashboard: NextPage = () => {
             </NextLink>
           </Flex>
         ),
-      }
-    })
+      };
+    });
   }
 
   const dashboardButtons = [
@@ -157,124 +157,124 @@ const Dashboard: NextPage = () => {
   const serverImg = `https://cdn.discordapp.com/icons/${currentServer?.id}/${currentServer?.icon}.png`
 
   return (
-      <Box bg='dark-2' minH='calc(100vh - 60px)' pt='4rem' pb='8rem'>
-        <Head>
-          <title>Goverator | Server Polls</title>
-        </Head>
-        <Container maxW='container.xl'>
-          <Box bg='dark-1' mx='auto' p='2rem 3rem'>
-            <Flex justifyContent='space-between' alignItems='center'>
-              <Govcrumb currentServerName={currentServer?.name} />
-            </Flex>
-            <Flex
-              my='3rem'
-              justifyContent={{ 
-                base: 'center',
-                lg: 'space-between'
+    <Box bg='dark-2' minH='calc(100vh - 60px)' pt='4rem' pb='8rem'>
+      <Head>
+        <title>Goverator | Server Polls</title>
+      </Head>
+      <Container maxW='container.xl'>
+        <Box bg='dark-1' mx='auto' p='2rem 3rem'>
+          <Flex justifyContent='space-between' alignItems='center'>
+            <Govcrumb currentServerName={currentServer?.name} />
+          </Flex>
+          <Flex
+            my='3rem'
+            justifyContent={{ 
+              base: 'center',
+              lg: 'space-between'
+            }}
+            alignItems={{
+              base: 'center',
+              lg: 'flex-end'
+            }}
+            flexDir={{
+              base: 'column',
+              lg: 'row',
+            }}
+          >
+        {/* Dashboard Buttons Box */}
+        {!loading && currentServer && (
+              <Box>
+                <Image
+                  src={serverImg}
+                  alt='user-avatar'
+                  borderRadius='full'
+                  boxSize='70px'
+                  mx='auto'
+                />
+                <Text
+                  as='span'
+                  display='block'
+                  color='gray.200'
+                  fontSize='2xl'
+                  mt='1rem'
+                >
+                  {currentServer.name}
+                </Text>
+              </Box>
+            )}
+            <Heading
+              as='h2'
+              display='block'
+              color='gray.200'
+              fontSize='2xl'
+              mt='1rem'
+              mb={{
+                base: '2rem',
+                lg: 'unset'
               }}
-              alignItems={{
-                base: 'center',
-                lg: 'flex-end'
-              }}
-              flexDir={{
-                base: 'column',
-                lg: 'row',
+            >My Polls</Heading>
+            <HStack
+              wrap={{
+                base: 'wrap',
               }}
             >
-          {/* Dashboard Buttons Box */}
-          {!loading && currentServer && (
-                <Box>
-                  <Image
-                    src={serverImg}
-                    alt='user-avatar'
-                    borderRadius='full'
-                    boxSize='70px'
-                    mx='auto'
-                  />
-                  <Text
-                    as='span'
-                    display='block'
-                    color='gray.200'
-                    fontSize='2xl'
-                    mt='1rem'
-                  >
-                    {currentServer.name}
-                  </Text>
-                </Box>
-              )}
-              <Heading
-                as='h2'
-                display='block'
-                color='gray.200'
-                fontSize='2xl'
-                mt='1rem'
-                mb={{
-                  base: '2rem',
-                  lg: 'unset'
-                }}
-              >My Polls</Heading>
-              <HStack
-                wrap={{
-                  base: 'wrap',
-                }}
+              <SearchBox
+                  setValue={setNewPolls}
+                  originalValues={originalPolls}
+                  searchKeys={['name']}
+                  placeholder='Search poll title...'
+                />
+              {loading && <Spinner color='gray.200' />}
+              {/* Render server icons */}
+              <Grid
+                templateColumns='1fr'
+                gap={6}
               >
-                <SearchBox
-                    setValue={setNewPolls}
-                    originalValues={originalPolls}
-                    searchKeys={['name']}
-                    placeholder='Search poll title...'
-                  />
-                {loading && <Spinner color='gray.200' />}
-                {/* Render server icons */}
-                <Grid
-                  templateColumns='1fr'
-                  gap={6}
-                >
-                  {dashboardButtons.map((_button, idx) => {
-                    return (
-                      <Box key={`button-${idx}`} width='100%' mt={{
-                        base: '1rem',
-                      }}>
-                        <NextLink href={_button.href}>
-                          <Button
-                            leftIcon={_button.icon}
-                            color='blue.600'
-                            variant='solid'
-                            minW='4xs'
-                          >
-                            {_button.title}
-                          </Button>
-                        </NextLink>
-                      </Box>
-                    )
-                  })}
+                {dashboardButtons.map((_button, idx) => {
+                  return (
+                    <Box key={`button-${idx}`} width='100%' mt={{
+                      base: '1rem',
+                    }}>
+                      <NextLink href={_button.href} legacyBehavior>
+                        <Button
+                          leftIcon={_button.icon}
+                          color='blue.600'
+                          variant='solid'
+                          minW='4xs'
+                        >
+                          {_button.title}
+                        </Button>
+                      </NextLink>
+                    </Box>
+                  );
+                })}
 
-                </Grid>
-              </HStack>
-        </Flex>
+              </Grid>
+            </HStack>
+      </Flex>
 
-            {loading && (
-              <Flex justifyContent='center' alignItems='center' mt='5rem'>
-                <VStack spacing={10}>
-                  <Spinner color='gray.200' />
-                </VStack>
-              </Flex>
-            )}
-            {!loading && (
-              <>
-                <Box overflowX={'auto'}>
-                  <DataTable
-                    data={polls}
-                    columns={columns}
-                    loading={isLoadingPolls}
-                  />
-                </Box>
-              </>
-            )}
-          </Box>
-        </Container>
-      </Box>
-  )
+          {loading && (
+            <Flex justifyContent='center' alignItems='center' mt='5rem'>
+              <VStack spacing={10}>
+                <Spinner color='gray.200' />
+              </VStack>
+            </Flex>
+          )}
+          {!loading && (
+            <>
+              <Box overflowX={'auto'}>
+                <DataTable
+                  data={polls}
+                  columns={columns}
+                  loading={isLoadingPolls}
+                />
+              </Box>
+            </>
+          )}
+        </Box>
+      </Container>
+    </Box>
+  );
 }
 
 export default Dashboard

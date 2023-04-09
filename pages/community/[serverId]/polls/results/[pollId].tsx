@@ -1,22 +1,29 @@
 import type { NextPage } from 'next'
-import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Flex, Spinner } from '@chakra-ui/react'
+import {
+  Box,
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  Flex,
+  Spinner,
+} from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import useSWR from 'swr'
 import { privateBaseFetcher } from 'constants/axios'
 import { Poll } from 'interfaces'
 import Govcrumb from 'components/BreadCrumb'
 import DisplayPollResults from 'components/polls/DisplayPollResults'
-import {useTotalVotes, useVotesData} from "../../../../../hooks/useVoteData";
+import { useTotalVotes, useVotesData } from '../../../../../hooks/useVoteData'
 import useServers from 'hooks/useServers'
 import { ChevronRightIcon } from '@chakra-ui/icons'
 
-
-
 const PollResults: NextPage = () => {
-
   const usePollData = (): any => {
-    const { data } = useSWR(`/poll/${router.query.pollId}`, privateBaseFetcher)
-    const pollData = data?.data ? (data?.data as Poll) : {} as Poll
+    const { data, error } = useSWR(
+      `/poll/${router.query.pollId}`,
+      privateBaseFetcher
+    )
+    const pollData = data?.data ? (data?.data as Poll) : ({} as Poll)
     return { pollData, error }
   }
   const { loading, currentServer } = useServers()
@@ -24,8 +31,8 @@ const PollResults: NextPage = () => {
   const router = useRouter()
 
   const { pollData, error } = usePollData()
-  const { votesData } = useVotesData(router.query.pollId as string);
-  const { totalVotes } = useTotalVotes(router.query.pollId as string);
+  const { votesData } = useVotesData(router.query.pollId as string)
+  const { totalVotes } = useTotalVotes(router.query.pollId as string)
 
   const isLoadingPoll = !pollData && !error
 
@@ -41,14 +48,9 @@ const PollResults: NextPage = () => {
         <Breadcrumb
           spacing='8px'
           separator={<ChevronRightIcon color='gray.500' />}
-          color='gray.300'
-        >
+          color='gray.300'>
           <BreadcrumbItem>
-            <BreadcrumbLink
-              onClick={returnToServer}
-            >
-              Back
-            </BreadcrumbLink>
+            <BreadcrumbLink onClick={returnToServer}>Back</BreadcrumbLink>
           </BreadcrumbItem>
         </Breadcrumb>
         {isLoadingPoll && (

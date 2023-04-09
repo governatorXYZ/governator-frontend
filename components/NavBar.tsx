@@ -73,119 +73,117 @@ const MobileDrawer: React.FC<{ session: Session | null }> = ({ session }) => {
   }, [])
 
 
-  return (
-    <>
-      {session ? (
-        <>
-          <Button ref={btnRef} colorScheme='transparent' onClick={onOpen}>
-            <HamburgerIcon boxSize={'5'} />
-          </Button>
-          <Drawer
-            isOpen={isOpen}
-            placement='right'
-            onClose={onClose}
-            finalFocusRef={btnRef}
+  return <>
+    {session ? (
+      <>
+        <Button ref={btnRef} colorScheme='transparent' onClick={onOpen}>
+          <HamburgerIcon boxSize={'5'} />
+        </Button>
+        <Drawer
+          isOpen={isOpen}
+          placement='right'
+          onClose={onClose}
+          finalFocusRef={btnRef}
+        >
+          <DrawerOverlay />
+          <DrawerContent
+            bg='gray.700'
           >
-            <DrawerOverlay />
-            <DrawerContent
-              bg='gray.700'
+            <DrawerCloseButton color='white' />
+            <DrawerHeader
+              color='gray.200'
+              fontSize={'1rem'}
+            >                      <Flex
+              maxW='max-content'
+              alignItems='center'
+              color='gray.200'
             >
-              <DrawerCloseButton color='white' />
-              <DrawerHeader
-                color='gray.200'
-                fontSize={'1rem'}
-              >                      <Flex
-                maxW='max-content'
-                alignItems='center'
-                color='gray.200'
+                <Image
+                  src={image || ''}
+                  alt='user-avatar'
+                  borderRadius='full'
+                  h='30px'
+                  mr='0.5rem'
+                />
+                <Text>{name}</Text>
+              </Flex></DrawerHeader>
+            <DrawerBody
+              p='0'
+            >
+              <Flex
+                h='100%'
               >
-                  <Image
-                    src={image || ''}
-                    alt='user-avatar'
-                    borderRadius='full'
-                    h='30px'
-                    mr='0.5rem'
-                  />
-                  <Text>{name}</Text>
-                </Flex></DrawerHeader>
-              <DrawerBody
-                p='0'
-              >
-                <Flex
-                  h='100%'
+                <VStack
+                  color='gray.200'
+                  align='flex-start'
+                  w='100%'
                 >
-                  <VStack
-                    color='gray.200'
-                    align='flex-start'
+                  <Flex
+                    borderTop={'2px solid'}
+                    borderTopColor='gray.600'
+                    direction={'column'}
                     w='100%'
                   >
-                    <Flex
-                      borderTop={'2px solid'}
-                      borderTopColor='gray.600'
-                      direction={'column'}
+                    <Box
+                      p='16px 1.5rem'
                       w='100%'
                     >
-                      <Box
-                        p='16px 1.5rem'
-                        w='100%'
-                      >
-                        <Link href='/dashboard'>
-                          <a>
-                            <Text as='span'>
-                              Dashboard
-                            </Text>
-                          </a>
-                        </Link>
-                      </Box>
-                      <Box
-                        p='16px 1.5rem'
-                      >
-                        <Link
-                          href='/account'>
-                          My Account
-                        </Link>
-                      </Box>
-                      <chakra.a
-                        href='https://governator.notion.site/Governator-Support-Center-2ebc542d891a4fbba9c014cef66a6d64'
-                        onClick={() => { onClose() }}
-                        p='16px 1.5rem'
-                        target='_blank'
-                        rel='noreferrer'
-                      >
-                        Help
-                      </chakra.a>
-                    </Flex>
-                  </VStack>
-                </Flex>
-              </DrawerBody>
-              <DrawerFooter
-                justifyContent='flex-start'
+                      <Link href='/dashboard'>
+
+                        <Text as='span'>
+                          Dashboard
+                        </Text>
+
+                      </Link>
+                    </Box>
+                    <Box
+                      p='16px 1.5rem'
+                    >
+                      <Link
+                        href='/account'>
+                        My Account
+                      </Link>
+                    </Box>
+                    <chakra.a
+                      href='https://governator.notion.site/Governator-Support-Center-2ebc542d891a4fbba9c014cef66a6d64'
+                      onClick={() => { onClose() }}
+                      p='16px 1.5rem'
+                      target='_blank'
+                      rel='noreferrer'
+                    >
+                      Help
+                    </chakra.a>
+                  </Flex>
+                </VStack>
+              </Flex>
+            </DrawerBody>
+            <DrawerFooter
+              justifyContent='flex-start'
+            >
+              <chakra.a
+                href='https://forms.gle/yWiYsAmy243rNUvm9'
+                onClick={() => { onClose() }}
+                rel='noreferrer'
+                display='block'
+                target='_blank'
+                mr='16px'
               >
-                <chakra.a
-                  href='https://forms.gle/yWiYsAmy243rNUvm9'
-                  onClick={() => { onClose() }}
-                  rel='noreferrer'
-                  display='block'
-                  target='_blank'
-                  mr='16px'
-                >
-                  <Button
-                    colorScheme='purple'
-                  >Feedback</Button>
-                </chakra.a>
                 <Button
-                  onClick={() => {
-                    signOut()
-                  }}>
-                  Logout
-                </Button>
-              </DrawerFooter>
-            </DrawerContent>
-          </Drawer>
-        </>
-      ) : (<LoginText />)}
-    </>
-  )
+                  colorScheme='purple'
+                >Feedback</Button>
+              </chakra.a>
+              <Button
+                onClick={() => {
+                  signOut()
+                }}>
+                Logout
+              </Button>
+            </DrawerFooter>
+          </DrawerContent>
+        </Drawer>
+      </>
+    ) : (<LoginText />)}
+  </>;
 }
 
 const UserAvatar: React.FC<{ session: Session }> = ({ session }) => {
@@ -224,10 +222,7 @@ const UserAvatar: React.FC<{ session: Session }> = ({ session }) => {
             alignItems={'flex-end'}
             justifyContent={'stretch'}
           >
-            <Link
-              href='/account'
-              passHref
-            >
+            <Link href='/account' passHref legacyBehavior>
               <ChakraLink
                 display={'block'}
                 w='100%'
@@ -259,7 +254,7 @@ const UserAvatar: React.FC<{ session: Session }> = ({ session }) => {
         </MenuGroup>
       </MenuList>
     </Menu>
-  )
+  );
 }
 
 const NavBar = () => {
@@ -324,11 +319,11 @@ const NavBar = () => {
             {session ? (
               <HStack color='gray.200' spacing='2rem'>
                 <Link href='/dashboard'>
-                  <a>
-                    <Text as='span' fontSize='15px' fontWeight='500'>
-                      Dashboard
-                    </Text>
-                  </a>
+
+                  <Text as='span' fontSize='15px' fontWeight='500'>
+                    Dashboard
+                  </Text>
+
                 </Link>
                 <UserAvatar session={session} />
                 <a
@@ -355,7 +350,7 @@ const NavBar = () => {
         </Flex>
       </Container>
     </Flex>
-  )
+  );
 }
 
 export default NavBar

@@ -173,7 +173,7 @@ class Siwe {
     address?: string
   ) {
     if (!signer) { alert('Wallet not connected!'); return }
-    const walletAddress = (address) ?? await signer.getAddress();
+    const walletAddress = (address) ?? (await signer.getAddress());
       
     const data: SiweVerifyDto = {
       _id: walletAddress,
