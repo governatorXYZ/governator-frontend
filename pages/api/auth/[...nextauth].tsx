@@ -5,8 +5,8 @@ export default NextAuth({
   // Configure one or more authentication providers
   providers: [
     DiscordProvider({
-      clientId: process.env.DISCORD_CLIENT_ID ?? "",
-      clientSecret: process.env.DISCORD_CLIENT_SECRET ?? "",
+      clientId: process.env.DISCORD_CLIENT_ID ?? '',
+      clientSecret: process.env.DISCORD_CLIENT_SECRET ?? '',
       authorization:
         'https://discord.com/api/oauth2/authorize?type=token&scope=identify+guilds',
     }),
@@ -14,7 +14,7 @@ export default NextAuth({
   ],
   callbacks: {
     /* return {token, user, account, profile, isNewUser} */
-    async jwt({token, user, account}) {
+    async jwt({ token, user, account }) {
       if (account?.access_token) {
         token.accessToken = account.access_token
         token.refreshToken = account.refresh_token
@@ -34,4 +34,5 @@ export default NextAuth({
       return session
     },
   },
+  secret: process.env.NEXTAUTH_SECRET,
 })
