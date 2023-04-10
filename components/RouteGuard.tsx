@@ -1,8 +1,9 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
-import { Grid, Spinner } from '@chakra-ui/react'
+import { Grid, Spinner, useToast } from '@chakra-ui/react'
 import styled from '@emotion/styled'
+import { signOut } from 'next-auth/react'
 
 const StyledGrid = styled(Grid)`
   background-color: #29303a;
@@ -10,8 +11,9 @@ const StyledGrid = styled(Grid)`
 `
 
 const RouteGuard: React.FC = ({ children }) => {
-  const { status } = useSession()
+  const { data: session, status } = useSession()
   const router = useRouter()
+  const toast = useToast();
 
   const url = '/'
 
@@ -19,6 +21,17 @@ const RouteGuard: React.FC = ({ children }) => {
   const allowedPages = [ '/team', '/privacy', '/400', '/500' ];
   const isAllowed = allowedPages.includes(router.route)
 
+  if (session &&  new Date(session.expires).getTime() < Date.now()) {
+    toast({
+      title: 'Session expired',
+      description: 'Your session has expired. Please sign in again.',
+      status: 'error',
+      duration: 5000,
+      isClosable: true,
+    })
+    signOut()
+  }
+  
   useEffect(() => {
     if (status === 'unauthenticated' && !isAllowed) {
       router.push(url)
