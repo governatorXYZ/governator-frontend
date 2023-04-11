@@ -58,16 +58,11 @@ const Footer: React.FC = () => {
     return (
       <>
         {links.map((link) => (
-          <Link
-            key={link.name}
-            href={link.href}
-        >
-          <Box
-            p='.5em 1em'
-          >
-            {link.name}
-          </Box>
-        </Link>)
+          <Link key={link.name} href={link.href}>
+            <Box p='.5em 1em'>
+              {link.name}
+            </Box>
+          </Link>)
         )}
       </>
     )
@@ -78,13 +73,13 @@ const Footer: React.FC = () => {
       <Flex>
         {socials.map((social) => (
           <Link key={social.name} href={social.href} target='_blank'>
-              <Button
-                variant='ghost'
-                _hover={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
-                {social.icon}
-              </Button>
+            <Button
+              variant='ghost'
+              _hover={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
+              {social.icon}
+            </Button>
           </Link>)
-          )}
+        )}
       </Flex>
     )
   }
