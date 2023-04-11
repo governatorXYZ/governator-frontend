@@ -1,11 +1,8 @@
 import {
   Image,
   Flex,
-  Box,
-  Link as ChakraLink,
   Heading,
 } from '@chakra-ui/react'
-import { Router } from 'next/router';
 
 interface CommunityProps {
   icon: string;

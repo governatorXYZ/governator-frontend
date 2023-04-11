@@ -1,9 +1,6 @@
 import {
   Flex,
-  Link as ChakraLink,
   Box,
-  Button,
-  HStack,
 } from '@chakra-ui/react'
 
 interface LayoutProps {

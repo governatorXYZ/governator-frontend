@@ -25,7 +25,6 @@ const PollResults: NextPage = () => {
     }
   }
   const {
-    loading,
     currentServer
   } = useServers()
 

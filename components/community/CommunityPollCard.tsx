@@ -1,14 +1,10 @@
 import {
   Heading,
-  Button,
   HStack,
-  Image,
   Text,
   Flex,
   Box
 } from '@chakra-ui/react'
-import { ClientConfigBase } from 'governator-sdk';
-import { useRouter } from 'next/router';
 
 interface CommunityPollCardProps {
   description?: string;

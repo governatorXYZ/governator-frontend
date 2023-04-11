@@ -4,10 +4,8 @@ import {
   HStack,
   Image,
   Flex,
-  Box,
 } from '@chakra-ui/react'
-import { redirect } from 'next/dist/server/api-utils';
-import { Router, useRouter } from 'next/router';
+import { useRouter } from 'next/router';
 
 interface CommunityPageHeaderProps {
   icon?: string;

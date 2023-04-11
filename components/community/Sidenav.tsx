@@ -15,6 +15,7 @@ interface SidenavProps {
   children?: JSX.Element
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const Sidenav = ({ children }: SidenavProps) => {
   const { communities } = useCommunities();
 

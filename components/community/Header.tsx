@@ -1,10 +1,8 @@
 import {
-  Link as ChakraLink,
   Button,
   Image,
   Flex,
   Text,
-  Box
 } from '@chakra-ui/react'
 
 interface HeaderProps {

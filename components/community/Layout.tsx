@@ -1,8 +1,7 @@
 import { useSession, signOut } from 'next-auth/react'
 import {
   Box,
-  Flex,
-  Link as ChakraLink,
+  Flex
 } from '@chakra-ui/react'
 import { CommunitiesProvider } from 'contexts/CommunitiesContext'
 import Sidenav from './Sidenav'
@@ -17,7 +16,6 @@ interface LayoutProps {
 const Layout = ({ children }: LayoutProps) => {
   const {
     data: session,
-    status,
   } = useSession();
   
   return (
