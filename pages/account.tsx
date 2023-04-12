@@ -111,7 +111,7 @@ const Account: NextPage = () => {
 
         // if not, verify it.
         if (!hasBeenVerified) {
-          await Siwe.signInWithEthereum(session?.discordId as unknown as string, provider, address);
+          await Siwe.signInWithEthereum(session?.oauthProfile._id, provider, address);
           await mutate?.();
         }
       }
@@ -131,7 +131,7 @@ const Account: NextPage = () => {
     }
   }
 
-  const { session } = useSession()
+  const session = useSession()
 
   const signInWithEthereum = async (): Promise<void> => {
     try {
@@ -149,7 +149,7 @@ const Account: NextPage = () => {
         await mutate?.();
       }
   
-      const { verified } = await Siwe.signInWithEthereum(session?.discordId as unknown as string, provider, account.address);
+      const { verified } = await Siwe.signInWithEthereum(session?.oauthProfile._id, provider, account.address);
       await mutate?.();
       
       setVerified(verified);
@@ -167,7 +167,7 @@ const Account: NextPage = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      if (user.userId === '') await setUser({ userId: (await privateBaseAxios.get(`/user/discord/${session?.discordId}`)).data._id });
+      if (user.userId === '') await setUser({ userId: (await privateBaseAxios.get(`/user/discord/${session?.oauthProfile._id}`)).data._id });
     }
     fetchUser()
       .then(() => null)
@@ -182,7 +182,7 @@ const Account: NextPage = () => {
   },
 
     //eslint-disable-next-line react-hooks/exhaustive-deps
-    [session?.discordId]
+    [session?.oauthProfile._id]
   )
 
   const removeWallet = async (walletAddress: string): Promise<void> => {

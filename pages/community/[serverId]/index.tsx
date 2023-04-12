@@ -26,7 +26,7 @@ import DeletePoll from 'components/polls/DeletePoll'
 import { FaDiscord } from 'react-icons/fa'
 import useSWR from 'swr'
 import { privateBaseFetcher } from 'constants/axios'
-import { useGovernatorUser } from 'hooks/useGovernatorUser'
+import { useSession } from 'hooks/useSession'
 import useServer from 'hooks/useServer'
 import { Poll, RenderedPoll } from 'interfaces'
 import { useState, useEffect } from 'react'
@@ -36,9 +36,9 @@ const Dashboard: NextPage = () => {
   const router = useRouter()
   const { loading, currentServer } = useServers()
   const { channels, loading: isLoadingChannels } = useServer()
-  const governatorUser = useGovernatorUser()
+  const governatorUserId = useSession()?.governatorId
 
-  const { data, error, mutate } = useSWR(governatorUser.userId ? `/poll/user/${governatorUser.userId}` : null, privateBaseFetcher);
+  const { data, error, mutate } = useSWR(governatorUserId ? `/poll/user/${governatorUserId}` : null, privateBaseFetcher);
   let pollsData = data?.data ? (data?.data as Poll[]) : []
 
   const filteredPollsData: Poll[] = [];

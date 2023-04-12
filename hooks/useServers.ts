@@ -1,8 +1,7 @@
-import { discordAxios } from 'constants/axios'
+import { governatorApiWithSessionCredentials } from 'constants/axios'
 import { useAtom } from 'jotai'
 import { serversAtom } from 'atoms'
 import { useState, useCallback, useEffect } from 'react'
-import { useSession } from 'hooks/useSession'
 import { useRouter } from 'next/router'
 
 /**
@@ -16,7 +15,6 @@ const MVP_ALLOWED_GUILDS = {
 };
 
 const useServers = () => {
-  const { session } = useSession()
   const [servers, setServers] = useAtom(serversAtom)
   const [loading, setLoading] = useState(false)
   const [retry, setRetry] = useState(0)
@@ -29,8 +27,8 @@ const useServers = () => {
 
     const fetchData = async () => {
       try {
-        const data = await discordAxios(session?.accessToken as string).get(
-          '/users/@me/guilds'
+        const data = await governatorApiWithSessionCredentials.get(
+          'auth/discord/servers'
         )
         const serversData = data.data.filter( (_guild: { id: string }) => Object.values(MVP_ALLOWED_GUILDS).includes(_guild.id))
         setServers(serversData)

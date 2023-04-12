@@ -15,7 +15,7 @@ export default async function handler(
 
 
     // trim trailing slash from api endpoint.
-    const apiEndPoint = `${process.env.GOVERNATOR_API_ENDPOINT?.replace(/\/$/, '')}`
+    const apiEndPoint = `${process.env.NEXT_PUBLIC_GOVERNATOR_API_ENDPOINT?.replace(/\/$/, '')}`
 
     console.log(`${apiEndPoint}/${url}`)
 

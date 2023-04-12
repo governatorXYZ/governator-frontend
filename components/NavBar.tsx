@@ -28,30 +28,15 @@ import {
 import { HamburgerIcon } from '@chakra-ui/icons'
 import { AiOutlineCaretDown } from 'react-icons/ai'
 import Link from 'next/link'
-import { privateBaseAxios, privateBaseFetcher, governatorApiAxios } from '../constants/axios';
+import { privateBaseAxios, governatorApiWithSessionCredentials } from '../constants/axios';
 import { useAtom } from 'jotai';
 import { userAtom } from 'atoms';
 import { useEffect, useRef } from 'react'
 import { useRouter } from 'next/router'
 import { useSession } from 'hooks/useSession'
+import { Session } from 'interfaces';
 
-const signIn = async () => {
-  const loginResponse = await governatorApiAxios.get(
-    `/auth/login`
-  )
-
-  console.log(loginResponse.data)
-}
-
-const signOut = async () => {
-  const loginResponse = await governatorApiAxios.get(
-    `/auth/logout`
-  )
-
-  console.log(loginResponse.data)
-}
-
-const LoginText = () => {
+const LoginText = (params: { url: string }) => {
   return (
     <HStack justifyContent='center' alignItems='center' color='gray.200'>
       {(
@@ -61,30 +46,32 @@ const LoginText = () => {
           ml={{
             base: '8px',
           }}
-          onClick={() => {
-            signIn()
-          }}>
-          Login
+          // onClick={() => {
+          //   signIn()
+          // }}
+        >
+          <a href={params.url}>Login</a>
         </Text>
       )}
     </HStack>
   )
 }
 
-const MobileDrawer: React.FC<{ session: any }> = ({ session }) => {
+const MobileDrawer: React.FC<Session> = (session) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const btnRef = useRef(null);
   const router = useRouter();
 
-  const name = session?.discord_username
-  const image = session?.avatar
+  let name = '';
+  let image = '';
+  const loginUrl = `${process.env.NEXT_PUBLIC_GOVERNATOR_API_ENDPOINT}/auth/login`;
+  const logoutUrl = `${process.env.NEXT_PUBLIC_GOVERNATOR_API_ENDPOINT}/auth/logout`;
 
-  console.log(session)
-  console.log(name)
-  console.log(image)
-
-
-  
+  if (session && session.status === 200) {
+    name = session ? session.oauthProfile.discord_username : ''
+    image = session ? session.oauthProfile.avatar : ''
+  }
+   
   useEffect(() => {
     router.events.on('beforeHistoryChange', onClose)
 
@@ -96,7 +83,7 @@ const MobileDrawer: React.FC<{ session: any }> = ({ session }) => {
 
   return (
     <>
-      {session ? (
+      {session && session.status === 200 ? (
         <>
           <Button ref={btnRef} colorScheme='transparent' onClick={onOpen}>
             <HamburgerIcon boxSize={'5'} />
@@ -194,24 +181,26 @@ const MobileDrawer: React.FC<{ session: any }> = ({ session }) => {
                     colorScheme='purple'
                   >Feedback</Button>
                 </chakra.a>
-                <Button
-                  onClick={() => {
-                    signOut()
-                  }}>
-                  Logout
-                </Button>
+                <Text
+                  // onClick={() => {
+                  //   signOut()
+                  // }}
+                >
+                  <a href={logoutUrl}>Logout</a>
+                </Text>
               </DrawerFooter>
             </DrawerContent>
           </Drawer>
         </>
-      ) : (<LoginText />)}
+      ) : (<LoginText url={loginUrl}/>)}
     </>
   )
 }
 
-const UserAvatar: React.FC<{ session: any }> = ({ session }) => {
-  const name = session?.discord_username
-  const image = session?.avatar
+const UserAvatar: React.FC<Session> = (session) => {
+  const name = session?.oauthProfile.discord_username
+  const image = session?.oauthProfile.avatar
+  const logoutUrl = `${process.env.NEXT_PUBLIC_GOVERNATOR_API_ENDPOINT}/auth/logout`;
 
   return (
     <Menu>
@@ -271,11 +260,11 @@ const UserAvatar: React.FC<{ session: any }> = ({ session }) => {
           </MenuItem>
           <MenuItem
             justifyContent={'stretch'}
-            onClick={() => {
-              signOut()
-            }}
+            // onClick={() => {
+            //   signOut()
+            // }}
           >
-            Logout
+            <a href={logoutUrl}>Logout</a>
           </MenuItem>
         </MenuGroup>
       </MenuList>
@@ -284,13 +273,13 @@ const UserAvatar: React.FC<{ session: any }> = ({ session }) => {
 }
 
 const NavBar = () => {
-  const { session } = useSession()
+  const session = useSession()
   const [user, setUser] = useAtom(userAtom);
 
   useEffect(() => {
 
     async function checkAndCreateUser() {
-      const discordId = session?._id;
+      const discordId = session?.oauthProfile._id;
       if (!discordId) {
         return
       }
@@ -310,7 +299,7 @@ const NavBar = () => {
 
       const data = {
         _id: discordId,
-        discord_username: session?.name
+        discord_username: session?.oauthProfile.discord_username,
       }
       const userXhr = await privateBaseAxios.post('/account/discord/create', data);
       const newUser = userXhr.data;
@@ -322,7 +311,9 @@ const NavBar = () => {
     checkAndCreateUser().then(() => null);
 
     //eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session?.discordId])
+  }, [session])
+
+  const loginUrl = `${process.env.NEXT_PUBLIC_GOVERNATOR_API_ENDPOINT}/auth/login`;
 
   return (
     <Flex bg='gray.700' h='60px'>
@@ -342,7 +333,7 @@ const NavBar = () => {
             base: 'none',
             md: 'block',
           }}>
-            {session ? (
+            {session && session.status === 200 ? (
               <HStack color='gray.200' spacing='2rem'>
                 <Link href='/dashboard'>
                   <a>
@@ -351,7 +342,7 @@ const NavBar = () => {
                     </Text>
                   </a>
                 </Link>
-                <UserAvatar session={session} />
+                <UserAvatar {...session} />
                 <a
                   target='_blank'
                   rel='noreferrer'
@@ -364,14 +355,14 @@ const NavBar = () => {
                 </a>
               </HStack>
             ) : (
-              <LoginText />
+              <LoginText url={loginUrl}/>
             )}
           </Box>
           <Box display={{
             base: 'block',
             md: 'none'
           }}>
-            <MobileDrawer session={session} />
+            <MobileDrawer {...session} />
           </Box>
         </Flex>
       </Container>

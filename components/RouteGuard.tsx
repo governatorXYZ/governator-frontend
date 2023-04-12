@@ -10,7 +10,7 @@ const StyledGrid = styled(Grid)`
 `
 
 const RouteGuard: React.FC = ({ children }) => {
-  const { session } = useSession()
+  const session = useSession()
   const router = useRouter()
 
   const url = '/'
@@ -20,13 +20,13 @@ const RouteGuard: React.FC = ({ children }) => {
   const isAllowed = allowedPages.includes(router.route)
 
   useEffect(() => {
-    if (session.status === 401 && !isAllowed) {
+    if ((!session || session.status === 401) && !isAllowed) {
       router.push(url)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session])
 
-  if (router.asPath.split('?')[0] === '/' || isAllowed || session.status === 200) {
+  if (router.asPath.split('?')[0] === '/' || isAllowed || (session && session.status === 200)) {
     return <>{children}</>
   }
 

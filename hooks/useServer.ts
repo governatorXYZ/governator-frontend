@@ -1,12 +1,8 @@
-import {
-  discordAxios,
-  privateBaseAxios,
-  privateBaseFetcher,
-} from 'constants/axios'
+import { privateBaseFetcher } from 'constants/axios'
 import { useAtom } from 'jotai'
 import { channelsAtom, rolesAtom } from 'atoms'
 import { useState, useCallback, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
+import { useSession } from 'hooks/useSession'
 import useServers from './useServers'
 
 
@@ -14,7 +10,7 @@ const useServer = () => {
   const [loading, setLoading] = useState(false)
   const [channels, setChannels] = useAtom(channelsAtom)
   const [roles, setRoles] = useAtom(rolesAtom)
-  const { data: session } = useSession()
+  const session = useSession()
 
   const { currentServer } = useServers()
 
@@ -25,7 +21,7 @@ const useServer = () => {
         setLoading(true)
 
         const channelsResponse = await privateBaseFetcher(
-          `/client/discord/${currentServer.id}/channels/${session?.discordId}`
+          `/client/discord/${currentServer.id}/channels/${session?.oauthProfile._id}`
         )
 
         const sortedChannels = (
@@ -42,7 +38,7 @@ const useServer = () => {
         setChannels(sortedChannels)
 
         const rolesResponse = await privateBaseFetcher(
-          `/client/discord/${currentServer.id}/roles/${session?.discordId}`
+          `/client/discord/${currentServer.id}/roles/${session?.oauthProfile._id}`
         )
 
         const sortedRoles = (
