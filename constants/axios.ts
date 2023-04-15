@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { responseSymbol } from 'next/dist/server/web/spec-compliant/fetch-event';
 
 export const privateBaseAxios = axios.create({
   baseURL: '/api'
@@ -9,7 +8,7 @@ export const privateBaseFetcher = (url: string) => privateBaseAxios.get(url)
 
 export const governatorApiWithSessionCredentials =
   axios.create({
-    baseURL: process.env.NEXT_PUBLIC_GOVERNATOR_API_ENDPOINT,
+    baseURL: '/governator',
     withCredentials: true ,
 })
 
