@@ -1,8 +1,9 @@
 import { governatorApiWithSessionCredentials } from 'constants/axios';
 import { ethers }  from 'ethers';
 import { Session } from 'interfaces';
-import { atom } from 'jotai'
+import { atom, Getter } from 'jotai'
 import { loadable } from "jotai/utils"
+import { getRouteRegex } from 'next/dist/shared/lib/router/utils';
 
 
 export const serversAtom = atom<{ icon: string; name: string; id: string }[]>(
@@ -31,17 +32,27 @@ export const strategiesAtom = atom<{ value: string; label: string, strategy_type
 //   }
 // })
 
-// const fetchCountAtom = atom(
-//   (get) => get(countAtom),
-//   async (_get, set, url) => {
-//     const response = await fetch(url)
-//     set(countAtom, (await response.json()).count)
-//   }
-// )
 
-// const fetchFunc = async () => await (await governatorApiWithSessionCredentials.get(`/auth/session`).catch()).data
+const fetchFunc = async () => await (await governatorApiWithSessionCredentials.get(`/auth/session`).catch()).data
 
-// // const asyncAtom = atom<Promise<Session>>(fetchFunc)
+const asyncAtom = atom<Promise<Session>>(fetchFunc)
+
+function atomWithRefresh<T>(fn: (get: Getter) => T) {
+  const refreshCounter = atom(0)
+
+  return atom(
+    (get) => {
+      get(refreshCounter)
+      return fn(get)
+    },
+    (_, set) => set(refreshCounter, (i) => i + 1)
+  )
+}
+
+export const refreshAtom = atomWithRefresh((get) =>
+  governatorApiWithSessionCredentials.get(`/auth/session`).then((data) => data.data).catch()
+  // fetch('https://jsonplaceholder.typicode.com/posts').then((r) => r.json())
+)
 
 // const asyncWriteAtom = atom(
 //   () => governatorApiWithSessionCredentials.get(`/auth/session`), 
@@ -60,7 +71,7 @@ export const strategiesAtom = atom<{ value: string; label: string, strategy_type
 //     }
 // )
 
-// export const loadableSessionAtom = loadable(asyncWriteAtom)
+export const loadableSessionAtom = loadable(asyncAtom)
 
 // export const finalAtom = atom(
 //   (get) => get(loadableSessionAtom),

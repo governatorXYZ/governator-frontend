@@ -29,7 +29,7 @@ import { HamburgerIcon } from '@chakra-ui/icons'
 import { AiOutlineCaretDown } from 'react-icons/ai'
 import Link from 'next/link'
 import { useAtom } from 'jotai';
-import { finalAtom, loadableSessionAtom } from 'atoms';
+import { loadableSessionAtom } from 'atoms';
 import { useEffect, useRef } from 'react'
 import { useRouter } from 'next/router'
 import { Session } from 'interfaces';
@@ -255,7 +255,7 @@ const UserAvatar: React.FC<Session> = (session) => {
 }
 
 const NavBar = () => {
-  const [session] = useAtom(finalAtom)
+  const [session] = useAtom(loadableSessionAtom)
 
   useEffect(() => {
 
@@ -263,7 +263,7 @@ const NavBar = () => {
 
       if(session.state !== 'hasData') return;
 
-      const discordId = session.data.data.oauthProfile._id;
+      const discordId = session.data.oauthProfile._id;
 
       if (!discordId) {
         return
@@ -303,7 +303,7 @@ const NavBar = () => {
                     </Text>
                   </a>
                 </Link>
-                <UserAvatar {...(session.data.data as Session)} />
+                <UserAvatar {...(session.data as Session)} />
                 <a
                   target='_blank'
                   rel='noreferrer'
@@ -323,7 +323,7 @@ const NavBar = () => {
             base: 'block',
             md: 'none'
           }}>
-            {session.state === 'hasData' ? (<MobileDrawer {...(session.data.data as Session)} />) : (<LoginText url={LOGIN_PATH}/>) }
+            {session.state === 'hasData' ? (<MobileDrawer {...(session.data as Session)} />) : (<LoginText url={LOGIN_PATH}/>) }
           </Box>
         </Flex>
       </Container>

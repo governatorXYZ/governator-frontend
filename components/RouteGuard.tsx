@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import { Grid, Spinner } from '@chakra-ui/react'
 import styled from '@emotion/styled'
 import { useAtom } from 'jotai'
-import { loadableSessionAtom } from 'atoms'
+import { loadableSessionAtom, refreshAtom } from 'atoms'
 
 const StyledGrid = styled(Grid)`
   background-color: #29303a;
@@ -17,6 +17,8 @@ const RouteGuard: React.FC = ({ children }) => {
 
   const [session] = useAtom(loadableSessionAtom)
 
+  const [sesh, updateSesh] = useAtom(refreshAtom);
+
   const url = '/'
 
   // whitelist of pages that can so the routeguard ignores them.
@@ -25,6 +27,13 @@ const RouteGuard: React.FC = ({ children }) => {
 
   useEffect(() => {
     console.log(session.state)
+
+    console.log(sesh)
+
+    updateSesh()
+
+    console.log(sesh)
+
     if (session.state === 'hasError') {
       router.push(url);
     }
