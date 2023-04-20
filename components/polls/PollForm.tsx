@@ -30,7 +30,7 @@ import useServer from 'hooks/useServer'
 import useStrategies from 'hooks/useStrategies'
 import PollOption from './PollOption'
 import {useAtom} from "jotai";
-import {userAtom} from "../../atoms";
+import {loadableSessionAtom, userAtom} from "../../atoms";
 import {BlockHeight} from '../../interfaces';
 
 const STANDARD_STRATEGY_NAME = 'Standard (1 Vote = 1 Vote)';
@@ -83,7 +83,7 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
   const { strategies } = useStrategies();
   const [isTokenVote, setIsTokenVote] = useState(false);
   const [isSingleVoteChecked, setIsSingleVoteChecked] = useState(true);
-  const [user] = useAtom(userAtom);
+  const [session] = useAtom(loadableSessionAtom);
 
   const defaultStratId = (strategies.find((strat: {label: string, value: string}) => strat.label === STANDARD_STRATEGY_NAME ))?.value
 
@@ -194,7 +194,7 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
         author_user_id: data.author_user_id
       }
 
-      console.log({ submittedData })
+      // console.log({ submittedData })
 
       const res = await privateBaseAxios.post('/poll/create', submittedData)
 
@@ -442,7 +442,7 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
                   isSearchable
                   onBlur={onBlur}
                   onChange={i => {
-                    console.log({ i })
+                    // console.log({ i })
                     setValue(
                       'strategy_config',
                       i?.value ?? ''
@@ -522,7 +522,7 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             id='author_user_id'
             type='hidden'
             {...register('author_user_id')}
-            {...setValue('author_user_id', user.userId)}
+            {...setValue('author_user_id', session.state === 'hasData' ? session.data.governatorId : '')}
           />
           <Flex mt='4rem'>
             <Button

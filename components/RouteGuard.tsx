@@ -1,8 +1,10 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useRouter } from 'next/router'
-import { useSession } from 'hooks/useSession'
+// import { useSession } from 'hooks/useSession'
 import { Grid, Spinner } from '@chakra-ui/react'
 import styled from '@emotion/styled'
+import { useAtom } from 'jotai'
+import { loadableSessionAtom } from 'atoms'
 
 const StyledGrid = styled(Grid)`
   background-color: #29303a;
@@ -10,23 +12,49 @@ const StyledGrid = styled(Grid)`
 `
 
 const RouteGuard: React.FC = ({ children }) => {
-  const session = useSession()
+  // const session = useSession()
   const router = useRouter()
+
+  const [session] = useAtom(loadableSessionAtom)
 
   const url = '/'
 
   // whitelist of pages that can so the routeguard ignores them.
-  const allowedPages = [ '/team', '/privacy', '/400', '/500' ];
+  const allowedPages = [ '/team', '/privacy', '/400', '/500'];
   const isAllowed = allowedPages.includes(router.route)
 
   useEffect(() => {
-    if ((!session || session.status === 401) && !isAllowed) {
-      router.push(url)
+    console.log(session.state)
+    if (session.state === 'hasError') {
+      router.push(url);
     }
+    // if ((!session || session.status === 401) && !isAllowed) {
+    //   console.log('guard')
+    //   if (isFirstRun.current) {
+    //     isFirstRun.current = false;
+    //     return;
+    //   } else {
+    //     router.push('/')
+    //   }
+    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session])
+  },[session])
 
-  if (router.asPath.split('?')[0] === '/' || isAllowed || (session && session.status === 200)) {
+  // console.log(session.state)
+
+  // if (value.state === 'loading') {
+  //   return (
+  //     <StyledGrid
+  //         placeItems='center'
+  //         h='calc(100vh - 60px)'
+  //         bg='gray.700'
+  //         color='gray.200'>
+  //       <Spinner />
+  //     </StyledGrid>
+  // )
+  // }
+
+  if (router.asPath.split('?')[0] === '/' || isAllowed || session.state === 'hasData') {
     return <>{children}</>
   }
 

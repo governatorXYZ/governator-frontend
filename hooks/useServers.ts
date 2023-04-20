@@ -11,7 +11,8 @@ import { useRouter } from 'next/router'
  */
 const MVP_ALLOWED_GUILDS = {
   "The DAO Bot Garage": "851552281249972254",
-  "Bankless DAO": "834499078434979890"
+  "Bankless DAO": "834499078434979890",
+  "Governator.xyz": "1092659203266580532"
 };
 
 const useServers = () => {
@@ -34,7 +35,6 @@ const useServers = () => {
         setServers(serversData)
         return true
       } catch (e) {
-        console.log({ e })
         return false;
       }
     };
@@ -47,9 +47,9 @@ const useServers = () => {
           setTimeout(fetchData, 500);
           setRetry(retry + 1)
         } 
-        // else {
-        //   ((signOut()))
-        // }
+        else {
+          router.push('/proxy/auth/logout');
+        }
       } else {
         setLoading(false)
       }

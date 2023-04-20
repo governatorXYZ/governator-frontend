@@ -1,13 +1,20 @@
 import type { NextPage } from 'next'
 import { Box, VStack, Image, Flex, Text, Grid, Spinner } from '@chakra-ui/react'
-import Govcrumb from 'components/BreadCrumb'
 import useServers from 'hooks/useServers'
 import Head from 'next/head'
 
 import Link from 'next/link'
+import { useEffect } from 'react'
+import { finalAtom } from 'atoms'
+import { useAtom } from 'jotai'
 
 const ServerSelect: NextPage = () => {
   const { servers, loading } = useServers()
+  const [session, refreshSession] = useAtom(finalAtom)
+  useEffect(() => {
+    refreshSession();
+    // console.log(session)
+  },[])
 
   return (
     <Flex

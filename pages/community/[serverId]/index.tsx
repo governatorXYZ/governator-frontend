@@ -23,22 +23,25 @@ import DataTable from 'components/Datatable'
 import SearchBox from 'components/SearchBox'
 import * as luxon from 'luxon'
 import DeletePoll from 'components/polls/DeletePoll'
-import { FaDiscord } from 'react-icons/fa'
+// import { FaDiscord } from 'react-icons/fa'
 import useSWR from 'swr'
 import { privateBaseFetcher } from 'constants/axios'
-import { useSession } from 'hooks/useSession'
+// import { useSession } from 'hooks/useSession'
 import useServer from 'hooks/useServer'
-import { Poll, RenderedPoll } from 'interfaces'
+import { Poll, RenderedPoll, Session } from 'interfaces'
 import { useState, useEffect } from 'react'
 import Head from 'next/head'
+import { loadableSessionAtom } from 'atoms'
+import { useAtom } from 'jotai'
 
 const Dashboard: NextPage = () => {
   const router = useRouter()
   const { loading, currentServer } = useServers()
   const { channels, loading: isLoadingChannels } = useServer()
-  const governatorUserId = useSession()?.governatorId
+  const [session] = useAtom(loadableSessionAtom)
+  // const governatorUserId = useSession()?.governatorId
 
-  const { data, error, mutate } = useSWR(governatorUserId ? `/poll/user/${governatorUserId}` : null, privateBaseFetcher);
+  const { data, error, mutate } = useSWR(session.state === 'hasData' ? `/poll/user/${(session.data as Session).governatorId}` : null, privateBaseFetcher);
   let pollsData = data?.data ? (data?.data as Poll[]) : []
 
   const filteredPollsData: Poll[] = [];

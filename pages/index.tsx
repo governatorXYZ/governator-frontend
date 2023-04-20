@@ -23,9 +23,11 @@ import { MdLoop } from 'react-icons/md'
 
 import { useEffect, useState } from 'react'
 import { sample } from 'lodash'
-import { useSession } from 'hooks/useSession'
+// import { useSession } from 'hooks/useSession'
 import { useRouter } from 'next/router'
 import { Footer, StyledBox } from 'components/common'
+import { loadableSessionAtom } from 'atoms'
+import { useAtom } from 'jotai'
 
 const votes = [
   'Pineapple on pizza? 🍍 or 👎',
@@ -52,10 +54,10 @@ const Quote: React.FC = () => {
 }
 
 const HeroButton = () => {
-  const session = useSession()
+  const [session] = useAtom(loadableSessionAtom)
   const router = useRouter()
 
-  return session ? (
+  return session.state === 'hasData' ? (
     <Button
       color='gray.700'
       leftIcon={<FaChartBar />}

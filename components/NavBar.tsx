@@ -28,13 +28,14 @@ import {
 import { HamburgerIcon } from '@chakra-ui/icons'
 import { AiOutlineCaretDown } from 'react-icons/ai'
 import Link from 'next/link'
-import { privateBaseAxios, governatorApiWithSessionCredentials } from '../constants/axios';
 import { useAtom } from 'jotai';
-import { userAtom } from 'atoms';
+import { finalAtom, loadableSessionAtom } from 'atoms';
 import { useEffect, useRef } from 'react'
 import { useRouter } from 'next/router'
-import { useSession } from 'hooks/useSession'
 import { Session } from 'interfaces';
+
+const LOGIN_PATH = `/proxy/auth/login`;
+const LOGOUT_PATH = `/proxy/auth/logout`;
 
 const LoginText = (params: { url: string }) => {
   return (
@@ -46,11 +47,8 @@ const LoginText = (params: { url: string }) => {
           ml={{
             base: '8px',
           }}
-          // onClick={() => {
-          //   signIn()
-          // }}
         >
-          <a href={params.url}>Login</a>
+          <Link href={params.url}>Login</Link>
         </Text>
       )}
     </HStack>
@@ -62,16 +60,9 @@ const MobileDrawer: React.FC<Session> = (session) => {
   const btnRef = useRef(null);
   const router = useRouter();
 
-  let name = '';
-  let image = '';
-  const loginUrl = `${process.env.NEXT_PUBLIC_GOVERNATOR_API_ENDPOINT}/auth/login`;
-  const logoutUrl = `${process.env.NEXT_PUBLIC_GOVERNATOR_API_ENDPOINT}/auth/logout`;
+  const name = session.oauthProfile.discord_username;
+  const image = session.oauthProfile.avatar;
 
-  if (session && session.status === 200) {
-    name = session ? session.oauthProfile.discord_username : ''
-    image = session ? session.oauthProfile.avatar : ''
-  }
-   
   useEffect(() => {
     router.events.on('beforeHistoryChange', onClose)
 
@@ -80,10 +71,7 @@ const MobileDrawer: React.FC<Session> = (session) => {
     }
   }, [])
 
-
   return (
-    <>
-      {session && session.status === 200 ? (
         <>
           <Button ref={btnRef} colorScheme='transparent' onClick={onOpen}>
             <HamburgerIcon boxSize={'5'} />
@@ -186,21 +174,18 @@ const MobileDrawer: React.FC<Session> = (session) => {
                   //   signOut()
                   // }}
                 >
-                  <a href={logoutUrl}>Logout</a>
+                  <Link href={LOGOUT_PATH} prefetch={false}>Logout</Link>
                 </Text>
               </DrawerFooter>
             </DrawerContent>
           </Drawer>
         </>
-      ) : (<LoginText url={loginUrl}/>)}
-    </>
   )
 }
 
 const UserAvatar: React.FC<Session> = (session) => {
-  const name = session?.oauthProfile.discord_username
-  const image = session?.oauthProfile.avatar
-  const logoutUrl = `${process.env.NEXT_PUBLIC_GOVERNATOR_API_ENDPOINT}/auth/logout`;
+  const name = session.oauthProfile.discord_username;
+  const image = session.oauthProfile.avatar;
 
   return (
     <Menu>
@@ -260,11 +245,8 @@ const UserAvatar: React.FC<Session> = (session) => {
           </MenuItem>
           <MenuItem
             justifyContent={'stretch'}
-            // onClick={() => {
-            //   signOut()
-            // }}
           >
-            <a href={logoutUrl}>Logout</a>
+            <Link href={LOGOUT_PATH}>Logout</Link>
           </MenuItem>
         </MenuGroup>
       </MenuList>
@@ -273,47 +255,26 @@ const UserAvatar: React.FC<Session> = (session) => {
 }
 
 const NavBar = () => {
-  const session = useSession()
-  const [user, setUser] = useAtom(userAtom);
+  const [session] = useAtom(finalAtom)
 
   useEffect(() => {
 
     async function checkAndCreateUser() {
-      const discordId = session?.oauthProfile._id;
+
+      if(session.state !== 'hasData') return;
+
+      const discordId = session.data.data.oauthProfile._id;
+
       if (!discordId) {
         return
       }
 
-      /* Check if user already exists in database */
-      const dicordUserRes = await privateBaseAxios.get(`account/discord/get-by-account-id/${discordId}`)
-      const discordUser = dicordUserRes.data
-
-      /* Create user if does not already exist */
-      if (discordUser) {
-        setUser({
-          ...user,
-          userId: discordUser.user_id
-        });
-        return
-      }
-
-      const data = {
-        _id: discordId,
-        discord_username: session?.oauthProfile.discord_username,
-      }
-      const userXhr = await privateBaseAxios.post('/account/discord/create', data);
-      const newUser = userXhr.data;
-      setUser({
-        ...user,
-        userId: newUser.user_id
-      });
     }
+
     checkAndCreateUser().then(() => null);
 
     //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session])
-
-  const loginUrl = `${process.env.NEXT_PUBLIC_GOVERNATOR_API_ENDPOINT}/auth/login`;
 
   return (
     <Flex bg='gray.700' h='60px'>
@@ -333,7 +294,7 @@ const NavBar = () => {
             base: 'none',
             md: 'block',
           }}>
-            {session && session.status === 200 ? (
+            {session.state === 'hasData' ? (
               <HStack color='gray.200' spacing='2rem'>
                 <Link href='/dashboard'>
                   <a>
@@ -342,7 +303,7 @@ const NavBar = () => {
                     </Text>
                   </a>
                 </Link>
-                <UserAvatar {...session} />
+                <UserAvatar {...(session.data.data as Session)} />
                 <a
                   target='_blank'
                   rel='noreferrer'
@@ -355,14 +316,14 @@ const NavBar = () => {
                 </a>
               </HStack>
             ) : (
-              <LoginText url={loginUrl}/>
+              <LoginText url={LOGIN_PATH}/>
             )}
           </Box>
           <Box display={{
             base: 'block',
             md: 'none'
           }}>
-            <MobileDrawer {...session} />
+            {session.state === 'hasData' ? (<MobileDrawer {...(session.data.data as Session)} />) : (<LoginText url={LOGIN_PATH}/>) }
           </Box>
         </Flex>
       </Container>
