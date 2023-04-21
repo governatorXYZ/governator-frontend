@@ -16,12 +16,9 @@ interface Props {
 }
 
 const RouteGuard: React.FC<Props> = ({ children }) => {
-  // const session = useSession()
+
   const router = useRouter()
-
   const [session] = useAtom(writableLoadableAtom)
-
-  // const [sesh, updateSesh] = useAtom(refreshAtom);
 
   const url = '/'
 
@@ -30,42 +27,12 @@ const RouteGuard: React.FC<Props> = ({ children }) => {
   const isAllowed = allowedPages.includes(router.route)
 
   useEffect(() => {
-    console.log(session.state)
-    console.log(session)
-
-    // console.log(sesh)
-
-    // updateSesh()
-
 
     if (session.state === 'hasError' || (session.state === 'hasData' && !session.data) || (session.state === 'hasData' && _.isEmpty(session.data))) {
       router.push(url);
     }
-    // if ((!session || session.status === 401) && !isAllowed) {
-    //   console.log('guard')
-    //   if (isFirstRun.current) {
-    //     isFirstRun.current = false;
-    //     return;
-    //   } else {
-    //     router.push('/')
-    //   }
-    // }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[session])
 
-  // console.log(session.state)
-
-  // if (value.state === 'loading') {
-  //   return (
-  //     <StyledGrid
-  //         placeItems='center'
-  //         h='calc(100vh - 60px)'
-  //         bg='gray.700'
-  //         color='gray.200'>
-  //       <Spinner />
-  //     </StyledGrid>
-  // )
-  // }
+  },[session, router])
 
   if (router.asPath.split('?')[0] === '/' || isAllowed || session.state === 'hasData') {
     return <>{children}</>

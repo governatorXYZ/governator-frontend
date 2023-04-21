@@ -16,7 +16,7 @@ import {
 } from '@chakra-ui/react'
 
 /* Modules */
-import { privateBaseAxios, privateBaseFetcher } from '../constants/axios';
+import { privateBaseFetcher } from '../constants/axios';
 import Siwe from '../modules/siwe';
 
 /* UI Components */
@@ -26,7 +26,7 @@ import DataTable from 'components/Datatable';
 /* Types */
 import { Address, Session } from '../interfaces';
 
-import { Account } from '@web3-onboard/core/dist/types';
+// import { Account } from '@web3-onboard/core/dist/types';
 import { useConnectWallet } from '@web3-onboard/react';
 import Head from 'next/head';
 import { writableLoadableAtom } from 'atoms';

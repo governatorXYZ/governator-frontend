@@ -168,12 +168,8 @@ const MobileDrawer: React.FC<Session> = (session) => {
                     colorScheme='purple'
                   >Feedback</Button>
                 </chakra.a>
-                <Text
-                  // onClick={() => {
-                  //   signOut()
-                  // }}
-                >
-                  <Link href={LOGOUT_PATH} prefetch={false}>Logout</Link>
+                <Text>
+                  <Link href={LOGOUT_PATH} passHref prefetch={false}>Logout</Link>
                 </Text>
               </DrawerFooter>
             </DrawerContent>
@@ -303,8 +299,6 @@ const NavBar = () => {
                 </Link>
                 <UserAvatar {...session.data} />
                 <Link
-                  target='_blank'
-                  rel='noreferrer'
                   href='https://forms.gle/yWiYsAmy243rNUvm9'
                   passHref
                 >

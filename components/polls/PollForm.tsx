@@ -31,7 +31,7 @@ import useStrategies from 'hooks/useStrategies'
 import PollOption from './PollOption'
 import {useAtom} from "jotai";
 import {writableLoadableAtom} from "../../atoms";
-import {BlockHeight} from '../../interfaces';
+import {BlockHeight, Session} from '../../interfaces';
 
 const STANDARD_STRATEGY_NAME = 'Standard (1 Vote = 1 Vote)';
 
@@ -84,6 +84,8 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
   const [isTokenVote, setIsTokenVote] = useState(false);
   const [isSingleVoteChecked, setIsSingleVoteChecked] = useState(true);
   const [session] = useAtom(writableLoadableAtom);
+
+  const authorId = (session.state === 'hasData' && session.data) ? (session.data as Session).governatorId : '';
 
   const defaultStratId = (strategies.find((strat: {label: string, value: string}) => strat.label === STANDARD_STRATEGY_NAME ))?.value
 
@@ -480,6 +482,16 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
           </FormControl>
 
 
+          <FormControl>
+          <Input
+            id='author_user_id'
+            type='hidden'
+            {...register('author_user_id')}
+            {...(!getValues('author_user_id')) ? setValue('author_user_id', authorId) : {}}
+          />
+          </FormControl>
+
+
           {/* ██████╗ ██╗███████╗████████╗██████╗ ██╗██████╗ ██╗   ██╗████████╗██╗ ██████╗ ███╗   ██╗    ███████╗███████╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗
           {/* ██╔══██╗██║██╔════╝╚══██╔══╝██╔══██╗██║██╔══██╗██║   ██║╚══██╔══╝██║██╔═══██╗████╗  ██║    ██╔════╝██╔════╝██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║
           {/* ██║  ██║██║███████╗   ██║   ██████╔╝██║██████╔╝██║   ██║   ██║   ██║██║   ██║██╔██╗ ██║    ███████╗█████╗  ██║        ██║   ██║██║   ██║██╔██╗ ██║
@@ -518,12 +530,6 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             <FormErrorMessage>{errors.channel_id?.message}</FormErrorMessage>
           </FormControl>
 
-          <input
-            id='author_user_id'
-            type='hidden'
-            {...register('author_user_id')}
-            {...setValue('author_user_id', session.state === 'hasData' ? session.data.governatorId : '')}
-          />
           <Flex mt='4rem'>
             <Button
               type='submit'
