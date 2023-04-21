@@ -37,7 +37,7 @@ const votes = [
 ]
 
 const Quote: React.FC = () => {
-  const [sentence, setSentence] = useState(sample(votes))
+  const [sentence, setSentence] = useState(votes[0])
 
   const tick = () => {
     setSentence(sample(votes) as string)

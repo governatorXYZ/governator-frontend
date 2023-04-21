@@ -125,12 +125,10 @@ const MobileDrawer: React.FC<Session> = (session) => {
                         p='16px 1.5rem'
                         w='100%'
                       >
-                        <Link href='/dashboard'>
-                          <a>
+                        <Link href='/dashboard' passHref>
                             <Text as='span'>
                               Dashboard
                             </Text>
-                          </a>
                         </Link>
                       </Box>
                       <Box
@@ -223,13 +221,14 @@ const UserAvatar: React.FC<Session> = (session) => {
               href='/account'
               passHref
             >
-              <ChakraLink
+              {/* <ChakraLink
                 display={'block'}
                 w='100%'
                 _hover={{
                   textDecoration: 'none',
                 }}
-              >My Account</ChakraLink>
+              >My Account</ChakraLink> */}
+              My Account
             </Link>
           </MenuItem>
           <MenuItem>
@@ -296,24 +295,23 @@ const NavBar = () => {
           }}>
             {session.state === 'hasData' ? (
               <HStack color='gray.200' spacing='2rem'>
-                <Link href='/dashboard'>
-                  <a>
+                <Link href='/dashboard' passHref>
                     <Text as='span' fontSize='15px' fontWeight='500'>
                       Dashboard
                     </Text>
-                  </a>
                 </Link>
                 <UserAvatar {...(session.data as Session)} />
-                <a
+                <Link
                   target='_blank'
                   rel='noreferrer'
                   href='https://forms.gle/yWiYsAmy243rNUvm9'
+                  passHref
                 >
                   <Button
                     colorScheme='purple'
                   > Feedback
                   </Button>
-                </a>
+                </Link>
               </HStack>
             ) : (
               <LoginText url={LOGIN_PATH}/>
