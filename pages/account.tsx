@@ -29,7 +29,7 @@ import { Address, Session } from '../interfaces';
 import { Account } from '@web3-onboard/core/dist/types';
 import { useConnectWallet } from '@web3-onboard/react';
 import Head from 'next/head';
-import { loadableSessionAtom } from 'atoms';
+import { writableLoadableAtom } from 'atoms';
 
 const columns = [
   {
@@ -60,7 +60,7 @@ type AddressesData = {
 const Account: NextPage = () => {
   // const [user, setUser] = useAtom(userAtom);
   const [verified, setVerified] = useState(false);
-  const [session] = useAtom(loadableSessionAtom)
+  const [session] = useAtom(writableLoadableAtom)
 
   const toast = useToast();
 

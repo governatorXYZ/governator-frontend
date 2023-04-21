@@ -29,10 +29,11 @@ import { HamburgerIcon } from '@chakra-ui/icons'
 import { AiOutlineCaretDown } from 'react-icons/ai'
 import Link from 'next/link'
 import { useAtom } from 'jotai';
-import { loadableSessionAtom } from 'atoms';
+import { writableLoadableAtom } from 'atoms';
 import { useEffect, useRef } from 'react'
 import { useRouter } from 'next/router'
 import { Session } from 'interfaces';
+import _ from 'lodash'
 
 const LOGIN_PATH = `/proxy/auth/login`;
 const LOGOUT_PATH = `/proxy/auth/logout`;
@@ -60,8 +61,8 @@ const MobileDrawer: React.FC<Session> = (session) => {
   const btnRef = useRef(null);
   const router = useRouter();
 
-  const name = session.oauthProfile.discord_username;
-  const image = session.oauthProfile.avatar;
+  const name = session ? session.oauthProfile.discord_username : '';
+  const image = session ? session.oauthProfile.avatar : '';
 
   useEffect(() => {
     router.events.on('beforeHistoryChange', onClose)
@@ -182,8 +183,8 @@ const MobileDrawer: React.FC<Session> = (session) => {
 }
 
 const UserAvatar: React.FC<Session> = (session) => {
-  const name = session.oauthProfile.discord_username;
-  const image = session.oauthProfile.avatar;
+  const name = session ? session.oauthProfile.discord_username : '';
+  const image = session ? session.oauthProfile.avatar : '';
 
   return (
     <Menu>
@@ -254,26 +255,26 @@ const UserAvatar: React.FC<Session> = (session) => {
 }
 
 const NavBar = () => {
-  const [session] = useAtom(loadableSessionAtom)
+  const [session] = useAtom(writableLoadableAtom)
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    async function checkAndCreateUser() {
+  //   async function checkAndCreateUser() {
 
-      if(session.state !== 'hasData') return;
+  //     if(session.state !== 'hasData' || !session.data || _.isEmpty(session.data)) return;
 
-      const discordId = session.data.oauthProfile._id;
+  //     const discordId = session.data.oauthProfile._id;
 
-      if (!discordId) {
-        return
-      }
+  //     if (!discordId) {
+  //       return
+  //     }
 
-    }
+  //   }
 
-    checkAndCreateUser().then(() => null);
+  //   checkAndCreateUser().then(() => null);
 
-    //eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session])
+  //   //eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [session])
 
   return (
     <Flex bg='gray.700' h='60px'>
@@ -293,14 +294,14 @@ const NavBar = () => {
             base: 'none',
             md: 'block',
           }}>
-            {session.state === 'hasData' ? (
+            {(session.state === 'hasData' && session.data && !_.isEmpty(session.data)) ? (
               <HStack color='gray.200' spacing='2rem'>
                 <Link href='/dashboard' passHref>
                     <Text as='span' fontSize='15px' fontWeight='500'>
                       Dashboard
                     </Text>
                 </Link>
-                <UserAvatar {...(session.data as Session)} />
+                <UserAvatar {...session.data} />
                 <Link
                   target='_blank'
                   rel='noreferrer'
@@ -321,7 +322,7 @@ const NavBar = () => {
             base: 'block',
             md: 'none'
           }}>
-            {session.state === 'hasData' ? (<MobileDrawer {...(session.data as Session)} />) : (<LoginText url={LOGIN_PATH}/>) }
+            {(session.state === 'hasData' && session.data && !_.isEmpty(session.data)) ? (<MobileDrawer {...session.data} />) : (<LoginText url={LOGIN_PATH}/>) }
           </Box>
         </Flex>
       </Container>

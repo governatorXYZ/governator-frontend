@@ -30,7 +30,7 @@ import useServer from 'hooks/useServer'
 import useStrategies from 'hooks/useStrategies'
 import PollOption from './PollOption'
 import {useAtom} from "jotai";
-import {loadableSessionAtom, userAtom} from "../../atoms";
+import {writableLoadableAtom} from "../../atoms";
 import {BlockHeight} from '../../interfaces';
 
 const STANDARD_STRATEGY_NAME = 'Standard (1 Vote = 1 Vote)';
@@ -83,7 +83,7 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
   const { strategies } = useStrategies();
   const [isTokenVote, setIsTokenVote] = useState(false);
   const [isSingleVoteChecked, setIsSingleVoteChecked] = useState(true);
-  const [session] = useAtom(loadableSessionAtom);
+  const [session] = useAtom(writableLoadableAtom);
 
   const defaultStratId = (strategies.find((strat: {label: string, value: string}) => strat.label === STANDARD_STRATEGY_NAME ))?.value
 

@@ -2,8 +2,7 @@ import { governatorApiWithSessionCredentials } from 'constants/axios';
 import { ethers }  from 'ethers';
 import { Session } from 'interfaces';
 import { atom, Getter } from 'jotai'
-import { loadable } from "jotai/utils"
-import { getRouteRegex } from 'next/dist/shared/lib/router/utils';
+import { atomWithDefault, loadable } from "jotai/utils"
 
 
 export const serversAtom = atom<{ icon: string; name: string; id: string }[]>(
@@ -35,7 +34,7 @@ export const strategiesAtom = atom<{ value: string; label: string, strategy_type
 
 const fetchFunc = async () => await (await governatorApiWithSessionCredentials.get(`/auth/session`).catch()).data
 
-const asyncAtom = atom<Promise<Session>>(fetchFunc)
+// const asyncAtom = atom<Promise<Session>>(fetchFunc)
 
 function atomWithRefresh<T>(fn: (get: Getter) => T) {
   const refreshCounter = atom(0)
@@ -71,7 +70,6 @@ export const refreshAtom = atomWithRefresh((get) =>
 //     }
 // )
 
-export const loadableSessionAtom = loadable(asyncAtom)
 
 // export const finalAtom = atom(
 //   (get) => get(loadableSessionAtom),
@@ -80,5 +78,21 @@ export const loadableSessionAtom = loadable(asyncAtom)
 //       set(asyncWriteAtom, fetchFunc)
 //   }
 // )
+
+const asyncAtom = atomWithDefault<Promise<any>>(
+  async (get) => await fetchFunc()
+)
+
+export const loadableSessionAtom = loadable(asyncAtom)
+
+
+export const writableLoadableAtom = atom(
+  (get) => get(loadableSessionAtom),
+  async (_get, set, arg) => {
+      console.log('setting Session Atom')
+      const response = await fetchFunc().catch((error) => {error: error})
+      set(asyncAtom, response)
+  }
+)
 
 export const providerAtom = atom<ethers.providers.Web3Provider>(null as unknown as ethers.providers.Web3Provider)

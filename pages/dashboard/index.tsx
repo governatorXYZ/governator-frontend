@@ -4,17 +4,17 @@ import useServers from 'hooks/useServers'
 import Head from 'next/head'
 
 import Link from 'next/link'
-// import { useEffect } from 'react'
-// import { loadableSessionAtom } from 'atoms'
-// import { useAtom } from 'jotai'
+import { useEffect } from 'react'
+import { writableLoadableAtom } from 'atoms'
+import { useAtom } from 'jotai'
 
 const ServerSelect: NextPage = () => {
   const { servers, loading } = useServers()
-  // const [session, refreshSession] = useAtom(loadableSessionAtom)
-  // useEffect(() => {
-  //   refreshSession();
-  //   // console.log(session)
-  // },[])
+  const [session, refreshSession] = useAtom(writableLoadableAtom)
+  useEffect(() => {
+    refreshSession(0);
+    console.log(session)
+  },[])
 
   return (
     <Flex

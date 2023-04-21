@@ -1,10 +1,11 @@
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 // import { useSession } from 'hooks/useSession'
 import { Grid, Spinner } from '@chakra-ui/react'
 import styled from '@emotion/styled'
 import { useAtom } from 'jotai'
-import { loadableSessionAtom, refreshAtom } from 'atoms'
+import { writableLoadableAtom } from 'atoms'
+import _ from 'lodash'
 
 const StyledGrid = styled(Grid)`
   background-color: #29303a;
@@ -18,7 +19,7 @@ const RouteGuard: React.FC<Props> = ({ children }) => {
   // const session = useSession()
   const router = useRouter()
 
-  const [session] = useAtom(loadableSessionAtom)
+  const [session] = useAtom(writableLoadableAtom)
 
   // const [sesh, updateSesh] = useAtom(refreshAtom);
 
@@ -30,13 +31,14 @@ const RouteGuard: React.FC<Props> = ({ children }) => {
 
   useEffect(() => {
     console.log(session.state)
+    console.log(session)
 
     // console.log(sesh)
 
     // updateSesh()
 
 
-    if (session.state === 'hasError') {
+    if (session.state === 'hasError' || (session.state === 'hasData' && !session.data) || (session.state === 'hasData' && _.isEmpty(session.data))) {
       router.push(url);
     }
     // if ((!session || session.status === 401) && !isAllowed) {

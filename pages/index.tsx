@@ -26,7 +26,7 @@ import { sample } from 'lodash'
 // import { useSession } from 'hooks/useSession'
 import { useRouter } from 'next/router'
 import { Footer, StyledBox } from 'components/common'
-import { loadableSessionAtom } from 'atoms'
+import { writableLoadableAtom } from 'atoms'
 import { useAtom } from 'jotai'
 
 const votes = [
@@ -54,7 +54,7 @@ const Quote: React.FC = () => {
 }
 
 const HeroButton = () => {
-  const [session] = useAtom(loadableSessionAtom)
+  const [session] = useAtom(writableLoadableAtom)
   const router = useRouter()
 
   return session.state === 'hasData' ? (

@@ -1,6 +1,6 @@
 import { privateBaseFetcher } from 'constants/axios'
 import { useAtom } from 'jotai'
-import { channelsAtom, loadableSessionAtom, rolesAtom } from 'atoms'
+import { channelsAtom, writableLoadableAtom, rolesAtom } from 'atoms'
 import { useState, useCallback, useEffect } from 'react'
 // import { useSession } from 'hooks/useSession'
 import useServers from './useServers'
@@ -11,7 +11,7 @@ const useServer = () => {
   const [loading, setLoading] = useState(false)
   const [channels, setChannels] = useAtom(channelsAtom)
   const [roles, setRoles] = useAtom(rolesAtom)
-  const [session] = useAtom(loadableSessionAtom)
+  const [session] = useAtom(writableLoadableAtom)
 
   const { currentServer } = useServers()
 
