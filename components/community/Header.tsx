@@ -13,9 +13,14 @@ interface HeaderProps {
     image?: string | null;
   };
   onSignOut?: () => void;
+  onClick?: () => void;
 }
 
-const Header = ({ user, onSignOut }: HeaderProps) => {
+const Header = ({
+  user,
+  onSignOut,
+  onClick
+}: HeaderProps) => {
   
   return (
     <Flex
@@ -26,6 +31,17 @@ const Header = ({ user, onSignOut }: HeaderProps) => {
       py='15px'
       h='40px'
     >
+      <Flex>
+        <Button
+          onClick={onClick}
+        >
+          <Image
+            src='/images/log-out-04.svg'
+            alt='log out icon'
+            flexShrink={0}
+          />
+        </Button>
+      </Flex>
       <Flex
         borderRadius='full'
         bg='#303F56'
@@ -42,7 +58,12 @@ const Header = ({ user, onSignOut }: HeaderProps) => {
           borderRadius={'full'}
           mr='6px'
         />
-        <Text>
+        <Text
+          display={{
+            base: 'none',
+            md: 'block',
+          }}
+        >
           {user?.name}
         </Text>
       </Flex>

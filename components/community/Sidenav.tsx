@@ -4,19 +4,19 @@ import {
   Flex,
   Image,
   Button,
-  Heading,
+  Heading
 } from '@chakra-ui/react'
-import { useRouter } from 'next/router'
-import { useCommunities } from 'contexts/CommunitiesContext'
+import { useCommunities } from 'contexts/CommunitiesContext';
 import { IoMdAddCircleOutline } from 'react-icons/io';
+import { useRouter } from 'next/router'
 import Community from './Community'
 
 interface SidenavProps {
-  children?: JSX.Element
+  children?: JSX.Element;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const Sidenav = ({ children }: SidenavProps) => {
+const Sidenav = ({ children, ...styles }: SidenavProps) => {
   const { communities } = useCommunities();
 
   const router = useRouter();
@@ -39,7 +39,10 @@ const Sidenav = ({ children }: SidenavProps) => {
       flexShrink={0}
       bg='#2A303A'
       color='#fff'
-      w='277px'
+      w={{
+        base: '96px',
+        md: '277px'
+      }}
       px='25px'
       py='20px'
     >
