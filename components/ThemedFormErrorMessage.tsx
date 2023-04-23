@@ -5,7 +5,6 @@ const ThemedFormErrorMessage: React.FC<TextProps> = ({
   ...props
 }) => (
   <Text
-    as='span'
     fontWeight='500'
     fontSize='12px'
     color='red.400'
