@@ -84,7 +84,7 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
   const { strategies } = useStrategies();
   const [isTokenVote, setIsTokenVote] = useState(false);
   const [isSingleVoteChecked, setIsSingleVoteChecked] = useState(true);
-  const [loadable] = useAtom(writableLoadableAtom);
+  const [loadable, refreshLoadable] = useAtom(writableLoadableAtom);
 
   const authorId = utils.isAuthenticated(loadable) ? (loadable as LoadableWithData).data.governatorId : '';
 
@@ -197,8 +197,6 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
         author_user_id: data.author_user_id
       }
 
-      // console.log({ submittedData })
-
       const res = await privateBaseAxios.post('/poll/create', submittedData)
 
       if (res.data) {
@@ -208,6 +206,7 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
           description: 'The poll has been created successfully.',
         })
       }
+
     } catch (err) {
       //eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore

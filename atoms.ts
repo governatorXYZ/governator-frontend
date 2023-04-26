@@ -21,7 +21,6 @@ export const loadableSessionAtom = loadable(asyncAtom)
 export const writableLoadableAtom = atom(
   (get) => get(loadableSessionAtom),
   async (_get, set) => {
-      console.log('setting Session Atom')
       const response = await fetchFunc().catch((error) => {error: error})
       set(asyncAtom, response)
   }
