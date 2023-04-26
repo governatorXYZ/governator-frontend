@@ -12,7 +12,7 @@ export default async function handler(
     const url = typeof(req.query.slug)==='string' ? req.query.slug : req.query.slug.join('/')
 
     // trim trailing slash from FE host.
-    const proxyBase = `${process.env.VERCEL_URL?.replace(/\/$/, '')}/proxy`
+    const proxyBase = `https://${process.env.VERCEL_URL?.replace(/\/$/, '')}/proxy`
 
     const response = await axios({
       method: req.method as 'GET' | 'DELETE' | 'POST',
