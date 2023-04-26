@@ -1,11 +1,12 @@
-import { useEffect } from 'react'
-import { useRouter } from 'next/router'
+import { useEffect, useRef, useState } from 'react'
+import { NextRouter, useRouter } from 'next/router'
 // import { useSession } from 'hooks/useSession'
 import { Grid, Spinner } from '@chakra-ui/react'
 import styled from '@emotion/styled'
 import { useAtom } from 'jotai'
 import { writableLoadableAtom } from 'atoms'
 import _ from 'lodash'
+import utils from '../constants/utils'
 
 const StyledGrid = styled(Grid)`
   background-color: #29303a;
@@ -15,10 +16,23 @@ interface Props {
   children: React.ReactNode;
 }
 
+function usePush(): NextRouter['push'] {
+  const router = useRouter()
+  const routerRef = useRef(router)
+
+  routerRef.current = router
+
+  const [{ push }] = useState<Pick<NextRouter, 'push'>>({
+      push: path => routerRef.current.push(path),
+  })
+  return push
+}
+
 const RouteGuard: React.FC<Props> = ({ children }) => {
 
   const router = useRouter()
   const [session] = useAtom(writableLoadableAtom)
+  const push = usePush();
 
   const url = '/'
 
@@ -26,15 +40,20 @@ const RouteGuard: React.FC<Props> = ({ children }) => {
   const allowedPages = [ '/team', '/privacy', '/400', '/500'];
   const isAllowed = allowedPages.includes(router.route)
 
+
+  // console.log(utils.isAuthenticated(session))
+
   useEffect(() => {
 
-    if (session.state === 'hasError' || (session.state === 'hasData' && !session.data) || (session.state === 'hasData' && _.isEmpty(session.data))) {
-      router.push(url);
+    console.log(utils.isAuthenticated(session))
+
+    if (!utils.isAuthenticated(session)) {
+      push(url);
     }
 
-  },[session, router])
+  },[session, push])
 
-  if (router.asPath.split('?')[0] === '/' || isAllowed || session.state === 'hasData') {
+  if (router.asPath.split('?')[0] === '/' || isAllowed || (session.state === 'hasData' && session.data && !_.isEmpty(session.data))) {
     return <>{children}</>
   }
 
