@@ -128,11 +128,19 @@ const MobileDrawer: React.FC<Session> = (session) => {
                         p='16px 1.5rem'
                         w='100%'
                       >
-                        <Link href='/dashboard' passHref>
-                            <Text as='span'>
-                              Dashboard
-                            </Text>
-                        </Link>
+                        <Text
+                          as='span'
+                          cursor='pointer'
+                          ml={{
+                            base: '8px',
+                          }}
+                        >
+                          <Link href='/dashboard' passHref>
+                                Dashboard
+                          </Link>
+
+                        </Text>
+
                       </Box>
                       <Box
                         p='16px 1.5rem'
@@ -275,11 +283,17 @@ const NavBar = () => {
           }}>
             {utils.isAuthenticated(loadable) ? (
               <HStack color='gray.200' spacing='2rem'>
-                <Link href='/dashboard' passHref>
-                    <Text as='span' fontSize='15px' fontWeight='500'>
-                      Dashboard
-                    </Text>
-                </Link>
+                <Text
+                  as='span'
+                  cursor='pointer'
+                  ml={{
+                    base: '8px',
+                  }}
+                >
+                  <Link href='/dashboard' passHref>
+                    Dashboard
+                  </Link>
+                </Text>
                 <UserAvatar {...(loadable as LoadableWithData).data} />
                 <Link
                   href='https://forms.gle/yWiYsAmy243rNUvm9'
