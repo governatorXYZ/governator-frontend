@@ -16,6 +16,7 @@ interface Props {
   children: React.ReactNode;
 }
 
+// custom hook to memoize router.push()
 function usePush(): NextRouter['push'] {
   const router = useRouter()
   const routerRef = useRef(router)
@@ -40,20 +41,15 @@ const RouteGuard: React.FC<Props> = ({ children }) => {
   const allowedPages = [ '/team', '/privacy', '/400', '/500'];
   const isAllowed = allowedPages.includes(router.route)
 
-
-  // console.log(utils.isAuthenticated(session))
-
   useEffect(() => {
 
-    console.log(utils.isAuthenticated(session))
-
-    if (!utils.isAuthenticated(session)) {
+    if (!utils.isAuthenticated(session) && !utils.isLoading(session)) {
       push(url);
     }
 
   },[session, push])
 
-  if (router.asPath.split('?')[0] === '/' || isAllowed || (session.state === 'hasData' && session.data && !_.isEmpty(session.data))) {
+  if (router.asPath.split('?')[0] === '/' || isAllowed || utils.isAuthenticated(session)) {
     return <>{children}</>
   }
 
