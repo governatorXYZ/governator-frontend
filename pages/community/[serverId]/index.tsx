@@ -35,6 +35,11 @@ const Dashboard: NextPage = () => {
   const router = useRouter()
   const { loading, currentServer } = useServers()
   const [loadable] = useAtom(writableLoadableAtom)
+  const [, refreshLoadable] = useAtom(writableLoadableAtom)
+  
+  useEffect(() => {
+    refreshLoadable();
+  },[refreshLoadable])
 
   const { data, error, mutate } = useSWR(utils.isAuthenticated(loadable) ? `/poll/user/${(loadable as LoadableWithData).data.governatorId}` : null, privateBaseFetcher);
   let pollsData = data?.data ? (data?.data as Poll[]) : []

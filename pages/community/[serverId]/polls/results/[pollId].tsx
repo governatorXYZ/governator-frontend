@@ -8,10 +8,18 @@ import DisplayPollResults from 'components/polls/DisplayPollResults'
 import {useTotalVotes, useVotesData} from "../../../../../hooks/useVoteData";
 import useServers from 'hooks/useServers'
 import { ChevronRightIcon } from '@chakra-ui/icons'
+import { writableLoadableAtom } from 'atoms'
+import { useAtom } from 'jotai'
+import { useEffect } from 'react'
 
 
 
 const PollResults: NextPage = () => {
+  const [, refreshLoadable] = useAtom(writableLoadableAtom)
+  
+  useEffect(() => {
+    refreshLoadable();
+  },[refreshLoadable])
 
   const usePollData = (): any => {
     const { data, error } = useSWR(`/poll/${router.query.pollId}`, privateBaseFetcher)
