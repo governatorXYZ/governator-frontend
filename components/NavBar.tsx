@@ -32,8 +32,10 @@ import { useAtom } from 'jotai';
 import { writableLoadableAtom } from 'atoms';
 import { useEffect, useRef } from 'react'
 import { useRouter } from 'next/router'
-import { Session } from 'interfaces';
+import { LoadableWithData, Session } from 'interfaces';
 import _ from 'lodash'
+import utils from '../constants/utils'
+
 
 const LOGIN_PATH = `/proxy/auth/login`;
 const LOGOUT_PATH = `/proxy/auth/logout`;
@@ -61,8 +63,8 @@ const MobileDrawer: React.FC<Session> = (session) => {
   const btnRef = useRef(null);
   const router = useRouter();
 
-  const name = session ? session.oauthProfile.discord_username : '';
-  const image = session ? session.oauthProfile.avatar : '';
+  const name = session.oauthProfile.discord_username;
+  const image = session.oauthProfile.avatar;
 
   useEffect(() => {
     router.events.on('beforeHistoryChange', onClose)
@@ -179,8 +181,8 @@ const MobileDrawer: React.FC<Session> = (session) => {
 }
 
 const UserAvatar: React.FC<Session> = (session) => {
-  const name = session ? session.oauthProfile.discord_username : '';
-  const image = session ? session.oauthProfile.avatar : '';
+  const name = session.oauthProfile.discord_username;
+  const image = session.oauthProfile.avatar;
 
   return (
     <Menu>
@@ -242,7 +244,7 @@ const UserAvatar: React.FC<Session> = (session) => {
           <MenuItem
             justifyContent={'stretch'}
           >
-            <Link href={LOGOUT_PATH}>Logout</Link>
+            <Link href={LOGOUT_PATH} passHref prefetch={false}>Logout</Link>
           </MenuItem>
         </MenuGroup>
       </MenuList>
@@ -251,26 +253,7 @@ const UserAvatar: React.FC<Session> = (session) => {
 }
 
 const NavBar = () => {
-  const [session] = useAtom(writableLoadableAtom)
-
-  // useEffect(() => {
-
-  //   async function checkAndCreateUser() {
-
-  //     if(session.state !== 'hasData' || !session.data || _.isEmpty(session.data)) return;
-
-  //     const discordId = session.data.oauthProfile._id;
-
-  //     if (!discordId) {
-  //       return
-  //     }
-
-  //   }
-
-  //   checkAndCreateUser().then(() => null);
-
-  //   //eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [session])
+  const [loadable] = useAtom(writableLoadableAtom)
 
   return (
     <Flex bg='gray.700' h='60px'>
@@ -290,14 +273,14 @@ const NavBar = () => {
             base: 'none',
             md: 'block',
           }}>
-            {(session.state === 'hasData' && session.data && !_.isEmpty(session.data)) ? (
+            {utils.isAuthenticated(loadable) ? (
               <HStack color='gray.200' spacing='2rem'>
                 <Link href='/dashboard' passHref>
                     <Text as='span' fontSize='15px' fontWeight='500'>
                       Dashboard
                     </Text>
                 </Link>
-                <UserAvatar {...session.data} />
+                <UserAvatar {...(loadable as LoadableWithData).data} />
                 <Link
                   href='https://forms.gle/yWiYsAmy243rNUvm9'
                   passHref
@@ -316,7 +299,7 @@ const NavBar = () => {
             base: 'block',
             md: 'none'
           }}>
-            {(session.state === 'hasData' && session.data && !_.isEmpty(session.data)) ? (<MobileDrawer {...session.data} />) : (<LoginText url={LOGIN_PATH}/>) }
+            {utils.isAuthenticated(loadable) ? (<MobileDrawer {...(loadable as LoadableWithData).data} />) : (<LoginText url={LOGIN_PATH}/>) }
           </Box>
         </Flex>
       </Container>

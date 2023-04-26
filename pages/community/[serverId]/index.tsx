@@ -24,20 +24,19 @@ import * as luxon from 'luxon'
 import DeletePoll from 'components/polls/DeletePoll'
 import useSWR from 'swr'
 import { privateBaseFetcher } from 'constants/axios'
-import { Poll, RenderedPoll } from 'interfaces'
+import { LoadableWithData, Poll, RenderedPoll } from 'interfaces'
 import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import { writableLoadableAtom } from 'atoms'
 import { useAtom } from 'jotai'
-import _ from 'lodash'
+import utils from '../../../constants/utils'
 
 const Dashboard: NextPage = () => {
   const router = useRouter()
   const { loading, currentServer } = useServers()
-  const [session] = useAtom(writableLoadableAtom)
-  // const governatorUserId = useSession()?.governatorId
+  const [loadable] = useAtom(writableLoadableAtom)
 
-  const { data, error, mutate } = useSWR((session.state === 'hasData' && session.data && !_.isEmpty(session.data)) ? `/poll/user/${session.data.governatorId}` : null, privateBaseFetcher);
+  const { data, error, mutate } = useSWR(utils.isAuthenticated(loadable) ? `/poll/user/${(loadable as LoadableWithData).data.governatorId}` : null, privateBaseFetcher);
   let pollsData = data?.data ? (data?.data as Poll[]) : []
 
   const filteredPollsData: Poll[] = [];

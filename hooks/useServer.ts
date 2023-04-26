@@ -2,16 +2,16 @@ import { privateBaseFetcher } from 'constants/axios'
 import { useAtom } from 'jotai'
 import { channelsAtom, writableLoadableAtom, rolesAtom } from 'atoms'
 import { useState, useCallback, useEffect } from 'react'
-// import { useSession } from 'hooks/useSession'
 import useServers from './useServers'
-import { Session } from 'interfaces'
+import { LoadableWithData } from 'interfaces'
+import utils from '../constants/utils'
 
 
 const useServer = () => {
   const [loading, setLoading] = useState(false)
   const [channels, setChannels] = useAtom(channelsAtom)
   const [roles, setRoles] = useAtom(rolesAtom)
-  const [session] = useAtom(writableLoadableAtom)
+  const [loadable] = useAtom(writableLoadableAtom)
 
   const { currentServer } = useServers()
 
@@ -21,10 +21,10 @@ const useServer = () => {
       try {
         setLoading(true)
 
-        if(session.state !== 'hasData') return;
+        if(!utils.isAuthenticated(loadable)) return;
 
         const channelsResponse = await privateBaseFetcher(
-          `/client/discord/${currentServer.id}/channels/${(session.data as Session).oauthProfile._id}`
+          `/client/discord/${currentServer.id}/channels/${(loadable as LoadableWithData).data.oauthProfile._id}`
         )
 
         const sortedChannels = (
@@ -41,7 +41,7 @@ const useServer = () => {
         setChannels(sortedChannels)
 
         const rolesResponse = await privateBaseFetcher(
-          `/client/discord/${currentServer.id}/roles/${(session.data as Session).oauthProfile._id}`
+          `/client/discord/${currentServer.id}/roles/${(loadable as LoadableWithData).data.oauthProfile._id}`
         )
 
         const sortedRoles = (

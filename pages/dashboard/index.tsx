@@ -2,7 +2,6 @@ import type { NextPage } from 'next'
 import { Box, VStack, Image, Flex, Text, Grid, Spinner } from '@chakra-ui/react'
 import useServers from 'hooks/useServers'
 import Head from 'next/head'
-
 import Link from 'next/link'
 import { useEffect } from 'react'
 import { writableLoadableAtom } from 'atoms'
@@ -10,11 +9,10 @@ import { useAtom } from 'jotai'
 
 const ServerSelect: NextPage = () => {
   const { servers, loading } = useServers()
-  const [session, refreshSession] = useAtom(writableLoadableAtom)
+  const [, refreshLoadable] = useAtom(writableLoadableAtom)
   useEffect(() => {
-    refreshSession(0);
-    console.log(session)
-  },[])
+    refreshLoadable();
+  },[refreshLoadable])
 
   return (
     <Flex

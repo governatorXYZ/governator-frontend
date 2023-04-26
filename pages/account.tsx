@@ -1,9 +1,7 @@
 import type { NextPage } from 'next';
-// import { useSession } from 'hooks/useSession'
 import moment from 'moment';
 import useSWR from 'swr';
 import { useAtom } from 'jotai';
-// import { userAtom } from 'atoms';
 import { useEffect, useState } from 'react';
 
 import {
@@ -24,12 +22,13 @@ import CustomButton from '../components/common/Button';
 import DataTable from 'components/Datatable';
 
 /* Types */
-import { Address, Session } from '../interfaces';
+import { Address, LoadableWithData, Session } from '../interfaces';
 
 // import { Account } from '@web3-onboard/core/dist/types';
 import { useConnectWallet } from '@web3-onboard/react';
 import Head from 'next/head';
 import { writableLoadableAtom } from 'atoms';
+import utils from '../constants/utils'
 
 const columns = [
   {
@@ -58,9 +57,8 @@ type AddressesData = {
 }
 
 const Account: NextPage = () => {
-  // const [user, setUser] = useAtom(userAtom);
   const [verified, setVerified] = useState(false);
-  const [session] = useAtom(writableLoadableAtom)
+  const [loadable] = useAtom(writableLoadableAtom)
 
   const toast = useToast();
 
@@ -91,7 +89,7 @@ const Account: NextPage = () => {
 
   async function connectWallet() {
 
-    if(session.state !== 'hasData') return;
+    if(!utils.isAuthenticated(loadable)) return;
     try {
       const wallets = await connect();
       if (!wallets) return;
@@ -104,7 +102,7 @@ const Account: NextPage = () => {
 
       // no address in db, so add it.
       if (!matchingAddress) {
-        await Siwe.createWalletAccount(address, (session.data as Session).governatorId);
+        await Siwe.createWalletAccount(address, (loadable as LoadableWithData).data.governatorId);
         await mutate?.();
       } else {
         // Check if it is verified.
@@ -114,7 +112,7 @@ const Account: NextPage = () => {
 
         // if not, verify it.
         if (!hasBeenVerified) {
-          await Siwe.signInWithEthereum((session.data as Session).oauthProfile._id, provider, address);
+          await Siwe.signInWithEthereum((loadable as LoadableWithData).data.oauthProfile._id, provider, address);
           await mutate?.();
         }
       }
@@ -137,8 +135,7 @@ const Account: NextPage = () => {
 
   const signInWithEthereum = async (): Promise<void> => {
 
-    if(session.state !== 'hasData') return;
-
+    if(!utils.isAuthenticated(loadable)) return;
     try {
       if (!wallet) return;
       const { accounts, provider } = wallet;
@@ -147,14 +144,14 @@ const Account: NextPage = () => {
   
       // no address in db, so add it.
       if (!matchingAddress && wallet?.accounts[0].address) {
-        await Siwe.createWalletAccount(account.address, (session.data as Session).governatorId);
+        await Siwe.createWalletAccount(account.address, (loadable as LoadableWithData).data.governatorId);
         // if it's a new wallet, then it's not verified. So set it to false.
         setVerified(false);
         // mutate the data.
         await mutate?.();
       }
   
-      const { verified } = await Siwe.signInWithEthereum((session.data as Session).oauthProfile._id, provider, account.address);
+      const { verified } = await Siwe.signInWithEthereum((loadable as LoadableWithData).data.oauthProfile._id, provider, account.address);
       await mutate?.();
       
       setVerified(verified);
@@ -168,27 +165,6 @@ const Account: NextPage = () => {
       });
     }
   }
-
-
-  // useEffect(() => {
-  //   const fetchUser = async () => {
-  //     if (user.userId === '') await setUser({ userId: (await privateBaseAxios.get(`/user/discord/${session?.oauthProfile._id}`)).data._id });
-  //   }
-  //   fetchUser()
-  //     .then(() => null)
-  //     .catch((e) => toast({
-  //         title: 'Error',
-  //         description: (e as Error).message,
-  //         status: 'error',
-  //         duration: 5000,
-  //         isClosable: true,
-  //       }
-  //     ))
-  // },
-
-  //   //eslint-disable-next-line react-hooks/exhaustive-deps
-  //   [session?.oauthProfile._id]
-  // )
 
   const removeWallet = async (walletAddress: string): Promise<void> => {
     try {
@@ -211,7 +187,7 @@ const Account: NextPage = () => {
 
   const useAddressesData = (): any => {
     // user ? ['/api/orders', user] : null, fetchWithUser
-    const { data, error, mutate } = useSWR((session.state === 'hasData') ? `/account/ethereum/get-by-user-id/${(session.data as Session).governatorId}` : null, privateBaseFetcher);
+    const { data, error, mutate } = useSWR(utils.isAuthenticated(loadable) ? `/account/ethereum/get-by-user-id/${(loadable as LoadableWithData).data.governatorId}` : null, privateBaseFetcher);
     const rawData = data?.data ? (data?.data) as Address[] : [] as Address[]
     const addressesData = rawData
       // Don't show unverified addresses.

@@ -1,11 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { NextRouter, useRouter } from 'next/router'
-// import { useSession } from 'hooks/useSession'
 import { Grid, Spinner } from '@chakra-ui/react'
 import styled from '@emotion/styled'
 import { useAtom } from 'jotai'
 import { writableLoadableAtom } from 'atoms'
-import _ from 'lodash'
 import utils from '../constants/utils'
 
 const StyledGrid = styled(Grid)`
@@ -32,7 +30,7 @@ function usePush(): NextRouter['push'] {
 const RouteGuard: React.FC<Props> = ({ children }) => {
 
   const router = useRouter()
-  const [session] = useAtom(writableLoadableAtom)
+  const [loadable] = useAtom(writableLoadableAtom)
   const push = usePush();
 
   const url = '/'
@@ -43,13 +41,13 @@ const RouteGuard: React.FC<Props> = ({ children }) => {
 
   useEffect(() => {
 
-    if (!utils.isAuthenticated(session) && !utils.isLoading(session)) {
+    if (!utils.isAuthenticated(loadable) && !utils.isLoading(loadable)) {
       push(url);
     }
 
-  },[session, push])
+  },[loadable, push])
 
-  if (router.asPath.split('?')[0] === '/' || isAllowed || utils.isAuthenticated(session)) {
+  if (router.asPath.split('?')[0] === '/' || isAllowed || utils.isAuthenticated(loadable)) {
     return <>{children}</>
   }
 

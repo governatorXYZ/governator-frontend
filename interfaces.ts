@@ -12,6 +12,8 @@ export interface Session {
   oauthProfile: DiscordUser
 }
 
+export interface LoadableWithData { state: "hasData",  data: Session }
+
 export interface Poll {
   _id: string
   createdAt: string
