@@ -63,7 +63,7 @@ const MobileDrawer: React.FC<{ session: Session | null }> = ({ session }) => {
 
   const name = session?.user?.name
   const image = session?.user?.image
-  
+
   useEffect(() => {
     router.events.on('beforeHistoryChange', onClose)
 
@@ -303,57 +303,100 @@ const NavBar = () => {
     //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session?.discordId])
 
+  const goToGitcoin = () => {
+    window.open('https://explorer.gitcoin.co/#/round/1/0x12bb5bbbfe596dbc489d209299b8302c3300fa40/0x12bb5bbbfe596dbc489d209299b8302c3300fa40-71', '_blank')
+  }
+
   return (
-    <Flex bg='gray.700' h='60px'>
-      <Container maxW='container.xl' my='auto'>
-        <Flex justifyContent='space-between' alignItems='center'>
-          <Box>
+    <Flex
+      direction='column'
+      bg='#fff'
+      minH='60px'
+    >
+      <Container
+        maxW='container.xl'
+        my='auto'
+        flexShrink={0}
+
+        bgPosition='10% 0%'
+        bgRepeat='no-repeat'
+        color='#040700'
+      >
+        <Flex
+          align='center'
+          // justify='space-between'
+          justify='center'
+          h='50px'
+        >
+          <Flex align='center'>
             <Text
-              as='span'
-              color='gray.200'
-              fontSize='lg'
-              className='roboto-mono'>
-              <Link href='/'>governator.xyz</Link>
-            </Text>
-          </Box>
-          {/* User Display */}
-          <Box display={{
-            base: 'none',
-            md: 'block',
-          }}>
-            {session ? (
-              <HStack color='gray.200' spacing='2rem'>
-                <Link href='/dashboard'>
-                  <a>
-                    <Text as='span' fontSize='15px' fontWeight='500'>
-                      Dashboard
-                    </Text>
-                  </a>
-                </Link>
-                <UserAvatar session={session} />
-                <a
-                  target='_blank'
-                  rel='noreferrer'
-                  href='https://forms.gle/yWiYsAmy243rNUvm9'
-                >
-                  <Button
-                    colorScheme='purple'
-                  > Feedback
-                  </Button>
-                </a>
-              </HStack>
-            ) : (
-              <LoginText />
-            )}
-          </Box>
-          <Box display={{
-            base: 'block',
-            md: 'none'
-          }}>
-            <MobileDrawer session={session} />
-          </Box>
+              mr={{
+                md: '.5rem',
+              }}
+            >We&apos;re live on Gitcoin!</Text>
+          </Flex>
+          <Button
+            bg='transparent'
+            color='#006d77'
+            onClick={goToGitcoin}
+            p='0'
+            _hover={{
+              bg: 'transparent',
+            }}
+          >Donate Now</Button>
         </Flex>
       </Container>
+      <Box bg='gray.700'>
+        <Container maxW='container.xl' my='auto'>
+          <Flex justifyContent='space-between' alignItems='center' h='60px'>
+            <Box>
+              <Text
+                as='span'
+                color='gray.200'
+                fontSize='lg'
+                className='roboto-mono'>
+                <Link href='/'>governator.xyz</Link>
+              </Text>
+            </Box>
+            {/* User Display */}
+            <Box display={{
+              base: 'none',
+              md: 'block',
+            }}>
+              {session ? (
+                <HStack color='gray.200' spacing='2rem'>
+                  <Link href='/dashboard'>
+                    <a>
+                      <Text as='span' fontSize='15px' fontWeight='500'>
+                        Dashboard
+                      </Text>
+                    </a>
+                  </Link>
+                  <UserAvatar session={session} />
+                  <a
+                    target='_blank'
+                    rel='noreferrer'
+                    href='https://forms.gle/yWiYsAmy243rNUvm9'
+                  >
+                    <Button
+                      colorScheme='purple'
+                    > Feedback
+                    </Button>
+                  </a>
+                </HStack>
+              ) : (
+                <LoginText />
+              )}
+            </Box>
+            <Box display={{
+              base: 'block',
+              md: 'none'
+            }}>
+              <MobileDrawer session={session} />
+            </Box>
+          </Flex>
+        </Container>
+      </Box>
     </Flex>
   )
 }
