@@ -49,13 +49,6 @@ const columns = [
   }
 ]
 
-type AddressesData = {
-  idx: number;
-  _id: string;
-  verifiedDate: string;
-  actions: any;
-}
-
 const Account: NextPage = () => {
   const [user, setUser] = useAtom(userAtom);
   const [verified, setVerified] = useState(false);
@@ -92,6 +85,7 @@ const Account: NextPage = () => {
     try {
       const wallets = await connect();
       if (!wallets) return;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { accounts, label, provider } = wallets[0];
 
       if (!accounts) return;
