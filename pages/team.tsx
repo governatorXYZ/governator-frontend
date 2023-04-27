@@ -1,25 +1,10 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import {
-  GridItem,
-  Heading,
-  Button,
-  Image,
-  Flex,
-  Grid,
-  Box,
-  Container,
-} from '@chakra-ui/react'
-import SVGWall from 'components/SVGWall'
+import { Heading, Flex, Grid, Box, Container } from '@chakra-ui/react'
 import TeamMember from 'components/common/TeamMember'
-import {
-  FaDiscord,
-} from 'react-icons/fa'
-import { FiTwitter } from 'react-icons/fi'
 import styled from '@emotion/styled'
 import team from '../assets/data/team.json'
-import Link from 'next/link'
-import Footer from 'components/common/Footer';
+import Footer from 'components/common/Footer'
 
 const StyledBox = styled(Flex)`
   background-color: #29303a;
@@ -32,33 +17,36 @@ const Team: NextPage = () => {
       <Head>
         <title>Governator.xyz | Team</title>
       </Head>
-      <StyledBox
-        direction='column'
-        justify={'space-between'}
-        color='gray.100'
-      >
-        <Container maxW='4xl' textAlign='center' color='whiteAlpha.800' py='4em'>
+      <StyledBox direction='column' justify={'space-between'} color='gray.100'>
+        <Container
+          maxW='4xl'
+          textAlign='center'
+          color='whiteAlpha.800'
+          py='4em'
+        >
           <Heading>Team</Heading>
           <Grid
             templateColumns={{
               base: '1fr',
               sm: 'repeat(2, minmax(min-content, max-content))',
               md: 'repeat(3, minmax(min-content, max-content))',
-              lg: 'repeat(3, 300px)'
+              lg: 'repeat(3, 300px)',
             }}
             gap={{
               base: '2em',
               md: '3em',
-              lg: '4em'
+              lg: '4em',
             }}
             alignContent={'center'}
             justifyContent={'center'}
             flexGrow={2}
             my='64px'
           >
-            {team.filter((member) => !member.alumni).map((member) => (
-              <TeamMember key={member.name} member={member} />
-            ))}
+            {team
+              .filter(member => !member.alumni)
+              .map(member => (
+                <TeamMember key={member.name} member={member} />
+              ))}
           </Grid>
           <Heading>Alumni</Heading>
           <Grid
@@ -66,27 +54,26 @@ const Team: NextPage = () => {
               base: '1fr',
               sm: 'repeat(2, minmax(min-content, max-content))',
               md: 'repeat(3, minmax(min-content, max-content))',
-              lg: 'repeat(3, 300px)'
+              lg: 'repeat(3, 300px)',
             }}
             gap={{
               base: '2em',
               md: '3em',
-              lg: '4em'
+              lg: '4em',
             }}
             alignContent={'center'}
             justifyContent={'center'}
             flexGrow={2}
             mt='32px'
           >
-            {team.filter((member) => member.alumni).map((member) => (
-              <TeamMember key={member.name} member={member} />
-            ))}
+            {team
+              .filter(member => member.alumni)
+              .map(member => (
+                <TeamMember key={member.name} member={member} />
+              ))}
           </Grid>
         </Container>
-        <Box
-          overflowX={'hidden'}
-          flexShrink='0'
-        >
+        <Box overflowX={'hidden'} flexShrink='0'>
           <Footer />
         </Box>
       </StyledBox>

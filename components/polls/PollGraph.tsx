@@ -5,28 +5,30 @@ import {
   Legend,
   ChartOptions,
   LegendItem,
-  LayoutPosition
+  LayoutPosition,
 } from 'chart.js'
 import { findIndex } from 'lodash'
 import { Pie } from 'react-chartjs-2'
-import {Poll, PollOption} from "../../interfaces";
+import { Poll } from '../../interfaces'
 ChartJS.register(ArcElement, Tooltip, Legend)
 
 type DisplayPollResultsProps = {
-  pollData: Poll,
+  pollData: Poll
   voteData: {
     _id: string
     percent: string
     vote_power: string
-  }[],
+  }[]
 }
 
 interface NewLegendItem extends LegendItem {
   count: number
 }
 
-const PollGraph: React.FC<DisplayPollResultsProps> = ({pollData, voteData =[]}) => {
-
+const PollGraph: React.FC<DisplayPollResultsProps> = ({
+  pollData,
+  voteData = [],
+}) => {
   const vote_ids = voteData?.map(voteOption => voteOption._id) || []
   const labels = vote_ids.map(id => {
     for (const option of pollData.poll_options) {
@@ -34,7 +36,7 @@ const PollGraph: React.FC<DisplayPollResultsProps> = ({pollData, voteData =[]}) 
     }
   })
   const count = voteData?.map(voteOption => parseInt(voteOption.percent)) || []
-  const sum = count?.reduce((acc, cur) => acc += cur, 0.0)
+  const sum = count?.reduce((acc, cur) => (acc += cur), 0.0)
 
   const backgroundColors = [
     'rgba(255, 99, 132)',
@@ -78,7 +80,7 @@ const PollGraph: React.FC<DisplayPollResultsProps> = ({pollData, voteData =[]}) 
       },
       legend: {
         display: true,
-        position: "top" as LayoutPosition,
+        position: 'top' as LayoutPosition,
         labels: {
           color: 'white',
           font: {

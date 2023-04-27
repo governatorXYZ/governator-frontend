@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useMemo } from 'react'
 import { useRouter } from 'next/router'
 import {
   Text,
@@ -25,7 +25,7 @@ const Govcrumb: React.FC<GovcrumbProps> = ({ currentServerName }) => {
   const router = useRouter()
   const guildId = router.asPath.split('/')[2]
 
-  const isServerPage = router.asPath === '/dashboard';
+  const isServerPage = router.asPath === '/dashboard'
 
   function buildCrumbs(path: string): T_crumbs[] {
     const paths = path.split('/')
@@ -63,7 +63,7 @@ const Govcrumb: React.FC<GovcrumbProps> = ({ currentServerName }) => {
     () => buildCrumbs(router.asPath) ?? [],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [router.query, currentServerName]
-  );
+  )
 
   return (
     <Breadcrumb
