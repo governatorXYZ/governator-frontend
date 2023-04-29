@@ -17,6 +17,8 @@ import { init, Web3OnboardProvider } from '@web3-onboard/react';
 import injectedModule from '@web3-onboard/injected-wallets';
 import coinbaseModule from '@web3-onboard/coinbase';
 import walletConnectModule from '@web3-onboard/walletconnect';
+import { SessionExtension } from 'interfaces'
+import { Session } from 'next-auth'
 
 const injected = injectedModule();
 const coinbase = coinbaseModule({ darkMode: true });
@@ -63,9 +65,11 @@ const web3Onboard = init({
   }
 });
 
-function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
+function MyApp({ Component, pageProps }: AppProps<{
+  session: Session;
+}>) {
   return (
-    <SessionProvider session={session}>
+    <SessionProvider session={pageProps.session}>
       <ChakraProvider theme={theme}>
         <Web3OnboardProvider web3Onboard={web3Onboard}>
           <NavBar />

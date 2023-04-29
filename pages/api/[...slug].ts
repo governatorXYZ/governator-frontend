@@ -9,10 +9,14 @@ export default async function handler(
 
   try {
 
-    const url = typeof(req.query.slug)==='string' ? req.query.slug : req.query.slug.join('/')
+    const url = typeof(req.query.slug)==='string' ? req.query.slug : req.query.slug !== undefined ? req.query.slug.join('/') : '/';
+
+    console.log(url)
 
     // trim trailing slash from api endpoint.
     const apiEndPoint = `${process.env.GOVERNATOR_API_ENDPOINT?.replace(/\/$/, '')}`
+
+    console.log(apiEndPoint)
 
     const response = await axios({
       method: req.method as 'GET' | 'DELETE' | 'POST',

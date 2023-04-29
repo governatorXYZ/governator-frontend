@@ -4,6 +4,7 @@ import { serversAtom } from 'atoms'
 import { useState, useCallback, useEffect } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/router'
+import { SessionExtension } from 'interfaces'
 
 /**
  * @important to remove in the future
@@ -25,11 +26,13 @@ const useServers = () => {
   const guildId = router.asPath.length >= 3 ? router.asPath.split('/')[2] : ''
   const currentServer = servers.find(s => s.id === guildId)
 
+  console.log(session)
+
   const getUserGuilds = useCallback(async () => {
 
     const fetchData = async () => {
       try {
-        const data = await discordAxios(session?.accessToken as string).get(
+        const data = await discordAxios((session as SessionExtension).accessToken as string).get(
           '/users/@me/guilds'
         )
         const serversData = data.data.filter( (_guild: { id: string }) => Object.values(MVP_ALLOWED_GUILDS).includes(_guild.id))

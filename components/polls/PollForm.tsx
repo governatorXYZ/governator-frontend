@@ -109,8 +109,8 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
   useEffect(() => {
     if (fields.length === 0) {
       append([
-        { poll_option_name: '' },
-        { poll_option_name: '' }
+        { poll_option_name: '', poll_option_emoji: '', _id: '' },
+        { poll_option_name: '', poll_option_emoji: '', _id: '' }
       ]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -299,7 +299,7 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             {fields.length < 8 && (
               <Button
                 onClick={() => {
-                  append({ poll_option_name: '' })
+                  append({ poll_option_name: '', poll_option_emoji: '', _id: '' })
                 }}
                 variant='outline'
                 size='sm'

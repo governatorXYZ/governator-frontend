@@ -1,4 +1,5 @@
-import NextAuth from 'next-auth'
+import { SessionExtension } from 'interfaces'
+import NextAuth, { Account } from 'next-auth'
 import DiscordProvider from 'next-auth/providers/discord'
 
 export default NextAuth({
@@ -14,23 +15,25 @@ export default NextAuth({
   ],
   callbacks: {
     /* return {token, user, account, profile, isNewUser} */
-    async jwt({token, user, account}) {
-      if (account?.access_token) {
-        token.accessToken = account.access_token
-        token.refreshToken = account.refresh_token
+    async jwt(anything) {
+      
+      console.log(anything)
+      
+      if( anything.trigger && anything.trigger === 'signIn') {
+        anything.token.accessToken = (anything.account as Account).access_token
+        anything.token.refreshToken = (anything.account as Account).refresh_token
+        anything.token.discordId = anything.user.id
+        anything.token.name = anything.user.name
+        anything.token.email = anything.user.email
       }
-      if (user) {
-        token.discordId = user.userId
-        token.name = user.name
-        token.email = user.email
-      }
-      return token
+
+      return anything.token
     },
     async session({ session, token }) {
-      session.accessToken = token.accessToken
-      session.discordId = token.sub
-      session.email = token.email
-      session.name = token.name
+      (session as SessionExtension).accessToken = (token.accessToken as string);
+      (session as SessionExtension).discordId = (token.sub as string);
+      (session as SessionExtension).user!.email = (token.email as string);
+      (session as SessionExtension).user!.name = (token.name as string);
       return session
     },
   },

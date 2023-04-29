@@ -1,3 +1,10 @@
+import { DefaultSession } from "next-auth";
+
+export interface SessionExtension extends DefaultSession {
+  accessToken: string;
+  discordId: string;
+}
+
 export interface Poll {
   _id: string
   createdAt: string
