@@ -8,6 +8,7 @@ import { channelsAtom, rolesAtom } from 'atoms'
 import { useState, useCallback, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import useServers from './useServers'
+import { SessionExtension } from 'interfaces'
 
 
 const useServer = () => {
@@ -25,7 +26,7 @@ const useServer = () => {
         setLoading(true)
 
         const channelsResponse = await privateBaseFetcher(
-          `/client/discord/${currentServer.id}/channels/${session?.discordId}`
+          `/client/discord/${currentServer.id}/channels/${(session as SessionExtension).discordId}`
         )
 
         const sortedChannels = (
@@ -42,7 +43,7 @@ const useServer = () => {
         setChannels(sortedChannels)
 
         const rolesResponse = await privateBaseFetcher(
-          `/client/discord/${currentServer.id}/roles/${session?.discordId}`
+          `/client/discord/${currentServer.id}/roles/${(session as SessionExtension).discordId}`
         )
 
         const sortedRoles = (

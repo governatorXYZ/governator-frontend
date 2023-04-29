@@ -96,6 +96,7 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
     getValues,
     formState: { errors, isSubmitting },
     watch,
+    reset,
   } = useForm<Poll>({
     resolver: yupResolver(schema),
   })
@@ -113,8 +114,16 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
         { poll_option_name: '', poll_option_emoji: '', _id: '' }
       ]);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fields.length, append]);
+
+  useEffect(() => {
+    const defaultValues = {
+      strategy_config: defaultStratId,
+      author_user_id: user.userId,
+    };
+    console.log(defaultValues)
+    reset({ ...defaultValues });
+  }, [defaultStratId, user.userId, reset]);
 
   const emojiExists = (emoji: string) =>
     watch('poll_options').some(p => p.poll_option_emoji === emoji)
@@ -432,9 +441,10 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             <Controller
               control={control}
               name='strategy_config'
-              {...(!getValues('strategy_config')) ? setValue('strategy_config', defaultStratId ? defaultStratId : '') : {}}
+              // {...() => setValue('strategy_config', defaultStratId as string)}
               render={({ field: { onBlur } }) => (
                 <Select
+                  {...register('strategy_config')}
                   id='tokenStrategies'
                   options={strategies}
                   defaultValue={{ label: STANDARD_STRATEGY_NAME, value: defaultStratId }}
@@ -453,6 +463,15 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
                 />
               )}
             />
+          </FormControl>
+
+          <FormControl>
+          <Input
+            id='author_user_id'
+            type='hidden'
+            {...register('author_user_id')}
+            // {...() => setValue('author_user_id', user.userId)}
+          />
           </FormControl>
 
           {/* <FormControl isInvalid={!!errors.block_height?.message}> */}
@@ -478,6 +497,9 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             </Tooltip>
             {/* <FormErrorMessage>{errors.block_height?.chain_id?.message}</FormErrorMessage> */}
           </FormControl>
+
+
+
 
 
           {/* ██████╗ ██╗███████╗████████╗██████╗ ██╗██████╗ ██╗   ██╗████████╗██╗ ██████╗ ███╗   ██╗    ███████╗███████╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗
@@ -518,12 +540,6 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             <FormErrorMessage>{errors.channel_id?.message}</FormErrorMessage>
           </FormControl>
 
-          <input
-            id='author_user_id'
-            type='hidden'
-            {...register('author_user_id')}
-            {...setValue('author_user_id', user.userId)}
-          />
           <Flex mt='4rem'>
             <Button
               type='submit'
@@ -546,3 +562,4 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
 }
 
 export default PollForm
+

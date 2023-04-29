@@ -72,7 +72,6 @@ const Timer: React.FC<DisplayPollResultsProps> = ({pollData, onCountdownComplete
     useEffect(() => {
         let interval: any = null;
         if (deltaT(pollData.end_time,  Date.now()) <= 1000) {
-            console.log('chanhged')
             onCountdownComplete!(false);
             return () => clearInterval(interval);
         }
@@ -110,11 +109,11 @@ const ShieldBlock: React.FC<DisplayPollResultsProps> = ({pollData, totalVotes, o
     return (
         <Center>
         <div id="parent">
-            <Box style={{width:'100%', height:'10%', backgroundColor: 'blue', zIndex: '10', position: 'absolute'}}>
+            <Box style={{width:'100%', height:'10%', backgroundColor: 'blue', zIndex: 10, position: 'absolute'}}>
                 <Center><Text as='b' color='white'>Result Shielded</Text></Center>
             </Box>
 
-            <Box style={{width:'100%', height:'100%', zIndex: '10', position: 'absolute'}}>
+            <Box style={{width:'100%', height:'100%', zIndex: 10, position: 'absolute'}}>
                 <Center style={{position: 'relative', top:'14%',  paddingLeft: 'auto', paddingRight: 'auto'}}>
                     <Text as='b'>Total votes</Text>
                 </Center>

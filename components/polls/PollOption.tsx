@@ -59,7 +59,6 @@ const PollOption: React.FC<PollOptionProps> = ({
     _: React.MouseEvent<Element, MouseEvent>,
     emojiObject: IEmojiData
   ) => {
-    console.log(emojiExists(emojiObject.emoji))
 
     if (emojiExists(emojiObject.emoji)) {
       toast({

@@ -26,8 +26,6 @@ const useServers = () => {
   const guildId = router.asPath.length >= 3 ? router.asPath.split('/')[2] : ''
   const currentServer = servers.find(s => s.id === guildId)
 
-  console.log(session)
-
   const getUserGuilds = useCallback(async () => {
 
     const fetchData = async () => {

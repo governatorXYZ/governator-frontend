@@ -15,19 +15,17 @@ export default NextAuth({
   ],
   callbacks: {
     /* return {token, user, account, profile, isNewUser} */
-    async jwt(anything) {
-      
-      console.log(anything)
-      
-      if( anything.trigger && anything.trigger === 'signIn') {
-        anything.token.accessToken = (anything.account as Account).access_token
-        anything.token.refreshToken = (anything.account as Account).refresh_token
-        anything.token.discordId = anything.user.id
-        anything.token.name = anything.user.name
-        anything.token.email = anything.user.email
+    async jwt({token, user, account, profile, trigger}) {
+
+      if( trigger && trigger === 'signIn') {
+        token.accessToken = (account as Account).access_token
+        token.refreshToken = (account as Account).refresh_token
+        token.discordId = user.id
+        token.name = user.name
+        token.email = user.email
       }
 
-      return anything.token
+      return token
     },
     async session({ session, token }) {
       (session as SessionExtension).accessToken = (token.accessToken as string);
