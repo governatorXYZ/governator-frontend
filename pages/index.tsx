@@ -21,11 +21,13 @@ import {
 import { AiOutlineTrophy } from 'react-icons/ai'
 import { MdLoop } from 'react-icons/md'
 
-import { useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { sample } from 'lodash'
 import { useSession, signIn } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import { Footer, StyledBox } from 'components/common'
+import { NextPageWithLayout } from './_app'
+import DefaultLayout from 'components/DefaultLayout'
 
 const votes = [
   'Pineapple on pizza? 🍍 or 👎',
@@ -72,7 +74,7 @@ const HeroButton = () => {
   )
 }
 
-const Home: NextPage = () => {
+const Home: NextPageWithLayout = () => {
   return (
     <>
       <Head>
@@ -334,6 +336,13 @@ const Home: NextPage = () => {
       </StyledBox>
     </>
   )
+}
+
+Home.getLayout = function getLayout(page: ReactElement) {
+  return (
+    <DefaultLayout>
+      {page}
+    </DefaultLayout>)
 }
 
 export default Home
