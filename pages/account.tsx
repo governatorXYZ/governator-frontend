@@ -24,9 +24,8 @@ import CustomButton from '../components/common/Button';
 import DataTable from 'components/Datatable';
 
 /* Types */
-import { Address } from '../interfaces';
+import { Address, SessionExtension } from '../interfaces';
 
-import { Account } from '@web3-onboard/core/dist/types';
 import { useConnectWallet } from '@web3-onboard/react';
 import Head from 'next/head';
 
@@ -48,13 +47,6 @@ const columns = [
     accessor: 'actions',
   }
 ]
-
-type AddressesData = {
-  idx: number;
-  _id: string;
-  verifiedDate: string;
-  actions: any;
-}
 
 const Account: NextPage = () => {
   const [user, setUser] = useAtom(userAtom);
@@ -92,7 +84,7 @@ const Account: NextPage = () => {
     try {
       const wallets = await connect();
       if (!wallets) return;
-      const { accounts, label, provider } = wallets[0];
+      const { accounts, provider } = wallets[0];
 
       if (!accounts) return;
       const { address } = accounts[0];
@@ -111,7 +103,7 @@ const Account: NextPage = () => {
 
         // if not, verify it.
         if (!hasBeenVerified) {
-          await Siwe.signInWithEthereum(session?.discordId as unknown as string, provider, address);
+          await Siwe.signInWithEthereum((session as SessionExtension)?.discordId, provider, address);
           await mutate?.();
         }
       }
@@ -149,7 +141,7 @@ const Account: NextPage = () => {
         await mutate?.();
       }
   
-      const { verified } = await Siwe.signInWithEthereum(session?.discordId as unknown as string, provider, account.address);
+      const { verified } = await Siwe.signInWithEthereum((session as SessionExtension)?.discordId, provider, account.address);
       await mutate?.();
       
       setVerified(verified);
@@ -167,7 +159,7 @@ const Account: NextPage = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      if (user.userId === '') await setUser({ userId: (await privateBaseAxios.get(`/user/discord/${session?.discordId}`)).data._id });
+      if (user.userId === '') await setUser({ userId: (await privateBaseAxios.get(`/user/discord/${(session as SessionExtension)?.discordId}`)).data._id });
     }
     fetchUser()
       .then(() => null)
@@ -182,7 +174,7 @@ const Account: NextPage = () => {
   },
 
     //eslint-disable-next-line react-hooks/exhaustive-deps
-    [session?.discordId]
+    [(session as SessionExtension)?.discordId]
   )
 
   const removeWallet = async (walletAddress: string): Promise<void> => {

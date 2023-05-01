@@ -1,4 +1,4 @@
-import { Box, Text, Flex, Image, Heading, GridItem } from '@chakra-ui/react'
+import { Box, Flex, Image, Heading, GridItem } from '@chakra-ui/react'
 
 interface ITeamMember {
   name: string;

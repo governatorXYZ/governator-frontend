@@ -93,7 +93,6 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
     control,
     clearErrors,
     setValue,
-    getValues,
     formState: { errors, isSubmitting },
     watch,
     reset,

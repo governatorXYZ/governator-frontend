@@ -4,7 +4,6 @@ import { useRouter } from 'next/router'
 import useSWR from 'swr'
 import { privateBaseFetcher } from 'constants/axios'
 import { Poll } from 'interfaces'
-import Govcrumb from 'components/BreadCrumb'
 import DisplayPollResults from 'components/polls/DisplayPollResults'
 import {useTotalVotes, useVotesData} from "../../../../../hooks/useVoteData";
 import useServers from 'hooks/useServers'
@@ -19,7 +18,7 @@ const PollResults: NextPage = () => {
     const pollData = data?.data ? (data?.data as Poll) : {} as Poll
     return { pollData, error }
   }
-  const { loading, currentServer } = useServers()
+  const { currentServer } = useServers()
 
   const router = useRouter()
 

@@ -14,7 +14,6 @@ import {
   Container,
   Heading,
   HStack,
-  Stack,
 } from '@chakra-ui/react'
 import Govcrumb from 'components/BreadCrumb'
 import useServers from 'hooks/useServers'
@@ -23,7 +22,6 @@ import DataTable from 'components/Datatable'
 import SearchBox from 'components/SearchBox'
 import * as luxon from 'luxon'
 import DeletePoll from 'components/polls/DeletePoll'
-import { FaDiscord } from 'react-icons/fa'
 import useSWR from 'swr'
 import { privateBaseFetcher } from 'constants/axios'
 import { useGovernatorUser } from 'hooks/useGovernatorUser'
@@ -35,7 +33,7 @@ import Head from 'next/head'
 const Dashboard: NextPage = () => {
   const router = useRouter()
   const { loading, currentServer } = useServers()
-  const { channels, loading: isLoadingChannels } = useServer()
+  const { loading: isLoadingChannels } = useServer()
   const governatorUser = useGovernatorUser()
 
   const { data, error, mutate } = useSWR(governatorUser.userId ? `/poll/user/${governatorUser.userId}` : null, privateBaseFetcher);

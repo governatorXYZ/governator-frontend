@@ -17,7 +17,6 @@ import { init, Web3OnboardProvider } from '@web3-onboard/react';
 import injectedModule from '@web3-onboard/injected-wallets';
 import coinbaseModule from '@web3-onboard/coinbase';
 import walletConnectModule from '@web3-onboard/walletconnect';
-import { SessionExtension } from 'interfaces'
 import { Session } from 'next-auth'
 
 const injected = injectedModule();

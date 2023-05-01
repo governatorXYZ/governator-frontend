@@ -15,7 +15,7 @@ export default NextAuth({
   ],
   callbacks: {
     /* return {token, user, account, profile, isNewUser} */
-    async jwt({token, user, account, profile, trigger}) {
+    async jwt({token, user, account, trigger}) {
 
       if( trigger && trigger === 'signIn') {
         token.accessToken = (account as Account).access_token

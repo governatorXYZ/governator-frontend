@@ -35,6 +35,7 @@ import { useAtom } from 'jotai';
 import { userAtom } from 'atoms';
 import { useEffect, useRef } from 'react'
 import { useRouter } from 'next/router'
+import { SessionExtension } from 'interfaces'
 
 const LoginText = () => {
   return (
@@ -269,11 +270,12 @@ const NavBar = () => {
   useEffect(() => {
 
     async function checkAndCreateUser() {
-      const discordId = session?.discordId;
-      if (!discordId) {
+      if (!session || !(session as SessionExtension)?.discordId) {
         return
       }
 
+      const discordId = (session as SessionExtension)?.discordId;
+      
       /* Check if user already exists in database */
       const dicordUserRes = await privateBaseAxios.get(`account/discord/get-by-account-id/${discordId}`)
       const discordUser = dicordUserRes.data
@@ -289,7 +291,7 @@ const NavBar = () => {
 
       const data = {
         _id: discordId,
-        discord_username: session?.name
+        discord_username: (session as SessionExtension)?.user?.name
       }
       const userXhr = await privateBaseAxios.post('/account/discord/create', data);
       const newUser = userXhr.data;
@@ -301,7 +303,7 @@ const NavBar = () => {
     checkAndCreateUser().then(() => null);
 
     //eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session?.discordId])
+  }, [(session as SessionExtension)?.discordId])
 
   return (
     <Flex bg='gray.700' h='60px'>

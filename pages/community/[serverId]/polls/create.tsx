@@ -2,14 +2,11 @@ import type { NextPage } from 'next'
 import { Box, Text, Flex, Breadcrumb, BreadcrumbItem, BreadcrumbLink } from '@chakra-ui/react'
 import { BiBarChartSquare } from 'react-icons/bi'
 import PollForm from 'components/polls/PollForm'
-import GovCrumb from 'components/BreadCrumb'
-import useServers from 'hooks/useServers'
 import { useRouter } from 'next/router'
 import { ChevronRightIcon } from '@chakra-ui/icons'
 import Head from 'next/head'
 
 const CreatePoll: NextPage = () => {
-  const { currentServer } = useServers()
   const router = useRouter();
 
   return (

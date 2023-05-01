@@ -1,6 +1,4 @@
 import {
-  discordAxios,
-  privateBaseAxios,
   privateBaseFetcher,
 } from 'constants/axios'
 import { useAtom } from 'jotai'
@@ -25,8 +23,14 @@ const useServer = () => {
       try {
         setLoading(true)
 
+        const discordId = (session as SessionExtension)?.discordId
+
+        if (!discordId) {
+          return;
+        }
+
         const channelsResponse = await privateBaseFetcher(
-          `/client/discord/${currentServer.id}/channels/${(session as SessionExtension).discordId}`
+          `/client/discord/${currentServer.id}/channels/${discordId}`
         )
 
         const sortedChannels = (

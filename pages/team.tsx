@@ -1,24 +1,15 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import {
-  GridItem,
   Heading,
-  Button,
-  Image,
   Flex,
   Grid,
   Box,
   Container,
 } from '@chakra-ui/react'
-import SVGWall from 'components/SVGWall'
 import TeamMember from 'components/common/TeamMember'
-import {
-  FaDiscord,
-} from 'react-icons/fa'
-import { FiTwitter } from 'react-icons/fi'
 import styled from '@emotion/styled'
 import team from '../assets/data/team.json'
-import Link from 'next/link'
 import Footer from 'components/common/Footer';
 
 const StyledBox = styled(Flex)`
@@ -85,7 +76,7 @@ const Team: NextPage = () => {
         </Container>
         <Box
           overflowX={'hidden'}
-          flexShrink='0'
+          flexShrink={0}
         >
           <Footer />
         </Box>
