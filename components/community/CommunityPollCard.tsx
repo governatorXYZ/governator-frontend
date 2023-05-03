@@ -43,7 +43,10 @@ const CommunityPollCard = ({
       cursor={'pointer'}
       color='white'
       bg='#303F56'
-      w='810px'
+      w={{
+        base: '100vw',
+        md: '810px'
+      }}
       h='300px'
       mb='20px'
       p='20px'
@@ -53,16 +56,34 @@ const CommunityPollCard = ({
           <Box
             borderRadius={'full'}
             bg='#656565'
-            mr='10px'
+            mr='8px'
             w='24px'
             h='24px'
           />
           <Text>{ author }</Text>
         </Flex>
-        <Box>#{ channel?.provider_id ?? 'unknown'}</Box>
+        <Box
+          color='#B8C6DD'
+        >
+          #{ channel?.provider_id ?? 'unknown'}
+        </Box>
       </HStack>
-      <Heading mb='14px'>{ title }</Heading>
-      <Text mb='20px' flexGrow='2'>{ description }</Text>
+      <Heading
+        fontSize={{
+          base: '18px',
+          md: '24px'
+        }}
+        fontWeight={{
+          base: '400',
+          md: '500'
+        }}
+        mb='14px'
+      >{ title }</Heading>
+      <Text
+        mb='20px'
+        flexGrow='2'
+        color='#D9E3F2'
+      >{ description }</Text>
       <HStack
         justify={'space-between'}
         justifySelf='flex-end'

@@ -48,6 +48,10 @@ const Community = ({ id, icon, name, active, onClick }: CommunityProps) => {
       lineHeight='24px'
       ml='10px'
       fontWeight={500}
+      display={{
+        base: 'none',
+        lg: 'unset'
+      }}
     >
       {name}
     </Heading>

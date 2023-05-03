@@ -83,7 +83,10 @@ const CommunityPollLists = ({
                 align='center'
                 color='white'
                 bg='#303F56'
-                w='810px'
+                w={{
+                  base: '100vw',
+                  md: '810px'
+                }}
                 h='300px'
               >
                 There are no live polls in your communities.
@@ -99,7 +102,10 @@ const CommunityPollLists = ({
                 align='center'
                 color='white'
                 bg='#303F56'
-                w='810px'
+                w={{
+                  base: '100vw',
+                  md: '810px'
+                }}
                 h='300px'
               >
                 There are no live polls in your communities.

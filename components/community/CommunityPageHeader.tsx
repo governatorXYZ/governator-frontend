@@ -17,7 +17,14 @@ const CommunityPageHeader = ({ icon, name }: CommunityPageHeaderProps) => {
   const router = useRouter();
 
   return (
-    <HStack justify={'space-between'} pt='25px' px='32px'>
+    <HStack
+      justify={{
+        base: 'center',
+        md: 'space-between'
+      }}
+      pt='25px'
+      px='32px'
+    >
       <Flex>
         { icon && <Image
           alt={`icon of ${name} discord server`}

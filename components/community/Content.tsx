@@ -12,7 +12,10 @@ const Content = ({ children }: LayoutProps) => {
     <Flex direction='column'>
       {/* bg with skewed radial gradiant */}
       <Box
-        h='150px'
+        h={{
+          base: '75px',
+          md: '150px'
+        }}
         borderTopLeftRadius={'32px'}
         bgGradient='linear(90deg, mauve.20, teal)'/>
       {children}

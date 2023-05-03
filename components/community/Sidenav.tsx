@@ -45,6 +45,11 @@ const Sidenav = ({ children, ...styles }: SidenavProps) => {
       }}
       px='25px'
       py='20px'
+      display={{
+        base: 'none',
+        sm: 'flex',
+        md: 'flex'
+      }}
     >
       <Flex
         align='center'
