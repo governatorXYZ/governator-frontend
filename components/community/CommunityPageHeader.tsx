@@ -20,7 +20,7 @@ const CommunityPageHeader = ({ icon, name }: CommunityPageHeaderProps) => {
     <HStack
       justify={{
         base: 'center',
-        md: 'space-between'
+        sm: 'space-between'
       }}
       pt='25px'
       px='32px'
@@ -37,6 +37,10 @@ const CommunityPageHeader = ({ icon, name }: CommunityPageHeaderProps) => {
         /> }
         <Heading
           color='white'
+          display={{
+            base: 'none',
+            sm: 'block'
+          }}
         >{ name }</Heading>
       </Flex>
       <Flex>

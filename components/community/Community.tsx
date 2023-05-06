@@ -50,7 +50,7 @@ const Community = ({ id, icon, name, active, onClick }: CommunityProps) => {
       fontWeight={500}
       display={{
         base: 'none',
-        lg: 'unset'
+        md: 'unset'
       }}
     >
       {name}
