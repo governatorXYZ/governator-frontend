@@ -1,3 +1,5 @@
+import { useRouter } from 'next/router';
+import { useMemo } from 'react';
 import {
   Heading,
   Spinner,
@@ -6,11 +8,10 @@ import {
   Flex,
   Box
 } from '@chakra-ui/react'
-import { Router, useRouter } from 'next/router';
 
 interface CommunityPollCardProps {
   description?: string;
-  endDate?: string;
+  endDate: string;
   author?: string;
   title: string;
   channel?: any;
@@ -25,12 +26,20 @@ const CommunityPollCard = ({
   title,
   id
 }: CommunityPollCardProps) => {
-
   const router = useRouter();
 
   const visitPoll = () => {
     router.push(`/community/${channel?.provider_id}/polls/results/${id}`)
   }
+
+  
+  const pollStatus = useMemo(() => {
+    const currentDate = new Date();
+    const end = new Date(endDate);
+
+    return (end < currentDate) ? 'Closed' : endDate;
+  }, [endDate])
+
 
   if (!id) return (<Spinner size='lg' />)
 
@@ -91,8 +100,12 @@ const CommunityPollCard = ({
         pt='14px'
       >
         <Box>Total Votes</Box>
-        <Box>
-          <Text>{ endDate }</Text>
+        <Box
+          bg="#C884D080"
+          p='.25em .75em'
+          borderRadius={'full'}
+        >
+          <Text>{ pollStatus }</Text>
         </Box>
       </HStack>
     </Flex>

@@ -37,7 +37,7 @@ const PollResults: NextPage = () => {
   const isLoadingPoll = !pollData && !error
 
   function returnToServer() {
-    router.push(`/community/${currentServer?.id ?? ''}`)
+    router.push(`/dashboard`)
   }
 
   // TODO: clean up comments.
