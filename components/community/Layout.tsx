@@ -30,6 +30,7 @@ const Layout = ({ children }: LayoutProps) => {
             flexGrow={2}
             ml={{
               base: '0px',
+              sm: '96px',
               md: '277px'
             }}
           >

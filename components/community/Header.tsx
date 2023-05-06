@@ -27,7 +27,7 @@ const Header = ({
       boxSizing='content-box'
       justify={{
         base: 'space-between',
-        md: 'flex-end'
+        sm: 'flex-end'
       }}
       align='center'
       p='15px 30px'
@@ -44,8 +44,7 @@ const Header = ({
       <Flex
         display={{
           base: 'flex',
-          md: 'flex',
-          lg: 'none',
+          sm: 'none',
         }}
       >
         <Button
@@ -78,7 +77,13 @@ const Header = ({
           borderRadius='full'
           bg='#303F56'
           h='40px'
-          w='40px'
+          w={{
+            base: '40px',
+            md: 'fit-content'
+          }}
+          px={{
+            md: '1em'
+          }}
           color='#fff'
           align='center'
           justify='center'

@@ -1,10 +1,11 @@
 import {
-  Icon,
-  Box,
-  Flex,
-  Image,
+  Heading,
   Button,
-  Heading
+  Image,
+  Icon,
+  Flex,
+  Box,
+  chakra
 } from '@chakra-ui/react'
 import { useCommunities } from 'contexts/CommunitiesContext';
 import { IoMdAddCircleOutline } from 'react-icons/io';
@@ -39,6 +40,7 @@ const Sidenav = ({ children, ...styles }: SidenavProps) => {
       flexShrink={0}
       bg='#2A303A'
       color='#fff'
+      h='100vh'
       w={{
         base: '96px',
         md: '277px'
@@ -62,13 +64,18 @@ const Sidenav = ({ children, ...styles }: SidenavProps) => {
           src='/images/gov-bot.jpeg'
           alt='Governator'
           w='50px'
-          h='50px'
+          h='auto'
+          flexShrink={0}
           borderRadius='full'
         />
         <Heading
           fontSize='24px'
           ml='20px'
           fontWeight={500}
+          display={{
+            base: 'none',
+            md: 'block'
+          }}
         >
           Governator
         </Heading>
@@ -78,16 +85,35 @@ const Sidenav = ({ children, ...styles }: SidenavProps) => {
       </Box>
       <Box>
         <Button
-          leftIcon={<Icon w={8} h={8} color={"#7F9AC7"} as={IoMdAddCircleOutline}/>}
+          as={Flex}
+          leftIcon={
+            <Icon
+            w={8}
+            h={8}
+            color={"#7F9AC7"}
+            as={IoMdAddCircleOutline}
+          />
+          }
           bg='#2C3748'
           color='#7F9AC7'
-          w='100%'
-          justifyContent='flex-start'
+          w={{
+            base: '50px',
+            md: '100%'
+          }}
+          alignItems='center'
+          justifyContent={{
+            base: 'center',
+            md: 'flex-start'
+          }}      
           h='50px'
-          flexShrink={0}
           my='0'
         >
-          Add a server
+          <chakra.span display={{
+            base: 'none',
+            md: 'inline'
+          }}>
+            Add a server
+          </chakra.span>
         </Button>
       </Box>
     </Flex>
