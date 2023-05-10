@@ -4,18 +4,25 @@ import { useRouter } from 'next/router'
 import useSWR from 'swr'
 import { privateBaseFetcher } from 'constants/axios'
 import { Poll } from 'interfaces'
-import Govcrumb from 'components/BreadCrumb'
 import DisplayPollResults from 'components/polls/DisplayPollResults'
 import {useTotalVotes, useVotesData} from "../../../../../hooks/useVoteData";
 import useServers from 'hooks/useServers'
 import { ChevronRightIcon } from '@chakra-ui/icons'
+import { writableLoadableAtom } from 'atoms'
+import { useAtom } from 'jotai'
+import { useEffect } from 'react'
 
 
 
 const PollResults: NextPage = () => {
+  const [, refreshLoadable] = useAtom(writableLoadableAtom)
+  
+  useEffect(() => {
+    refreshLoadable();
+  },[refreshLoadable])
 
   const usePollData = (): any => {
-    const { data } = useSWR(`/poll/${router.query.pollId}`, privateBaseFetcher)
+    const { data, error } = useSWR(`/poll/${router.query.pollId}`, privateBaseFetcher)
     const pollData = data?.data ? (data?.data as Poll) : {} as Poll
     return { pollData, error }
   }
@@ -56,7 +63,11 @@ const PollResults: NextPage = () => {
             <Spinner color='gray.200' mx='auto' />
           </Flex>
         )}
-        <DisplayPollResults pollData={pollData} voteData={votesData} totalVotes={totalVotes}/>
+        <DisplayPollResults
+          pollData={pollData}
+          voteData={votesData}
+          totalVotes={totalVotes}
+        />
       </Box>
     </Box>
   )

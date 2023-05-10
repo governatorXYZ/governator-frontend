@@ -1,3 +1,19 @@
+export interface DiscordUser {
+  discord_username: string
+  discriminator: string
+  _id: string
+  avatar: string
+  provider_id: string
+}
+
+export interface Session {
+  governatorId: string
+  status: number
+  oauthProfile: DiscordUser
+}
+
+export interface LoadableWithData { state: "hasData",  data: Session }
+
 export interface Poll {
   _id: string
   createdAt: string

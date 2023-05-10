@@ -1,5 +1,4 @@
 import { ChakraProvider } from '@chakra-ui/react'
-import { SessionProvider } from 'next-auth/react'
 import type { AppProps } from 'next/app'
 import theme from 'config/theme'
 import NavBar from 'components/NavBar'
@@ -17,6 +16,7 @@ import { init, Web3OnboardProvider } from '@web3-onboard/react';
 import injectedModule from '@web3-onboard/injected-wallets';
 import coinbaseModule from '@web3-onboard/coinbase';
 import walletConnectModule from '@web3-onboard/walletconnect';
+import { Provider } from 'jotai'
 
 const injected = injectedModule();
 const coinbase = coinbaseModule({ darkMode: true });
@@ -63,9 +63,9 @@ const web3Onboard = init({
   }
 });
 
-function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
+function MyApp({ Component, pageProps: { ...pageProps } }: AppProps) {
   return (
-    <SessionProvider session={session}>
+    <Provider>
       <ChakraProvider theme={theme}>
         <Web3OnboardProvider web3Onboard={web3Onboard}>
           <NavBar />
@@ -74,7 +74,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
           </RouteGuard>
         </Web3OnboardProvider>
       </ChakraProvider>
-    </SessionProvider>
+    </Provider>
   )
 }
 

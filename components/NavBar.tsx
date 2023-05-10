@@ -1,4 +1,3 @@
-import { useSession, signIn, signOut } from 'next-auth/react'
 import {
   Drawer,
   DrawerBody,
@@ -29,14 +28,19 @@ import {
 import { HamburgerIcon } from '@chakra-ui/icons'
 import { AiOutlineCaretDown } from 'react-icons/ai'
 import Link from 'next/link'
-import { Session } from 'next-auth/core/types'
-import { privateBaseAxios } from '../constants/axios';
 import { useAtom } from 'jotai';
-import { userAtom } from 'atoms';
+import { writableLoadableAtom } from 'atoms';
 import { useEffect, useRef } from 'react'
 import { useRouter } from 'next/router'
+import { LoadableWithData, Session } from 'interfaces';
+import _ from 'lodash'
+import utils from '../constants/utils'
 
-const LoginText = () => {
+
+const LOGIN_PATH = `/proxy/auth/login`;
+const LOGOUT_PATH = `/proxy/auth/logout`;
+
+const LoginText = (params: { url: string }) => {
   return (
     <HStack justifyContent='center' alignItems='center' color='gray.200'>
       {(
@@ -46,24 +50,22 @@ const LoginText = () => {
           ml={{
             base: '8px',
           }}
-          onClick={() => {
-            signIn('discord', { callbackUrl: "/dashboard" })
-          }}>
-          Login
+        >
+          <Link href={params.url}>Login</Link>
         </Text>
       )}
     </HStack>
   )
 }
 
-const MobileDrawer: React.FC<{ session: Session | null }> = ({ session }) => {
+const MobileDrawer: React.FC<Session> = (session) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const btnRef = useRef(null);
   const router = useRouter();
 
-  const name = session?.user?.name
-  const image = session?.user?.image
-  
+  const name = session.oauthProfile.discord_username;
+  const image = session.oauthProfile.avatar;
+
   useEffect(() => {
     router.events.on('beforeHistoryChange', onClose)
 
@@ -72,10 +74,7 @@ const MobileDrawer: React.FC<{ session: Session | null }> = ({ session }) => {
     }
   }, [])
 
-
   return (
-    <>
-      {session ? (
         <>
           <Button ref={btnRef} colorScheme='transparent' onClick={onOpen}>
             <HamburgerIcon boxSize={'5'} />
@@ -129,13 +128,19 @@ const MobileDrawer: React.FC<{ session: Session | null }> = ({ session }) => {
                         p='16px 1.5rem'
                         w='100%'
                       >
-                        <Link href='/dashboard'>
-                          <a>
-                            <Text as='span'>
-                              Dashboard
-                            </Text>
-                          </a>
-                        </Link>
+                        <Text
+                          as='span'
+                          cursor='pointer'
+                          ml={{
+                            base: '8px',
+                          }}
+                        >
+                          <Link href='/dashboard' passHref>
+                                Dashboard
+                          </Link>
+
+                        </Text>
+
                       </Box>
                       <Box
                         p='16px 1.5rem'
@@ -173,24 +178,19 @@ const MobileDrawer: React.FC<{ session: Session | null }> = ({ session }) => {
                     colorScheme='purple'
                   >Feedback</Button>
                 </chakra.a>
-                <Button
-                  onClick={() => {
-                    signOut()
-                  }}>
-                  Logout
-                </Button>
+                <Text>
+                  <Link href={LOGOUT_PATH} passHref prefetch={false}>Logout</Link>
+                </Text>
               </DrawerFooter>
             </DrawerContent>
           </Drawer>
         </>
-      ) : (<LoginText />)}
-    </>
   )
 }
 
-const UserAvatar: React.FC<{ session: Session }> = ({ session }) => {
-  const name = session?.user?.name
-  const image = session?.user?.image
+const UserAvatar: React.FC<Session> = (session) => {
+  const name = session.oauthProfile.discord_username;
+  const image = session.oauthProfile.avatar;
 
   return (
     <Menu>
@@ -228,13 +228,14 @@ const UserAvatar: React.FC<{ session: Session }> = ({ session }) => {
               href='/account'
               passHref
             >
-              <ChakraLink
+              {/* <ChakraLink
                 display={'block'}
                 w='100%'
                 _hover={{
                   textDecoration: 'none',
                 }}
-              >My Account</ChakraLink>
+              >My Account</ChakraLink> */}
+              My Account
             </Link>
           </MenuItem>
           <MenuItem>
@@ -250,11 +251,8 @@ const UserAvatar: React.FC<{ session: Session }> = ({ session }) => {
           </MenuItem>
           <MenuItem
             justifyContent={'stretch'}
-            onClick={() => {
-              signOut()
-            }}
           >
-            Logout
+            <Link href={LOGOUT_PATH} passHref prefetch={false}>Logout</Link>
           </MenuItem>
         </MenuGroup>
       </MenuList>
@@ -263,45 +261,7 @@ const UserAvatar: React.FC<{ session: Session }> = ({ session }) => {
 }
 
 const NavBar = () => {
-  const { data: session } = useSession()
-  const [user, setUser] = useAtom(userAtom);
-
-  useEffect(() => {
-
-    async function checkAndCreateUser() {
-      const discordId = session?.discordId;
-      if (!discordId) {
-        return
-      }
-
-      /* Check if user already exists in database */
-      const dicordUserRes = await privateBaseAxios.get(`account/discord/get-by-account-id/${discordId}`)
-      const discordUser = dicordUserRes.data
-
-      /* Create user if does not already exist */
-      if (discordUser) {
-        setUser({
-          ...user,
-          userId: discordUser.user_id
-        });
-        return
-      }
-
-      const data = {
-        _id: discordId,
-        discord_username: session?.name
-      }
-      const userXhr = await privateBaseAxios.post('/account/discord/create', data);
-      const newUser = userXhr.data;
-      setUser({
-        ...user,
-        userId: newUser.user_id
-      });
-    }
-    checkAndCreateUser().then(() => null);
-
-    //eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session?.discordId])
+  const [loadable] = useAtom(writableLoadableAtom)
 
   return (
     <Flex bg='gray.700' h='60px'>
@@ -321,36 +281,39 @@ const NavBar = () => {
             base: 'none',
             md: 'block',
           }}>
-            {session ? (
+            {utils.isAuthenticated(loadable) ? (
               <HStack color='gray.200' spacing='2rem'>
-                <Link href='/dashboard'>
-                  <a>
-                    <Text as='span' fontSize='15px' fontWeight='500'>
-                      Dashboard
-                    </Text>
-                  </a>
-                </Link>
-                <UserAvatar session={session} />
-                <a
-                  target='_blank'
-                  rel='noreferrer'
+                <Text
+                  as='span'
+                  cursor='pointer'
+                  ml={{
+                    base: '8px',
+                  }}
+                >
+                  <Link href='/dashboard' passHref>
+                    Dashboard
+                  </Link>
+                </Text>
+                <UserAvatar {...(loadable as LoadableWithData).data} />
+                <Link
                   href='https://forms.gle/yWiYsAmy243rNUvm9'
+                  passHref
                 >
                   <Button
                     colorScheme='purple'
                   > Feedback
                   </Button>
-                </a>
+                </Link>
               </HStack>
             ) : (
-              <LoginText />
+              <LoginText url={LOGIN_PATH}/>
             )}
           </Box>
           <Box display={{
             base: 'block',
             md: 'none'
           }}>
-            <MobileDrawer session={session} />
+            {utils.isAuthenticated(loadable) ? (<MobileDrawer {...(loadable as LoadableWithData).data} />) : (<LoginText url={LOGIN_PATH}/>) }
           </Box>
         </Flex>
       </Container>

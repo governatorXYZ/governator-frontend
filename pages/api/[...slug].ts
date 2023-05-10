@@ -11,12 +11,12 @@ export default async function handler(
 
     const url = typeof(req.query.slug)==='string' ? req.query.slug : req.query.slug.join('/')
 
-    // trim trailing slash from api endpoint.
-    const apiEndPoint = `${process.env.GOVERNATOR_API_ENDPOINT?.replace(/\/$/, '')}`
+    // trim trailing slash from FE host.
+    const proxyBase = `https://${process.env.VERCEL_URL?.replace(/\/$/, '')}/proxy`
 
     const response = await axios({
       method: req.method as 'GET' | 'DELETE' | 'POST',
-      url: `${apiEndPoint}/${url}`,
+      url: `${proxyBase}/${url}`,
       headers: {
         'X-API-KEY': process.env.GOVERNATOR_API_KEY as string
       },
@@ -25,14 +25,14 @@ export default async function handler(
 
     res.status(response.status).json(response.data)
   } catch (error) {
-    console.log({
-      //eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      status: error?.response?.status,
-      //eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      data: error?.response?.data
-    })
+    // console.log({
+    //   //eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //   // @ts-ignore
+    //   status: error?.response?.status,
+    //   //eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //   // @ts-ignore
+    //   data: error?.response?.data
+    // })
     //eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     res.status(error?.response?.status).json(error?.response?.data.message)

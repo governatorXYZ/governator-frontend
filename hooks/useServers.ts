@@ -1,8 +1,7 @@
-import { discordAxios } from 'constants/axios'
+import { governatorApiWithSessionCredentials } from 'constants/axios'
 import { useAtom } from 'jotai'
 import { serversAtom } from 'atoms'
 import { useState, useCallback, useEffect } from 'react'
-import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/router'
 
 /**
@@ -12,11 +11,11 @@ import { useRouter } from 'next/router'
  */
 const MVP_ALLOWED_GUILDS = {
   "The DAO Bot Garage": "851552281249972254",
-  "Bankless DAO": "834499078434979890"
+  "Bankless DAO": "834499078434979890",
+  "Governator.xyz": "1092659203266580532"
 };
 
 const useServers = () => {
-  const { data: session } = useSession()
   const [servers, setServers] = useAtom(serversAtom)
   const [loading, setLoading] = useState(false)
   const [retry, setRetry] = useState(0)
@@ -29,14 +28,13 @@ const useServers = () => {
 
     const fetchData = async () => {
       try {
-        const data = await discordAxios(session?.accessToken as string).get(
-          '/users/@me/guilds'
+        const data = await governatorApiWithSessionCredentials.get(
+          'auth/discord/servers'
         )
         const serversData = data.data.filter( (_guild: { id: string }) => Object.values(MVP_ALLOWED_GUILDS).includes(_guild.id))
         setServers(serversData)
         return true
       } catch (e) {
-        console.log({ e })
         return false;
       }
     };
@@ -48,8 +46,9 @@ const useServers = () => {
         if (retry < 4) {
           setTimeout(fetchData, 500);
           setRetry(retry + 1)
-        } else {
-          signOut()
+        } 
+        else {
+          router.push('/proxy/auth/logout');
         }
       } else {
         setLoading(false)

@@ -17,7 +17,8 @@ import {
     Table,
     List,
     UnorderedList,
-    ListItem
+    ListItem,
+    Spinner
  } from '@chakra-ui/react'
  import { Icon } from '@chakra-ui/icon'
 
@@ -72,7 +73,6 @@ const Timer: React.FC<DisplayPollResultsProps> = ({pollData, onCountdownComplete
     useEffect(() => {
         let interval: any = null;
         if (deltaT(pollData.end_time,  Date.now()) <= 1000) {
-            console.log('chanhged')
             onCountdownComplete!(false);
             return () => clearInterval(interval);
         }
@@ -195,6 +195,13 @@ const ResultBlock: React.FC<DisplayPollResultsProps> = ({pollData, voteData, tot
 
 type BlockHeight = Array<{chain_id: string, block: string}>
 const blockHeightsTable: React.FC<BlockHeight> = (blockHeight) => {
+
+    if (!blockHeight) return (<Spinner size='xl' color='blue.500' />)
+
+    if (typeof blockHeight === 'number') {
+        return <Text color='gray.100'>{blockHeight}</Text>
+    }
+
     return (
         <List>
             {blockHeight.map((item: any) => {

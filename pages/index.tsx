@@ -23,9 +23,11 @@ import { MdLoop } from 'react-icons/md'
 
 import { useEffect, useState } from 'react'
 import { sample } from 'lodash'
-import { useSession, signIn } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import { Footer, StyledBox } from 'components/common'
+import { writableLoadableAtom } from 'atoms'
+import { useAtom } from 'jotai'
+import utils from '../constants/utils'
 
 const votes = [
   'Pineapple on pizza? 🍍 or 👎',
@@ -35,7 +37,7 @@ const votes = [
 ]
 
 const Quote: React.FC = () => {
-  const [sentence, setSentence] = useState(sample(votes))
+  const [sentence, setSentence] = useState(votes[0])
 
   const tick = () => {
     setSentence(sample(votes) as string)
@@ -52,10 +54,10 @@ const Quote: React.FC = () => {
 }
 
 const HeroButton = () => {
-  const { data: session } = useSession()
+  const [loadable] = useAtom(writableLoadableAtom)
   const router = useRouter()
 
-  return session ? (
+  return utils.isAuthenticated(loadable) ? (
     <Button
       color='gray.700'
       leftIcon={<FaChartBar />}
@@ -66,7 +68,7 @@ const HeroButton = () => {
     <Button
       color='gray.700'
       leftIcon={<FaSignInAlt />}
-      onClick={() => signIn('discord', { callbackUrl: '/dashboard' })}>
+      onClick={() => ''}>
       Login
     </Button>
   )

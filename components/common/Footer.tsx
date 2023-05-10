@@ -61,22 +61,18 @@ const Footer: React.FC = () => {
         >
           <Flex>
             <Link href='https://discord.com/invite/bankless'>
-              <a>
                 <Button
                   variant='ghost'
                   _hover={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
                   <FaDiscord fontSize='20px' />
                 </Button>
-              </a>
             </Link>
             <Link href='https://twitter.com/governatorxyz'>
-              <a>
                 <Button
                   variant='ghost'
                   _hover={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
                   <FiTwitter fontSize='20px' />
                 </Button>
-              </a>
             </Link>
           </Flex>
           {links.map(({
