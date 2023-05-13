@@ -7,7 +7,9 @@ import {
   Box,
   Tab,
 } from '@chakra-ui/react'
+import { PageControls } from 'components/common';
 import { PollResponseDto } from 'governator-sdk';
+import usePaginator from 'hooks/usePaginator';
 import CommunityPollCard from './CommunityPollCard';
 
 interface CommunityPollCardProps {
@@ -20,7 +22,16 @@ const CommunityPollLists = ({
   closedPolls
 }: CommunityPollCardProps) => {
 
-  const ClosedPolls = closedPolls.map((poll) => (
+  const {
+    currentPage: closedPollsCurrentPage,
+    totalPages: closedPollsTotalPages,
+    prevPage: closedPollsPreviousPage,
+    nextPage: closedPollsNextPage,
+    goToPage: closedPollsGoToPage,
+    page: closedPollsPage,
+  } = usePaginator<PollResponseDto>(closedPolls);
+
+  const ClosedPolls = closedPollsPage.map((poll: PollResponseDto) => (
     <CommunityPollCard
       channel={poll.client_config[0]}
       description={poll.description}
@@ -110,6 +121,13 @@ const CommunityPollLists = ({
               >
                 There are no live polls in your communities.
               </Flex>) }
+              <PageControls
+                totalPages={closedPollsTotalPages}
+                currentPage={closedPollsCurrentPage}
+                previousPage={closedPollsPreviousPage}
+                nextPage={closedPollsNextPage}
+                goToPage={closedPollsGoToPage}
+              />
             </TabPanel>
           </TabPanels>
         </Tabs>
