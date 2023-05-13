@@ -29,6 +29,7 @@ const useServers = () => {
 
     const fetchData = async () => {
       try {
+        if (!session?.accessToken) return false
         const data = await discordAxios(session?.accessToken as string).get(
           '/users/@me/guilds'
         )
