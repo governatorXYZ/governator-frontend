@@ -1,4 +1,4 @@
-import { Button, chakra, Flex, Icon, Input, Text } from '@chakra-ui/react';
+import { Button, Flex, Icon } from '@chakra-ui/react';
 import { useState } from 'react'
 import { FaEllipsisH } from 'react-icons/fa';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
@@ -19,21 +19,14 @@ interface IPageControlsProps {
 }
 
 interface IMoreButtonProps {
-  currentPage: number;
-  totalPages: number;
+  remainingPages: Array<number>;
   goToPage: (page: number) => void;
 }
 
 const MoreButton = ({ 
-  currentPage,
-  totalPages,
+  remainingPages,
   goToPage
 }: IMoreButtonProps) => {
-  const remainingPages = Array.from(
-    { length: totalPages - currentPage },
-    (_, index) => currentPage + index + 1
-  );
-
   return (
     <Menu>
       <MenuButton
@@ -80,10 +73,25 @@ const PageControls: React.FC<IPageControlsProps> = ({
     previousPage();
   };
 
-  const buttonArray: Array<number | null> = Array.from(
-    { length: pageToDisplay },
-    (_, i) => startPage + i
+  const buttonArray: Array<number> = Array.from(
+    { length: totalPages },
+    (_, i) => i + 1
   );
+
+  const buttonMapFn = (button: number) => (
+  <Button
+    onClick={() => goToPage(button)}
+    bg={button === currentPage ? 'gray' : '#303F56' }
+    key={button}
+    borderRightRadius={0}
+    borderLeftRadius={0}
+  >
+    {button}
+  </Button>)
+
+  const firstTwoPages = buttonArray.slice(0, 2).map(buttonMapFn)
+  const remainingPages = buttonArray.slice(2, -2);
+  const lastTwoPages = buttonArray.slice(-2).map(buttonMapFn);
 
   return (
     <Flex
@@ -98,17 +106,12 @@ const PageControls: React.FC<IPageControlsProps> = ({
       >
         <Icon as={FiChevronLeft} />
       </Button>
-      {buttonArray.map((button) => button ? (
-        <Button
-          bg={button === currentPage ? 'gray' : '#303F56' }
-          key={button}
-          onClick={() => goToPage(button)}
-          borderRightRadius={0}
-          borderLeftRadius={0}
-        >
-          {button}
-        </Button>
-      ) : null)}
+      {firstTwoPages}
+      <MoreButton
+        goToPage={goToPage}
+        remainingPages={remainingPages}
+      />
+      {lastTwoPages}
       <Button
         borderLeftRadius={0}
         onClick={handleNextPage}
