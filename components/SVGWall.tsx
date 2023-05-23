@@ -1,6 +1,6 @@
 import { Grid } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
-import { sample, uniqueId } from 'lodash'
+import { uniqueId } from 'lodash'
 
 const getBackgroundColor = () => '#29303A'
   // sample(['#29303A', '#1A202C', '#171923', '#000', '#000', '#000', '#000'])

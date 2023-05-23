@@ -4,7 +4,6 @@ import {
   ListItem,
   Heading,
   List,
-  Flex,
   Text,
   Box
 } from '@chakra-ui/react';

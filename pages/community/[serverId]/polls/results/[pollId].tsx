@@ -26,7 +26,7 @@ const PollResults: NextPage = () => {
     const pollData = data?.data ? (data?.data as Poll) : {} as Poll
     return { pollData, error }
   }
-  const { loading, currentServer } = useServers()
+  const { currentServer } = useServers()
 
   const router = useRouter()
 

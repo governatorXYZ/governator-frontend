@@ -119,7 +119,7 @@ const Home: NextPage = () => {
                   x: [-200, -5, -10],
                   opacity: [0.25, 1, 1],
                 }}
-                transition={{ duration: 2 }}>
+                transition={{ duration: 4 }}>
                 <Image
                   src='./images/gov-bot.jpeg'
                   alt='gov-bot'

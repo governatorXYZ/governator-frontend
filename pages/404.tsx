@@ -1,13 +1,7 @@
 import { Container, Grid, Box, Flex, Button, Image, Heading } from "@chakra-ui/react";
 import { Footer } from "components/common";
-import SVGWall from "components/SVGWall";
-import { motion } from "framer-motion";
 import Head from "next/head";
-import Link from "next/link";
 import { useRouter } from "next/router";
-import { FaDiscord } from "react-icons/fa";
-import { FiTwitter } from "react-icons/fi";
-
 
 export default function Custom404() {
   const router = useRouter();
