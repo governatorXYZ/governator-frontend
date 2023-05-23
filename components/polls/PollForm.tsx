@@ -123,7 +123,6 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
       strategy_config: defaultStratId,
       author_user_id: authorId,
     };
-    console.log(defaultValues)
     reset({ ...defaultValues });
   }, [defaultStratId, authorId, reset]);
 
@@ -152,7 +151,6 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
   //@ts-ignore
   const onError = async (errors, e) => {
     console.log('submit error');
-    console.log(errors, e)
   };
 
   const onSubmit = async (data: Poll) => {
@@ -204,8 +202,6 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
         description: data.description,
         author_user_id: data.author_user_id
       }
-
-      // console.log({ submittedData })
 
       const res = await privateBaseAxios.post('/poll/create', submittedData)
 
@@ -454,7 +450,6 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
                   isSearchable
                   onBlur={onBlur}
                   onChange={i => {
-                    console.log({ i })
                     setValue(
                       'strategy_config',
                       i?.value ?? ''
