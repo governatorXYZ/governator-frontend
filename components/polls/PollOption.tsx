@@ -6,7 +6,7 @@ import {
   FormErrorMessage,
   useToast,
 } from '@chakra-ui/react'
-import { IEmojiData } from 'emoji-picker-react'
+import { EmojiClickData } from 'emoji-picker-react'
 import React, { useRef, useState } from 'react'
 import {
   Control,
@@ -45,7 +45,7 @@ const PollOption: React.FC<PollOptionProps> = ({
   setValue,
   emojiExists,
 }) => {
-  const [chosenEmoji, setChosenEmoji] = useState<IEmojiData | null>(null)
+  const [chosenEmoji, setChosenEmoji] = useState<EmojiClickData | null>(null)
   const [showPicker, setShowPicker] = useState(false)
   const ref = useRef<HTMLDivElement | null>(null)
   const toast = useToast()
@@ -55,10 +55,9 @@ const PollOption: React.FC<PollOptionProps> = ({
     handler: () => setShowPicker(false),
   })
 
-  const onEmojiClick = (
-    _: React.MouseEvent<Element, MouseEvent>,
-    emojiObject: IEmojiData
-  ) => {
+  
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const onEmojiClick = (emojiObject: EmojiClickData, _event: MouseEvent) => {
     console.log(emojiExists(emojiObject.emoji))
 
     if (emojiExists(emojiObject.emoji)) {

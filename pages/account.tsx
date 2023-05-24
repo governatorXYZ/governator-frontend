@@ -22,7 +22,7 @@ import CustomButton from '../components/common/Button';
 import DataTable from 'components/Datatable';
 
 /* Types */
-import { Address, LoadableWithData, Session } from '../interfaces';
+import { Address, LoadableWithData } from '../interfaces';
 
 // import { Account } from '@web3-onboard/core/dist/types';
 import { useConnectWallet } from '@web3-onboard/react';
@@ -49,12 +49,12 @@ const columns = [
   }
 ]
 
-type AddressesData = {
-  idx: number;
-  _id: string;
-  verifiedDate: string;
-  actions: any;
-}
+// type AddressesData = {
+//   idx: number;
+//   _id: string;
+//   verifiedDate: string;
+//   actions: any;
+// }
 
 const Account: NextPage = () => {
   const [verified, setVerified] = useState(false);
@@ -93,7 +93,7 @@ const Account: NextPage = () => {
     try {
       const wallets = await connect();
       if (!wallets) return;
-      const { accounts, label, provider } = wallets[0];
+      const { accounts, provider } = wallets[0];
 
       if (!accounts) return;
       const { address } = accounts[0];

@@ -9,7 +9,7 @@ export default async function handler(
 
   try {
 
-    const url = typeof(req.query.slug)==='string' ? req.query.slug : req.query.slug.join('/')
+    const url = typeof(req.query.slug)==='string' ? req.query.slug : (req.query.slug as string[]).join('/')
 
     // trim trailing slash from FE host.
     const proxyBase = `${process.env.NODE_ENV === 'development' ? '' : 'https://'}${process.env.VERCEL_URL?.replace(/\/$/, '')}/proxy`

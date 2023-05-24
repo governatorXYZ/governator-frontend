@@ -11,12 +11,7 @@ import {
     AccordionItem,
     AccordionButton,
     AccordionPanel,
-    AccordionIcon,
-    Td,
-    Tr,
-    Table,
     List,
-    UnorderedList,
     ListItem,
     Spinner
  } from '@chakra-ui/react'

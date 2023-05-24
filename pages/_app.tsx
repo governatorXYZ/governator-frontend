@@ -40,7 +40,7 @@ const chains = [
 const appMetadata = {
   name: 'Governator',
   description: 'Governator',
-  icon: "/favicon.ico",
+  logo: "/favicon.ico",
   recommendedInjectedWallets: [
     {
       name: 'MetamMask',
@@ -53,6 +53,7 @@ const web3Onboard = init({
   wallets,
   chains,
   appMetadata,
+  theme: 'dark',
   accountCenter: {
     desktop: {
       enabled: false

@@ -12,7 +12,6 @@ import {
   VStack,
   Flex,
   Text,
-  Link as ChakraLink,
   Image,
   Container,
   IconButton,
@@ -33,7 +32,6 @@ import { writableLoadableAtom } from 'atoms';
 import { useEffect, useRef } from 'react'
 import { useRouter } from 'next/router'
 import { LoadableWithData, Session } from 'interfaces';
-import _ from 'lodash'
 import utils from '../constants/utils'
 
 
