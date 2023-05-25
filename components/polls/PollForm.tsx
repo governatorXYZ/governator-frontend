@@ -30,8 +30,9 @@ import useServer from 'hooks/useServer'
 import useStrategies from 'hooks/useStrategies'
 import PollOption from './PollOption'
 import {useAtom} from "jotai";
-import {userAtom} from "../../atoms";
-import {BlockHeight} from '../../interfaces';
+import {writableLoadableAtom} from "../../atoms";
+import {BlockHeight, LoadableWithData} from '../../interfaces';
+import utils from '../../constants/utils'
 
 const STANDARD_STRATEGY_NAME = 'Standard (1 Vote = 1 Vote)';
 
@@ -83,7 +84,9 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
   const { strategies } = useStrategies();
   const [isTokenVote, setIsTokenVote] = useState(false);
   const [isSingleVoteChecked, setIsSingleVoteChecked] = useState(true);
-  const [user] = useAtom(userAtom);
+  const [loadable] = useAtom(writableLoadableAtom);
+
+  const authorId = utils.isAuthenticated(loadable) ? (loadable as LoadableWithData).data.governatorId : '';
 
   const defaultStratId = (strategies.find((strat: {label: string, value: string}) => strat.label === STANDARD_STRATEGY_NAME ))?.value
 
@@ -93,9 +96,9 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
     control,
     clearErrors,
     setValue,
-    getValues,
     formState: { errors, isSubmitting },
     watch,
+    reset,
   } = useForm<Poll>({
     resolver: yupResolver(schema),
   })
@@ -109,12 +112,19 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
   useEffect(() => {
     if (fields.length === 0) {
       append([
-        { poll_option_name: '' },
-        { poll_option_name: '' }
+        { poll_option_name: '', poll_option_emoji: '', _id: '' },
+        { poll_option_name: '', poll_option_emoji: '', _id: '' },
       ]);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fields.length, append]);
+
+  useEffect(() => {
+    const defaultValues = {
+      strategy_config: defaultStratId,
+      author_user_id: authorId,
+    };
+    reset({ ...defaultValues });
+  }, [defaultStratId, authorId, reset]);
 
   const emojiExists = (emoji: string) =>
     watch('poll_options').some(p => p.poll_option_emoji === emoji)
@@ -141,7 +151,6 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
   //@ts-ignore
   const onError = async (errors, e) => {
     console.log('submit error');
-    console.log(errors, e)
   };
 
   const onSubmit = async (data: Poll) => {
@@ -193,8 +202,6 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
         description: data.description,
         author_user_id: data.author_user_id
       }
-
-      console.log({ submittedData })
 
       const res = await privateBaseAxios.post('/poll/create', submittedData)
 
@@ -299,7 +306,7 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             {fields.length < 8 && (
               <Button
                 onClick={() => {
-                  append({ poll_option_name: '' })
+                  append({ poll_option_name: '', poll_option_emoji: '', _id: '' })
                 }}
                 variant='outline'
                 size='sm'
@@ -432,9 +439,10 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             <Controller
               control={control}
               name='strategy_config'
-              {...(!getValues('strategy_config')) ? setValue('strategy_config', defaultStratId ? defaultStratId : '') : {}}
+              // {...() => setValue('strategy_config', defaultStratId as string)}
               render={({ field: { onBlur } }) => (
                 <Select
+                  {...register('strategy_config')}
                   id='tokenStrategies'
                   options={strategies}
                   defaultValue={{ label: STANDARD_STRATEGY_NAME, value: defaultStratId }}
@@ -442,7 +450,6 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
                   isSearchable
                   onBlur={onBlur}
                   onChange={i => {
-                    console.log({ i })
                     setValue(
                       'strategy_config',
                       i?.value ?? ''
@@ -453,6 +460,15 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
                 />
               )}
             />
+          </FormControl>
+
+          <FormControl>
+          <Input
+            id='author_user_id'
+            type='hidden'
+            {...register('author_user_id')}
+            // {...() => setValue('author_user_id', user.userId)}
+          />
           </FormControl>
 
           {/* <FormControl isInvalid={!!errors.block_height?.message}> */}
@@ -478,6 +494,9 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             </Tooltip>
             {/* <FormErrorMessage>{errors.block_height?.chain_id?.message}</FormErrorMessage> */}
           </FormControl>
+
+
+
 
 
           {/* ██████╗ ██╗███████╗████████╗██████╗ ██╗██████╗ ██╗   ██╗████████╗██╗ ██████╗ ███╗   ██╗    ███████╗███████╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗
@@ -518,12 +537,6 @@ const PollForm: React.FC<BoxProps> = ({ ...props }) => {
             <FormErrorMessage>{errors.channel_id?.message}</FormErrorMessage>
           </FormControl>
 
-          <input
-            id='author_user_id'
-            type='hidden'
-            {...register('author_user_id')}
-            {...setValue('author_user_id', user.userId)}
-          />
           <Flex mt='4rem'>
             <Button
               type='submit'

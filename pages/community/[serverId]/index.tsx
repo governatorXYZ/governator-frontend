@@ -14,7 +14,6 @@ import {
   Container,
   Heading,
   HStack,
-  Stack,
 } from '@chakra-ui/react'
 import Govcrumb from 'components/BreadCrumb'
 import useServers from 'hooks/useServers'
@@ -23,22 +22,26 @@ import DataTable from 'components/Datatable'
 import SearchBox from 'components/SearchBox'
 import * as luxon from 'luxon'
 import DeletePoll from 'components/polls/DeletePoll'
-import { FaDiscord } from 'react-icons/fa'
 import useSWR from 'swr'
 import { privateBaseFetcher } from 'constants/axios'
-import { useGovernatorUser } from 'hooks/useGovernatorUser'
-import useServer from 'hooks/useServer'
-import { Poll, RenderedPoll } from 'interfaces'
+import { LoadableWithData, Poll, RenderedPoll } from 'interfaces'
 import { useState, useEffect } from 'react'
 import Head from 'next/head'
+import { writableLoadableAtom } from 'atoms'
+import { useAtom } from 'jotai'
+import utils from '../../../constants/utils'
 
 const Dashboard: NextPage = () => {
   const router = useRouter()
   const { loading, currentServer } = useServers()
-  const { channels, loading: isLoadingChannels } = useServer()
-  const governatorUser = useGovernatorUser()
+  const [loadable] = useAtom(writableLoadableAtom)
+  const [, refreshLoadable] = useAtom(writableLoadableAtom)
+  
+  useEffect(() => {
+    refreshLoadable();
+  },[refreshLoadable])
 
-  const { data, error, mutate } = useSWR(governatorUser.userId ? `/poll/user/${governatorUser.userId}` : null, privateBaseFetcher);
+  const { data, error, mutate } = useSWR(utils.isAuthenticated(loadable) ? `/poll/user/${(loadable as LoadableWithData).data.governatorId}` : null, privateBaseFetcher);
   let pollsData = data?.data ? (data?.data as Poll[]) : []
 
   const filteredPollsData: Poll[] = [];
@@ -72,7 +75,7 @@ const Dashboard: NextPage = () => {
       setPolls(fetchPolls())
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, isLoadingChannels])
+  }, [data])
 
   const columns = [
     {

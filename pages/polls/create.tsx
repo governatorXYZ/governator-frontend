@@ -10,8 +10,16 @@ import {
 import { ChevronRightIcon } from '@chakra-ui/icons'
 import { BiBarChartSquare } from 'react-icons/bi'
 import PollForm from 'components/polls/PollForm'
+import { writableLoadableAtom } from 'atoms'
+import { useAtom } from 'jotai'
+import { useEffect } from 'react'
 
 const CreatePoll: NextPage = () => {
+  const [, refreshLoadable] = useAtom(writableLoadableAtom)
+  useEffect(() => {
+    refreshLoadable();
+  },[refreshLoadable])
+  
   return (
     <Box bg='dark-2' minH='calc(100vh - 90px)' pt='4rem' pb='8rem'>
       <Box bg='dark-1' maxW='2xl' mx='auto' p='2rem 3rem'>

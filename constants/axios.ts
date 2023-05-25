@@ -1,19 +1,34 @@
 import axios from 'axios'
 
 export const privateBaseAxios = axios.create({
-  baseURL: '/api'
+  baseURL: '/api',
 })
 
-export const discordAxios = (accessToken: string) =>
-  axios.create({
-    baseURL: 'https://discord.com/api',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      Authorization: `Bearer ${accessToken}`,
-    },
-  })
-
-export const discordFetcher = (url: string, accessToken: string) =>
-  discordAxios(accessToken).get(url)
-
 export const privateBaseFetcher = (url: string) => privateBaseAxios.get(url)
+
+export const governatorApiWithSessionCredentials =
+  axios.create({
+    baseURL: '/proxy',
+    withCredentials: true ,
+})
+
+// governatorApiWithSessionCredentials.interceptors.response.use(response => {
+//   return response;
+// }, error => {
+//  if (error.response.status === 401) {
+//    return {
+//     governatorId: '',
+//     status: 401,
+//     oauthProfile: {
+//       discord_username: '',
+//       discriminator: '',
+//       _id: '',
+//       avatar: '',
+//       provider_id: '',
+//     }
+//   };
+//  }
+//  return error;
+// });
+
+export const governatorWCredentialsFetcher = (url: string) => governatorApiWithSessionCredentials.get(url)

@@ -9,7 +9,7 @@ import {
 } from 'chart.js'
 import { findIndex } from 'lodash'
 import { Pie } from 'react-chartjs-2'
-import {Poll, PollOption} from "../../interfaces";
+import { Poll } from "../../interfaces";
 ChartJS.register(ArcElement, Tooltip, Legend)
 
 type DisplayPollResultsProps = {

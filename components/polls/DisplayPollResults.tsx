@@ -11,12 +11,7 @@ import {
     AccordionItem,
     AccordionButton,
     AccordionPanel,
-    AccordionIcon,
-    Td,
-    Tr,
-    Table,
     List,
-    UnorderedList,
     ListItem,
     Spinner
  } from '@chakra-ui/react'
@@ -73,7 +68,6 @@ const Timer: React.FC<DisplayPollResultsProps> = ({pollData, onCountdownComplete
     useEffect(() => {
         let interval: any = null;
         if (deltaT(pollData.end_time,  Date.now()) <= 1000) {
-            console.log('chanhged')
             onCountdownComplete!(false);
             return () => clearInterval(interval);
         }
