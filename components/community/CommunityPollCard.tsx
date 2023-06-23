@@ -1,15 +1,14 @@
 import { useRouter } from 'next/router';
 import { useMemo } from 'react';
 import {
+  Progress,
   Heading,
   Spinner,
+  chakra,
   HStack,
   Text,
   Flex,
   Box,
-  chakra,
-  Progress,
-  ProgressLabel
 } from '@chakra-ui/react'
 import { CheckCircleIcon } from '@chakra-ui/icons';
 
