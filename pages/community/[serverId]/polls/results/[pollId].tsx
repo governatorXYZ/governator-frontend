@@ -22,9 +22,15 @@ const PollResults: NextPage = () => {
   },[refreshLoadable])
 
   const usePollData = (): any => {
-    const { data, error } = useSWR(`/poll/${router.query.pollId}`, privateBaseFetcher)
+    const {
+      data,
+      error
+    } = useSWR(`/poll/${router.query.pollId}`, privateBaseFetcher)
     const pollData = data?.data ? (data?.data as Poll) : {} as Poll
-    return { pollData, error }
+    return {
+      pollData,
+      error
+    }
   }
   const { currentServer } = useServers()
 
@@ -37,7 +43,7 @@ const PollResults: NextPage = () => {
   const isLoadingPoll = !pollData && !error
 
   function returnToServer() {
-    router.push(`/community/${currentServer?.id ?? ''}`)
+    router.push(`/dashboard`)
   }
 
   // TODO: clean up comments.

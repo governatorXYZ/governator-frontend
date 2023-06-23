@@ -1,10 +1,11 @@
 import { Container, Grid, Box, Flex, Button, Image, Heading } from "@chakra-ui/react";
 import { Footer } from "components/common";
+import DefaultLayout from "components/DefaultLayout";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import { ReactElement } from "react";
 
-
-export default function Custom500() {
+ function Custom500() {
   const router = useRouter();
   return (
     <>
@@ -78,3 +79,13 @@ export default function Custom500() {
     </>
   )
 }
+
+Custom500.getLayout = function getLayout(page: ReactElement) {
+  return (
+    <DefaultLayout>
+      {page}
+    </DefaultLayout>
+  )
+}
+
+export default Custom500;
