@@ -34,6 +34,7 @@ const CommunityPollLists = ({
   const ClosedPolls = closedPollsPage.map((poll: PollResponseDto) => (
     <CommunityPollCard
       channel={poll.client_config[0]}
+      pollOptions={poll.poll_options}
       description={poll.description}
       author={poll.author_user_id}
       endDate={poll.end_time}
@@ -46,6 +47,7 @@ const CommunityPollLists = ({
   const LivePolls = livePolls.map((poll) => (
     <CommunityPollCard
       channel={poll.client_config[0]}
+      pollOptions={poll.poll_options}
       description={poll.description}
       author={poll.author_user_id}
       endDate={poll.end_time}
