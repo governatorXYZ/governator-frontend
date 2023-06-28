@@ -5,8 +5,7 @@ import useSWR from 'swr'
 import { privateBaseFetcher } from 'constants/axios'
 import { Poll } from 'interfaces'
 import DisplayPollResults from 'components/polls/DisplayPollResults'
-import {useTotalVotes, useVotesData} from "../../../../../hooks/useVoteData";
-import useServers from 'hooks/useServers'
+import { useServers, useTotalVotes, useVotesData } from 'hooks';
 import { ChevronRightIcon } from '@chakra-ui/icons'
 import { writableLoadableAtom } from 'atoms'
 import { useAtom } from 'jotai'

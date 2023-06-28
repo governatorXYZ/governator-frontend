@@ -1,4 +1,3 @@
-import { useSession, signOut } from 'next-auth/react'
 import {
   Box,
   Flex,
@@ -10,6 +9,8 @@ import Header from './Header'
 import Content from './Content'
 import RouteGuard from 'components/RouteGuard'
 import MobileNav from './MobileNav'
+import { useSession } from 'hooks'
+import { useRouter } from 'next/router'
 
 interface LayoutProps {
   children: JSX.Element
@@ -18,7 +19,16 @@ interface LayoutProps {
 const Layout = ({ children }: LayoutProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const handleOpenMobileNav = () => onOpen();
-  const { data: session } = useSession();
+  const { session } = useSession();
+  const router = useRouter();
+
+  const signOut = async () => {
+    try {
+      router.push('/proxy/auth/logout');
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
   return (
     <CommunitiesProvider>

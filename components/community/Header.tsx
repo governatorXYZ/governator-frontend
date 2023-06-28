@@ -4,14 +4,11 @@ import {
   Flex,
   Text,
 } from '@chakra-ui/react'
+import { DiscordUser } from 'interfaces'
 
 interface HeaderProps {
   children?: JSX.Element;
-  user?: {
-    name?: string | null;
-    email?: string | null;
-    image?: string | null;
-  };
+  user?: DiscordUser;
   onSignOut?: () => void;
   onClick?: () => void;
 }
@@ -89,7 +86,7 @@ const Header = ({
           justify='center'
         >
           <Image
-            src={user?.image ?? 'images/user-01.svg'}
+            src={user?.avatar ?? 'images/user-01.svg'}
             alt='logo'
             w='20px'
             h='20px'
@@ -105,7 +102,7 @@ const Header = ({
               md: 'block',
             }}
           >
-            {user?.name}
+            {user?.discord_username}
           </Text>
         </Flex>
         <Button

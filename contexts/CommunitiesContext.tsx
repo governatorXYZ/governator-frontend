@@ -1,18 +1,15 @@
 import { privateBaseFetcher } from "constants/axios";
-import { useGovernatorUser } from "hooks/useGovernatorUser";
 import useServers from "hooks/useServers";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { PollResponseDto } from 'governator-sdk';
 import { useToast } from "@chakra-ui/react";
-import { useSession } from 'next-auth/react'
-
+import utils from '../constants/utils'
+import { writableLoadableAtom } from "atoms";
+import { useAtom } from "jotai";
+import { DiscordUser } from "interfaces";
 
 interface ContextValue {
-  user: {
-    userId: string;
-    discordId: string;
-    discordUsername: string;
-  };
+  user?: DiscordUser;
   loading: boolean;
   currentServer?: {
     id: string;
@@ -32,17 +29,15 @@ export function CommunitiesProvider({ children }: { children: React.ReactNode })
   const [livePolls, setLivePolls] = useState<PollResponseDto[]>([]);
   const [closedPolls, setClosedPolls] = useState<PollResponseDto[]>([]);
   const { loading, servers, currentServer } = useServers();
-  const governatorUser = useGovernatorUser()
+  const [loadable] = useAtom(writableLoadableAtom)
   const currentDate = useMemo(() => new Date(), []);
 
   const toast = useToast();
-
-  const { data: session } = useSession();
-
+  
   const getAllPolls = useCallback(async () => {
     try {
+      // governatorApiWithSessionCredentials
       const { data } = await privateBaseFetcher(`/poll/list`)
-      console.log(data);
       setLivePolls(data.filter(
         (poll: PollResponseDto) => (new Date(poll.end_time) > currentDate)
       ));
@@ -61,11 +56,12 @@ export function CommunitiesProvider({ children }: { children: React.ReactNode })
   }, [currentDate])
 
   useEffect(() => {
-    getAllPolls();
-  }, [getAllPolls])
+    if (utils.isAuthenticated(loadable)) {
+      getAllPolls();
+    }
+  }, [getAllPolls, loadable])
 
   const value: ContextValue = {
-    user: governatorUser,
     loading,
     currentServer,
     communities: servers,
