@@ -20,6 +20,7 @@ interface GuildDto {
 }
 
 interface ContextValue {
+  user?: DiscordUser;
   currentServer: { icon: string; name: string; id: string; } | undefined;
   communities: Array<any>;
   livePolls: Array<PollResponseDto>;
