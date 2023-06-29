@@ -3,6 +3,8 @@ import { useAtom } from 'jotai'
 import { serversAtom } from 'atoms'
 import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/router'
+import { useToast } from '@chakra-ui/react'
+import { AxiosError } from 'axios'
 
 /**
  * @important to remove in the future
@@ -20,6 +22,7 @@ const useServers = () => {
   const [loading, setLoading] = useState(false)
   const [retry, setRetry] = useState(0)
 
+  const toast = useToast();
   const router = useRouter()
   const guildId = router.asPath.length >= 3 ? router.asPath.split('/')[2] : ''
   const currentServer = servers.find(s => s.id === guildId)
@@ -30,11 +33,20 @@ const useServers = () => {
       try {
         const data = await governatorApiWithSessionCredentials.get(
           'auth/discord/servers'
-        )
+        );
         const serversData = data.data.filter( (_guild: { id: string }) => Object.values(MVP_ALLOWED_GUILDS).includes(_guild.id))
         setServers(serversData)
         return true
       } catch (e) {
+        if ((e as AxiosError).code === 'ERR_BAD_RESPONSE') {
+          toast({
+            title: "Error",
+            description: "Something went wrong in useServers.",
+            status: "error",
+            duration: 9000,
+            isClosable: true,
+          })
+        }
         return false;
       }
     };

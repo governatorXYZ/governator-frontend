@@ -26,13 +26,13 @@ import { useRouter } from 'next/router'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import {useEffect, useState} from 'react'
-import useServer from 'hooks/useServer'
 import useStrategies from 'hooks/useStrategies'
 import PollOption from './PollOption'
 import {useAtom} from "jotai";
 import {writableLoadableAtom} from "../../atoms";
 import {BlockHeight, LoadableWithData} from '../../interfaces';
 import utils from '../../constants/utils'
+import { useCommunities } from 'contexts/CommunitiesContext';
 
 const STANDARD_STRATEGY_NAME = 'Standard (1 Vote = 1 Vote)';
 
@@ -80,11 +80,17 @@ const schema = yup.object().shape({
 
 const PollForm: React.FC<BoxProps> = ({ ...props }) => {
   const router = useRouter()
-  const { roles, channels } = useServer()
   const { strategies } = useStrategies();
   const [isTokenVote, setIsTokenVote] = useState(false);
   const [isSingleVoteChecked, setIsSingleVoteChecked] = useState(true);
   const [loadable] = useAtom(writableLoadableAtom);
+
+  const { currentServer } = useCommunities();
+
+  console.log({
+    currentServer
+  });
+  
 
   const authorId = utils.isAuthenticated(loadable) ? (loadable as LoadableWithData).data.governatorId : '';
 

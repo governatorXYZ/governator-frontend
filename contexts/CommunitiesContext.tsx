@@ -1,21 +1,26 @@
-import { privateBaseFetcher } from "constants/axios";
-import useServers from "hooks/useServers";
+import { governatorApiWithSessionCredentials, privateBaseFetcher } from "constants/axios";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { PollResponseDto } from 'governator-sdk';
 import { useToast } from "@chakra-ui/react";
 import utils from '../constants/utils'
-import { writableLoadableAtom } from "atoms";
+import { serversAtom, writableLoadableAtom } from "atoms";
 import { useAtom } from "jotai";
 import { DiscordUser } from "interfaces";
+import { AxiosError } from "axios";
+import { useRouter } from "next/router";
+
+interface GuildDto {
+  id: string;
+  name: string;
+  icon: string;
+  owner: boolean;
+  permissions: number;
+  features: Array<string>;
+  permissions_new: string;
+}
 
 interface ContextValue {
-  user?: DiscordUser;
-  loading: boolean;
-  currentServer?: {
-    id: string;
-    name: string;
-    icon: string;
-  }
+  currentServer: { icon: string; name: string; id: string; } | undefined;
   communities: Array<any>;
   livePolls: Array<PollResponseDto>;
   closedPolls: Array<PollResponseDto>;
@@ -24,15 +29,45 @@ interface ContextValue {
 
 const CommunitiesContext = createContext<ContextValue | undefined>(undefined);
 
+const MVP_ALLOWED_GUILDS = {
+  "The DAO Bot Garage": "851552281249972254",
+  "Bankless DAO": "834499078434979890",
+  "Governator.xyz": "1092659203266580532"
+};
 
 export function CommunitiesProvider({ children }: { children: React.ReactNode }) {
   const [livePolls, setLivePolls] = useState<PollResponseDto[]>([]);
   const [closedPolls, setClosedPolls] = useState<PollResponseDto[]>([]);
-  const { loading, servers, currentServer } = useServers();
   const [loadable] = useAtom(writableLoadableAtom)
+  const [servers, setServers] = useAtom(serversAtom);
   const currentDate = useMemo(() => new Date(), []);
+  
+  const router = useRouter();
+
+  const guildId = useMemo(() => {
+    return router.asPath.length >= 3 ? router.asPath.split('/')[2] : '';
+  }, [router.asPath]);
+
+  const currentServer = useMemo(() => {
+    return servers.find(s => s.id === guildId);
+  }, [guildId, servers]);
 
   const toast = useToast();
+
+  const getServers = useCallback(async () => {
+    try {
+      const { data } = await governatorApiWithSessionCredentials.get(
+        'auth/discord/servers'
+      );
+
+      setServers(data.filter((server: GuildDto) => (
+        Object.values(MVP_ALLOWED_GUILDS).includes(server.id)
+      )));
+    } catch (error) {
+      console.error((error as AxiosError).message);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   
   const getAllPolls = useCallback(async () => {
     try {
@@ -57,12 +92,18 @@ export function CommunitiesProvider({ children }: { children: React.ReactNode })
 
   useEffect(() => {
     if (utils.isAuthenticated(loadable)) {
+      getServers();
+    }
+  }, [getServers, loadable]);
+
+
+  useEffect(() => {
+    if (utils.isAuthenticated(loadable)) {
       getAllPolls();
     }
-  }, [getAllPolls, loadable])
+  }, [getAllPolls, loadable]);
 
   const value: ContextValue = {
-    loading,
     currentServer,
     communities: servers,
     livePolls,
