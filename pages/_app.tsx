@@ -18,9 +18,25 @@ import coinbaseModule from '@web3-onboard/coinbase';
 import walletConnectModule from '@web3-onboard/walletconnect';
 import { Provider } from 'jotai'
 
+const wcV2InitOptions = {
+  version: 2 as const,
+  /**
+   * Project ID associated with [WalletConnect account](https://cloud.walletconnect.com)
+   */
+  projectId: process.env.NEXT_PUBLIC_WC_ID ? process.env.NEXT_PUBLIC_WC_ID : '',
+  /**
+   * Optional function to handle WalletConnect URI when it becomes available
+   */
+  // handleUri: (uri: string) => console.log(uri),
+  /**
+   * Chains required to be supported by all wallets connecting to your DApp
+   */
+  requiredChains: [1]
+}
+
 const injected = injectedModule();
 const coinbase = coinbaseModule({ darkMode: true });
-const walletConnect = walletConnectModule();
+const walletConnect = walletConnectModule(wcV2InitOptions);
 
 const wallets = [
   injected,
@@ -33,7 +49,7 @@ const chains = [
     id: '0x1',
     token: 'ETH',
     label: 'Ethereum Mainnet',
-    rpcUrl: process.env.NEXT_PUBLIC_RPC_URL ?? 'https://rpc.ankr.com/eth',
+    rpcUrl: process.env.NEXT_PUBLIC_RPC_URL ? process.env.NEXT_PUBLIC_RPC_URL : 'https://rpc.ankr.com/eth',
   }
 ]
 
