@@ -75,7 +75,7 @@ type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
 }
 
-function MyApp({ Component, pageProps: { session, ...pageProps } }: AppPropsWithLayout) {
+function MyApp({ Component, pageProps }: AppPropsWithLayout) {
 
   const getLayout = Component.getLayout ?? ((page: ReactNode) => page);
   const layout = getLayout(<Component {...pageProps} />)

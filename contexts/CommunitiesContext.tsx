@@ -5,9 +5,8 @@ import { useToast } from "@chakra-ui/react";
 import utils from '../constants/utils'
 import { serversAtom, writableLoadableAtom } from "atoms";
 import { useAtom } from "jotai";
-import { DiscordUser } from "interfaces";
+import { DiscordUser, DropdownValue, LoadableWithData } from "interfaces";
 import { AxiosError } from "axios";
-import { useRouter } from "next/router";
 
 interface GuildDto {
   id: string;
@@ -21,11 +20,15 @@ interface GuildDto {
 
 interface ContextValue {
   user?: DiscordUser;
+  loading: boolean;
   currentServer: { icon: string; name: string; id: string; } | undefined;
   communities: Array<any>;
   livePolls: Array<PollResponseDto>;
   closedPolls: Array<PollResponseDto>;
   getAllPolls: (user: string) => Promise<void>;
+  getCommunityChannels: (id: string) => Promise<DropdownValue[]>;
+  getCommunityRoles: (id: string) => Promise<DropdownValue[]>;
+  getCurrentServer: (id: string) => Promise<any>;
 }
 
 const CommunitiesContext = createContext<ContextValue | undefined>(undefined);
@@ -41,22 +44,15 @@ export function CommunitiesProvider({ children }: { children: React.ReactNode })
   const [closedPolls, setClosedPolls] = useState<PollResponseDto[]>([]);
   const [loadable] = useAtom(writableLoadableAtom)
   const [servers, setServers] = useAtom(serversAtom);
-  const currentDate = useMemo(() => new Date(), []);
+  const [loading, setLoading] = useState(false);
+  const [currentServer, setCurrentServer] = useState<{ icon: string; name: string; id: string; } | undefined>(undefined);
   
-  const router = useRouter();
-
-  const guildId = useMemo(() => {
-    return router.asPath.length >= 3 ? router.asPath.split('/')[2] : '';
-  }, [router.asPath]);
-
-  const currentServer = useMemo(() => {
-    return servers.find(s => s.id === guildId);
-  }, [guildId, servers]);
-
+  const currentDate = useMemo(() => new Date(), []);
   const toast = useToast();
 
   const getServers = useCallback(async () => {
     try {
+      if(!utils.isAuthenticated(loadable)) return;
       const { data } = await governatorApiWithSessionCredentials.get(
         'auth/discord/servers'
       );
@@ -69,10 +65,24 @@ export function CommunitiesProvider({ children }: { children: React.ReactNode })
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const getCurrentServer = useCallback(async (id: string) => {
+    try {
+      setLoading(true);
+      if(!utils.isAuthenticated(loadable)) return;
+      const community = servers.find(s => s.id === id);
+      return community;
+    } catch (error) {
+      console.error((error as AxiosError).message);
+    } finally {
+      setLoading(false);
+    }
+  }, [servers]);
   
   const getAllPolls = useCallback(async () => {
     try {
       // governatorApiWithSessionCredentials
+      if(!utils.isAuthenticated(loadable)) return;
       const { data } = await privateBaseFetcher(`/poll/list`)
       setLivePolls(data.filter(
         (poll: PollResponseDto) => (new Date(poll.end_time) > currentDate)
@@ -89,27 +99,86 @@ export function CommunitiesProvider({ children }: { children: React.ReactNode })
       })
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentDate])
+  }, [currentDate]);
 
-  useEffect(() => {
-    if (utils.isAuthenticated(loadable)) {
-      getServers();
+  const getCommunityChannels = useCallback(async (id: string) => {
+    try {
+      setLoading(true)
+      if(!utils.isAuthenticated(loadable)) return;
+      const { data } = await privateBaseFetcher(
+        `/client/discord/${id}/channels/${(loadable as LoadableWithData).data.oauthProfile._id}`
+      )
+
+      console.log({data});
+
+      return data.data       
+    } catch (e) {
+      toast({
+        title: "Error",
+        description: "There was an error fetching channels",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false)
     }
-  }, [getServers, loadable]);
+  }, [])
 
+  const getCommunityRoles = useCallback(async (id: string) => {
+    try {
+      setLoading(true)
+      const { data } = await privateBaseFetcher(
+        `/client/discord/${id}/roles/${(loadable as LoadableWithData).data.oauthProfile._id}`
+      )
+
+      console.log({data});
+
+      // const sortedRoles = (
+      //   rolesResponse?.data?.data as Record<number, string>[]
+      // )?.map(c => {
+      //     const entries = Object.entries(c)[0]
+      //     return { value: entries[0], label: entries[1] }
+      //   })
+      //   .filter(c => {
+      //     return c.label !== "@everyone"
+      //   })
+      //   .sort((curr, next) =>
+      //     curr.label.toLowerCase() < next.label.toLowerCase() ? -1 : 1
+      //   )
+      
+      // setRoles(sortedRoles)
+      return data.data
+    } catch (e) {
+      toast({
+        title: "Error",
+        description: "There was an error fetching channels",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false)
+    }
+  }, []);
 
   useEffect(() => {
-    if (utils.isAuthenticated(loadable)) {
+    if (utils.isAuthenticated(loadable) && !servers.length) {
+      getServers();
       getAllPolls();
     }
-  }, [getAllPolls, loadable]);
+  }, []);
 
   const value: ContextValue = {
-    currentServer,
     communities: servers,
-    livePolls,
+    currentServer,
     closedPolls,
-    getAllPolls
+    livePolls,
+    loading,
+    getAllPolls,
+    getCommunityChannels,
+    getCommunityRoles,
+    getCurrentServer
   };
 
   return (

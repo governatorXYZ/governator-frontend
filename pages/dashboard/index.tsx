@@ -18,7 +18,7 @@ const ServerSelect: NextPageWithLayout = () => {
   return (
     <Flex direction='column'>
       <Box>
-        <CommunityPageHeader name={"Communities"} />
+        <CommunityPageHeader name={"Your Timeline"} emoji={null}/>
       </Box>
       <CommunityPollLists livePolls={livePolls} closedPolls={closedPolls} />
     </Flex>
@@ -27,7 +27,7 @@ const ServerSelect: NextPageWithLayout = () => {
 
 ServerSelect.getLayout = function getLayout(page: ReactElement) {
   return (
-    <Layout>
+    <Layout short={true}>
       {page}
     </Layout>)
 }

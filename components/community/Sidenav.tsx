@@ -11,6 +11,7 @@ import { useCommunities } from 'contexts/CommunitiesContext';
 import { IoMdAddCircleOutline } from 'react-icons/io';
 import { useRouter } from 'next/router'
 import Community from './Community'
+import Dashboard from './Dashboard'
 
 interface SidenavProps {
   children?: JSX.Element;
@@ -46,7 +47,7 @@ const Sidenav = ({ children, ...styles }: SidenavProps) => {
         md: '277px'
       }}
       px='25px'
-      py='20px'
+      py='15px'
       display={{
         base: 'none',
         sm: 'flex',
@@ -55,15 +56,12 @@ const Sidenav = ({ children, ...styles }: SidenavProps) => {
     >
       <Flex
         align='center'
-        borderBottom="0.5px solid"
-        borderBottomColor={'#7F9AC7'}
-        pb='30px'
-        mb='20px'
+        pb='15px'
       >
         <Image
           src='/images/gov-bot.jpeg'
           alt='Governator'
-          w='50px'
+          w='40px'
           h='auto'
           flexShrink={0}
           borderRadius='full'
@@ -81,6 +79,12 @@ const Sidenav = ({ children, ...styles }: SidenavProps) => {
         </Heading>
       </Flex>
       <Box mb='13px'>
+        <Dashboard
+          name='Dashboard'
+          icon='images/layers-three-01.svg'
+          active={router.asPath === '/dashboard'}
+          onClick={() => router.push('/dashboard')}
+        />
         {list}
       </Box>
       <Box>

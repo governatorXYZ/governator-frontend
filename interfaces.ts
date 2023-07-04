@@ -74,3 +74,8 @@ export interface Address {
   verification_message: string
   nonce: string
 }
+
+export interface DropdownValue {
+  label: string;
+  value: string;
+}

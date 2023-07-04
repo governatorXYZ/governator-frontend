@@ -13,10 +13,11 @@ import { useSession } from 'hooks'
 import { useRouter } from 'next/router'
 
 interface LayoutProps {
-  children: JSX.Element
+  children: JSX.Element;
+  short?: boolean
 }
 
-const Layout = ({ children }: LayoutProps) => {
+const Layout = ({ children, short }: LayoutProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const handleOpenMobileNav = () => onOpen();
   const { session } = useSession();
@@ -49,7 +50,7 @@ const Layout = ({ children }: LayoutProps) => {
               onSignOut={signOut}
               onClick={handleOpenMobileNav}
             />
-            <Content>
+            <Content short={short}>
               {children}
             </Content>
           </Box>

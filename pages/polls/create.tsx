@@ -1,4 +1,3 @@
-import type { NextPage } from 'next'
 import {
   Box,
   Breadcrumb,
@@ -12,9 +11,11 @@ import { BiBarChartSquare } from 'react-icons/bi'
 import PollForm from 'components/polls/PollForm'
 import { writableLoadableAtom } from 'atoms'
 import { useAtom } from 'jotai'
-import { useEffect } from 'react'
+import { ReactElement, useEffect } from 'react'
+import Layout from 'components/community/Layout'
+import { NextPageWithLayout } from 'pages/_app'
 
-const CreatePoll: NextPage = () => {
+const CreatePoll: NextPageWithLayout = () => {
   const [, refreshLoadable] = useAtom(writableLoadableAtom)
   useEffect(() => {
     refreshLoadable();
@@ -60,5 +61,13 @@ const CreatePoll: NextPage = () => {
     </Box>
   )
 }
+
+CreatePoll.getLayout = function getLayout(page: ReactElement) {
+  return (
+    <Layout>
+      {page}
+    </Layout>)
+}
+
 
 export default CreatePoll

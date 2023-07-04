@@ -10,9 +10,10 @@ import { useRouter } from 'next/router';
 interface CommunityPageHeaderProps {
   icon?: string;
   name?: string;
+  emoji?: string | null;
 }
 
-const CommunityPageHeader = ({ icon, name }: CommunityPageHeaderProps) => {
+const CommunityPageHeader = ({ icon, name, emoji }: CommunityPageHeaderProps) => {
 
   const router = useRouter();
 
@@ -54,7 +55,7 @@ const CommunityPageHeader = ({ icon, name }: CommunityPageHeaderProps) => {
         >
           <Button
             leftIcon={<Image src="/images/bar-chart-10.svg" alt="bar chart icon" />}
-            onClick={() => router.push('/polls/create')}
+            onClick={() => router.push(`${router.query.serverId}/polls/create`)}
             bg='#2a303a'
             color='white'
             borderRadius={'full'}

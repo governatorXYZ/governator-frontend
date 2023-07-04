@@ -7,9 +7,11 @@ import { ChevronRightIcon } from '@chakra-ui/icons'
 import Head from 'next/head'
 import { writableLoadableAtom } from 'atoms'
 import { useAtom } from 'jotai'
-import { useEffect } from 'react'
+import { ReactElement, useEffect } from 'react'
+import { NextPageWithLayout } from 'pages/_app'
+import Layout from 'components/community/Layout'
 
-const CreatePoll: NextPage = () => {
+const CreatePoll: NextPageWithLayout = () => {
   // const { currentServer } = useServers()
   const router = useRouter();
 
@@ -53,5 +55,13 @@ const CreatePoll: NextPage = () => {
     </Box>
   )
 }
+
+CreatePoll.getLayout = function getLayout(page: ReactElement) {
+  return (
+    <Layout>
+      {page}
+    </Layout>)
+}
+
 
 export default CreatePoll
