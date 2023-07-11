@@ -5,8 +5,7 @@ import useSWR from 'swr'
 import { privateBaseFetcher } from 'constants/axios'
 import { Poll } from 'interfaces'
 import DisplayPollResults from 'components/polls/DisplayPollResults'
-import {useTotalVotes, useVotesData} from "../../../../../hooks/useVoteData";
-import useServers from 'hooks/useServers'
+import { useServers, useTotalVotes, useVotesData } from 'hooks';
 import { ChevronRightIcon } from '@chakra-ui/icons'
 import { writableLoadableAtom } from 'atoms'
 import { useAtom } from 'jotai'
@@ -22,9 +21,15 @@ const PollResults: NextPage = () => {
   },[refreshLoadable])
 
   const usePollData = (): any => {
-    const { data, error } = useSWR(`/poll/${router.query.pollId}`, privateBaseFetcher)
+    const {
+      data,
+      error
+    } = useSWR(`/poll/${router.query.pollId}`, privateBaseFetcher)
     const pollData = data?.data ? (data?.data as Poll) : {} as Poll
-    return { pollData, error }
+    return {
+      pollData,
+      error
+    }
   }
   const { currentServer } = useServers()
 
@@ -37,7 +42,7 @@ const PollResults: NextPage = () => {
   const isLoadingPoll = !pollData && !error
 
   function returnToServer() {
-    router.push(`/community/${currentServer?.id ?? ''}`)
+    router.push(`/dashboard`)
   }
 
   // TODO: clean up comments.

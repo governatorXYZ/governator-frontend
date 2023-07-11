@@ -113,6 +113,7 @@ const Footer: React.FC = () => {
             base: 'center',
             md: 'flex-end',
           }}
+          bgGradient='grad.1'
         >
           <SocialLinks />
           <FooterLinks />

@@ -2,7 +2,7 @@ import type { NextPage } from 'next';
 import moment from 'moment';
 import useSWR from 'swr';
 import { useAtom } from 'jotai';
-import { useEffect, useState } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 
 import {
   Box,
@@ -23,10 +23,11 @@ import DataTable from 'components/Datatable';
 
 /* Types */
 import { Address, LoadableWithData } from '../interfaces';
-
-// import { Account } from '@web3-onboard/core/dist/types';
 import { useConnectWallet } from '@web3-onboard/react';
 import Head from 'next/head';
+import { NextPageWithLayout } from './_app';
+import { AccountApi } from 'governator-sdk';
+import DefaultLayout from 'components/DefaultLayout';
 import { writableLoadableAtom } from 'atoms';
 import utils from '../constants/utils'
 
@@ -56,7 +57,7 @@ const columns = [
 //   actions: any;
 // }
 
-const Account: NextPage = () => {
+const Account: NextPageWithLayout = () => {
   const [verified, setVerified] = useState(false);
   const [loadable] = useAtom(writableLoadableAtom)
 
@@ -362,5 +363,7 @@ const Account: NextPage = () => {
     </Box>
   )
 }
+
+Account.getLayout = (page: ReactElement) => <DefaultLayout>{page}</DefaultLayout>;
 
 export default Account;

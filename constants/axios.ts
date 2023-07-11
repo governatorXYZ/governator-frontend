@@ -31,4 +31,4 @@ export const governatorApiWithSessionCredentials =
 //  return error;
 // });
 
-export const governatorWCredentialsFetcher = (url: string) => governatorApiWithSessionCredentials.get(url)
+export const governatorWCredentialsFetcher = <T>(url: string) => governatorApiWithSessionCredentials.get<T>(url)

@@ -26,13 +26,13 @@ import { useRouter } from 'next/router'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import {useEffect, useState} from 'react'
-import useServer from 'hooks/useServer'
 import useStrategies from 'hooks/useStrategies'
 import PollOption from './PollOption'
 import {useAtom} from "jotai";
 import {writableLoadableAtom} from "../../atoms";
-import {BlockHeight, LoadableWithData} from '../../interfaces';
+import {BlockHeight, DropdownValue, LoadableWithData} from '../../interfaces';
 import utils from '../../constants/utils'
+import { useCommunities } from 'contexts/CommunitiesContext';
 
 const STANDARD_STRATEGY_NAME = 'Standard (1 Vote = 1 Vote)';
 
@@ -80,12 +80,33 @@ const schema = yup.object().shape({
 
 const PollForm: React.FC<BoxProps> = ({ ...props }) => {
   const router = useRouter()
-  const { roles, channels } = useServer()
   const { strategies } = useStrategies();
   const [isTokenVote, setIsTokenVote] = useState(false);
   const [isSingleVoteChecked, setIsSingleVoteChecked] = useState(true);
+  const [roles, setRoles] = useState<DropdownValue[]>([]);
+  const [channels, setChannels] = useState<DropdownValue[]>([]);
   const [loadable] = useAtom(writableLoadableAtom);
 
+  const {
+    getCommunityChannels,
+    getCommunityRoles,
+    getCurrentServer,
+    currentServer,
+  } = useCommunities();
+
+  useEffect(() => {
+    console.log('loading poll');
+    getCurrentServer(router.query.serverId as string)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      .then(async (server) => {
+        console.log(server);
+        const roles = await getCommunityRoles(server.id);
+        const channels = await getCommunityChannels(server.id);
+        setRoles(roles);
+        setChannels(channels);
+      });
+  }, []);
+  
   const authorId = utils.isAuthenticated(loadable) ? (loadable as LoadableWithData).data.governatorId : '';
 
   const defaultStratId = (strategies.find((strat: {label: string, value: string}) => strat.label === STANDARD_STRATEGY_NAME ))?.value
